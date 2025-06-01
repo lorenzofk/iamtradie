@@ -24,4 +24,15 @@ Route::middleware('auth')->group(function () {
     Route::post('/logout', [LogoutController::class, 'logout'])->name('logout');
     Route::get('/settings', [SettingsController::class, 'show'])->name('settings');
     Route::put('/settings', [SettingsController::class, 'update'])->name('settings.update');
+
+    // Twilio routes
+    Route::prefix('twilio')->name('twilio.')->group(function () {
+        Route::post('/send-message', [App\Http\Controllers\TwilioController::class, 'sendMessage'])->name('send-message');
+        Route::post('/send-quote', [App\Http\Controllers\TwilioController::class, 'sendQuote'])->name('send-quote');
+        Route::post('/validate-phone', [App\Http\Controllers\TwilioController::class, 'validatePhone'])->name('validate-phone');
+        Route::get('/account-info', [App\Http\Controllers\TwilioController::class, 'getAccountInfo'])->name('account-info');
+    });
 });
+
+// Public webhook route (no auth required)
+Route::post('/twilio/webhook', [App\Http\Controllers\TwilioController::class, 'webhook'])->name('twilio.webhook');
