@@ -54,6 +54,9 @@ return [
 
     'url' => env('APP_URL', 'http://localhost'),
 
+    // Allow hosting on *.replit.dev hosts
+    'allowed_hosts' => ['*'],
+
     /*
     |--------------------------------------------------------------------------
     | Application Timezone
