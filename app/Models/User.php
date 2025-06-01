@@ -47,11 +47,25 @@ class User extends Authenticatable
         ];
     }
 
+    /**
+     * Get the settings for the user.
+     */
     public function settings(): HasOne
     {
         return $this->hasOne(UserSettings::class);
     }
+
+    /**
+     * Get the twilio settings for the user.
+     */
+    public function twilioSettings(): HasOne
+    {
+        return $this->hasOne(TwilioSettings::class);
+    }
     
+    /**
+     * Get the settings for the user, or create them if they don't exist.
+     */
     public function getOrCreateSettings(): UserSettings
     {
         return $this->settings ?? $this->settings()->create();

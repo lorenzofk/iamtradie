@@ -1,9 +1,12 @@
 <script setup>
+import { computed } from 'vue';
 import SidebarItem from './SidebarItem.vue';
 import { usePage, router } from '@inertiajs/vue3';
+import { useToast as PrimeVueUseToast } from 'primevue/usetoast';
+import { useToast } from '@Shared/Ui/Hooks/useToast';
+import Toast from '@Shared/Ui/Messages/Toast.vue';
 
-const user = usePage().props.auth?.user || { name: 'User', role: 'User' };
-console.log('Sidebar user:', user);
+const { setToast } = useToast();
 
 const navLinks = [
   { label: 'Dashboard', href: route('home'), icon: ['fas', 'fa-chart-bar'] },
@@ -19,6 +22,11 @@ const onLogout = (e) => {
   router.post(route('logout'));
 };
 
+const user = computed(() => {
+  return usePage().props.auth?.user || { name: 'User', role: 'Tradie' };
+});
+
+
 function userInitials(user) {
   if (!user) return 'U';
 
@@ -29,10 +37,14 @@ function userInitials(user) {
 
   return 'U';
 }
+
+
+setToast(PrimeVueUseToast());
 </script>
 
 <template>
   <div class="flex min-h-screen">
+    <Toast />
     <!-- Sidebar -->
     <aside class="w-64 bg-white border-r border-gray-200 flex flex-col justify-between min-h-screen">
       <div class="flex flex-col flex-grow pt-6 pb-4 overflow-y-auto">
@@ -47,25 +59,8 @@ function userInitials(user) {
         </div>
         <!-- Navigation -->
         <nav class="flex-1 px-2 space-y-1">
-          <SidebarItem
-                    label="Dashboard"
-                    :href="route('home')"
-                    :active="route().current('home')"
-                    icon="house"
-                />
-                <SidebarItem
-                    label="AI Quotes"
-                    :href="route('ai.quotes')"
-                    :active="route().current('ai.*')"
-                    icon="quote-right"
-                />
-                <SidebarItem
-                    label="Settings"
-                    :href="route('settings.index')"
-                    :active="route().current('settings.*')"
-                    icon="cog"
-                />
-            </nav>
+          <SidebarItem v-for="link in navLinks" :key="link.label" :label="link.label" :href="link.href" :icon="link.icon" />
+        </nav>
       </div>
       <!-- User Profile -->
       <div class="flex-shrink-0 flex border-t border-gray-200 p-4 items-center w-full">

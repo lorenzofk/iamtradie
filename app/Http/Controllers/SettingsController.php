@@ -6,18 +6,18 @@ use App\Enums\IndustryType;
 use App\Enums\ResponseTone;
 use App\Http\Requests\UpdateUserSettingsRequest;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
+use Exception;
 
 class SettingsController extends Controller
 {
     public function show(): Response
     {
-        $user = auth()->user();
-        $settings = $user->settings;
+        $settings = auth()->user()->settings;
 
         return Inertia::render('Settings/Index', [
-            'user' => $user,
             'settings' => $settings,
             'industryTypes' => IndustryType::toDropdown(),
             'responseTones' => ResponseTone::toDropdown(),
@@ -27,24 +27,31 @@ class SettingsController extends Controller
     public function update(UpdateUserSettingsRequest $request): RedirectResponse
     {
         $user = auth()->user();
+
         $validated = $request->validated();
 
-        // Update user basic info
-        $user->update([
-            'first_name' => $validated['first_name'],
-            'last_name' => $validated['last_name'],
-            'email' => $validated['email'],
-        ]);
+        DB::beginTransaction();
 
-        // Update or create settings
-        $settingsData = collect($validated)->except(['first_name', 'last_name', 'email'])->toArray();
-        $settingsData['auto_send_sms'] = $request->boolean('auto_send_sms');
-        $settingsData['auto_send_email'] = $request->boolean('auto_send_email');
+        try {
+            // Update user basic info
+            $user->update([
+                'first_name' => $validated['first_name'],
+                'last_name' => $validated['last_name'],
+                'email' => $validated['email'],
+            ]);
 
-        $user->settings()->updateOrCreate(
-            ['user_id' => $user->id],
-            $settingsData
-        );
+            // Update or create settings
+            $settingsData = collect($validated)->except(['first_name', 'last_name', 'email'])->toArray();
+            $settingsData['auto_send_sms'] = $request->boolean('auto_send_sms');
+            $settingsData['auto_send_email'] = $request->boolean('auto_send_email');
+
+            $user->settings()->updateOrCreate(['user_id' => $user->id], $settingsData);
+
+            DB::commit();
+        } catch (Exception) {
+            DB::rollBack();
+            return redirect()->back()->with('error', 'Failed to update settings. Please try again.');
+        }
 
         return redirect()->back()->with('success', 'Settings updated successfully!');
     }

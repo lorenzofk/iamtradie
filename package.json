@@ -23,6 +23,7 @@
         "@primeuix/themes": "^1.1.1",
         "@unhead/vue": "^2.0.10",
         "@vitejs/plugin-vue": "^5.2.4",
+        "laravel-precognition-vue-inertia": "^0.7.2",
         "primeicons": "^7.0.0",
         "primevue": "^4.3.4",
         "tailwindcss": "^4.1.8",

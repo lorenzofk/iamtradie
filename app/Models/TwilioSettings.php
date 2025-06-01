@@ -10,10 +10,11 @@ class TwilioSettings extends Model
     protected $fillable = [
         'user_id',
         'twilio_number',
-        'twilio_auth_token',
-        'twilio_account_sid',
     ];
 
+    /**
+     * Get the user that owns the twilio settings.
+     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

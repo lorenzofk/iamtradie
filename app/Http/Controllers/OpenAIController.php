@@ -1,4 +1,3 @@
-
 <?php
 
 namespace App\Http\Controllers;
@@ -7,32 +6,25 @@ use App\Http\Requests\GenerateQuoteRequest;
 use App\Http\Requests\ImproveQuoteRequest;
 use App\Services\OpenAIService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 class OpenAIController extends Controller
 {
-    private OpenAIService $openAIService;
-
-    public function __construct(OpenAIService $openAIService)
-    {
-        $this->openAIService = $openAIService;
-    }
+    public function __construct(private readonly OpenAIService $openAIService) {}
 
     /**
      * Generate a quote response using OpenAI
      */
     public function generateQuote(GenerateQuoteRequest $request): JsonResponse
     {
-        $user = $request->user();
-        $userSettings = $user->userSettings;
+        $user = auth()->user();
+        $userSettings = $user->getOrCreateSettings();
 
         $response = $this->openAIService->generateQuoteResponse(
             clientMessage: $request->input('client_message'),
-            jobType: $userSettings->industry_type ?? 'general trades',
-            location: $request->input('location'),
+            jobType: $userSettings->industry_type->value,
             calloutFee: $userSettings->callout_fee,
             hourlyRate: $userSettings->hourly_rate,
-            responseTone: $userSettings->response_tone ?? 'polite',
+            responseTone: $userSettings->response_tone->value,
             preferredCta: $userSettings->preferred_cta,
             tradieFirstName: $user->first_name
         );
@@ -58,55 +50,6 @@ class OpenAIController extends Controller
             'success' => true,
             'improved_response' => $improvedResponse,
             'character_count' => strlen($improvedResponse)
-        ]);
-    }
-
-    /**
-     * Analyze job complexity
-     */
-    public function analyzeJob(Request $request): JsonResponse
-    {
-        $request->validate([
-            'client_message' => 'required|string|max:1000',
-            'job_type' => 'required|string|max:100'
-        ]);
-
-        $analysis = $this->openAIService->analyzeJobComplexity(
-            clientMessage: $request->input('client_message'),
-            jobType: $request->input('job_type')
-        );
-
-        return response()->json([
-            'success' => true,
-            'analysis' => $analysis
-        ]);
-    }
-
-    /**
-     * Generate SMS-optimized response
-     */
-    public function generateSmsResponse(Request $request): JsonResponse
-    {
-        $request->validate([
-            'client_message' => 'required|string|max:1000'
-        ]);
-
-        $user = $request->user();
-        $userSettings = $user->userSettings;
-
-        $response = $this->openAIService->generateSmsResponse(
-            clientMessage: $request->input('client_message'),
-            jobType: $userSettings->industry_type ?? 'general trades',
-            calloutFee: $userSettings->callout_fee,
-            hourlyRate: $userSettings->hourly_rate,
-            responseTone: $userSettings->response_tone ?? 'polite',
-            tradieFirstName: $user->first_name
-        );
-
-        return response()->json([
-            'success' => true,
-            'sms_response' => $response,
-            'character_count' => strlen($response)
         ]);
     }
 }
