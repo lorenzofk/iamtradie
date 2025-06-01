@@ -2,38 +2,40 @@
 
 namespace App\Services;
 
+use App\Enums\ResponseTone;
 use Exception;
 use Illuminate\Support\Facades\Log;
 use OpenAI\Laravel\Facades\OpenAI;
 
 class OpenAIService
 {
-    public function __construct(
-        private string $model = 'gpt-4o',
-        private int $maxTokens = 200,
-        private float $temperature = 0.7,
-    ) {}
+    public function __construct(private ?string $model, private ?int $maxTokens, private ?float $temperature)
+    {
+        $this->model = config('services.openai.model');
+        $this->maxTokens = config('services.openai.max_tokens');
+        $this->temperature = config('services.openai.temperature');
+    }
 
     public function generateQuoteResponse(
-        string $clientMessage,
-        string $jobType,
+        string $message,
+        string $industryType,
         ?string $location = null,
         ?float $calloutFee = null,
         ?float $hourlyRate = null,
         string $responseTone = 'polite',
         ?string $preferredCta = null,
-        ?string $tradieFirstName = null
+        ?string $firstName = null
     ): string {
         try {
             $prompt = $this->buildQuotePrompt(
-                $clientMessage,
-                $jobType,
+                $message,
+                $industryType,
                 $location,
                 $calloutFee,
                 $hourlyRate,
                 $responseTone,
                 $preferredCta,
-                $tradieFirstName
+                $firstName
             );
 
             $response = OpenAI::chat()->create([
@@ -45,16 +47,16 @@ class OpenAIService
                 'temperature' => $this->temperature,
             ]);
 
-            return $response->choices[0]->message->content ?? $this->getFallbackResponse($tradieFirstName, $calloutFee, $hourlyRate, $preferredCta);
+            return $response->choices[0]->message->content ?? $this->getFallbackResponse($firstName, $calloutFee, $hourlyRate, $preferredCta, $responseTone);
 
         } catch (Exception $e) {
             Log::error('OpenAI quote generation failed', [
                 'error' => $e->getMessage(),
-                'client_message' => $clientMessage,
-                'job_type' => $jobType
+                'message' => $message,
+                'industry_type' => $industryType
             ]);
 
-            return $this->getFallbackResponse($tradieFirstName, $calloutFee, $hourlyRate, $preferredCta);
+            return $this->getFallbackResponse($firstName, $calloutFee, $hourlyRate, $preferredCta, $responseTone);
         }
     }
 
@@ -89,29 +91,17 @@ class OpenAIService
 
     private function buildQuotePrompt(
         string $clientMessage,
-        string $jobType,
+        string $industryType,
         ?string $location,
         ?float $calloutFee,
         ?float $hourlyRate,
         string $responseTone,
         ?string $preferredCta,
-        ?string $tradieFirstName
+        ?string $firstName
     ): string {
-        $toneInstructions = [
-            'casual' => 'Use relaxed Aussie slang — G\'day, mate, no worries, emojis OK.',
-            'polite' => 'Friendly and clear with light Aussie flavour. Avoid heavy slang.',
-            'professional' => 'Professional but still local Aussie tone. No slang or emojis, but human.'
-        ];
-
-        $defaultCta = match ($responseTone) {
-            'casual' => "Let me know if you'd like to lock it in 👍",
-            'polite' => "Let me know if you'd like to book it in",
-            default => "Please let me know if you'd like to proceed",
-        };
-
         $locationText = $location ?? 'Not specified';
-        $ctaText = $preferredCta ?? $defaultCta;
-        $toneText = $toneInstructions[$responseTone] ?? '';
+        $toneText = $this->getToneInstructions($responseTone, $industryType);
+        $callToActionText = $preferredCta ?? $this->getDefaultCta($responseTone);
 
         $prompt = <<<EOT
         🎯 Goal: Generate a short SMS-style message replying to a job inquiry from an Australian tradie.
@@ -119,7 +109,7 @@ class OpenAIService
         📥 Client Message: "{$clientMessage}"
         💰 Pricing: \${$calloutFee} callout + \${$hourlyRate}/hr
         🗣️ Tone: {$responseTone} - {$toneText}
-        👤 Tradie: {$tradieFirstName}
+        👤 Tradie: {$firstName}
         📍 Location: {$locationText}
 
         ✅ Requirements:
@@ -128,7 +118,7 @@ class OpenAIService
         - Mention time estimate if possible (e.g. "takes 1–2 hrs")
         - Avoid repeating the client's message
         - Keep under 160 characters
-        - End with: "{$ctaText}"
+        - End with: "{$callToActionText}"
 
         🚫 Don't:
         - Repeat what the client wrote
@@ -138,22 +128,52 @@ class OpenAIService
         Generate the SMS reply:
         EOT;
 
-
         return $prompt;
     }
 
     private function getFallbackResponse(
-        ?string $tradieFirstName,
+        ?string $firstName,
         ?float $calloutFee,
         ?float $hourlyRate,
-        ?string $preferredCta
+        ?string $preferredCta,
+        string $responseTone
     ): string {
-        return "G'day! " .
-            ($tradieFirstName ? "This is {$tradieFirstName}. " : '') .
+        $callToActionText = $preferredCta ?? $this->getDefaultCta($responseTone);
+
+        $message = "G'day! " .
+            ($firstName ? "This is {$firstName}. " : '') .
             "Thanks for your inquiry. I'd be happy to help with your job. " .
             ($calloutFee ? "My standard callout is \${$calloutFee}. " : '') .
             ($hourlyRate ? "My hourly rate is \${$hourlyRate}. " : '') .
             "I'll need to assess the job to give you an accurate quote. " .
-            ($preferredCta ?: "Please give me a call to discuss your requirements.");
+            $callToActionText;
+
+        return strlen($message) <= 160
+            ? $message
+            : "Hi, happy to help. Callout \${$calloutFee}, \${$hourlyRate}/hr. Call me to discuss the job";
+    }
+
+    private function getDefaultCta(string $responseTone): string
+    {
+        return match ($responseTone) {
+            ResponseTone::CASUAL->value => "Let me know if you'd like to lock it in 👍",
+            ResponseTone::PROFESSIONAL->value => "Let me know if you'd like to book it in",
+            ResponseTone::POLITE->value => "Please let me know if you'd like to proceed",
+            default => "Please let me know if you'd like to proceed",
+        };
+    }
+
+    private function getToneInstructions(string $responseTone, string $industryType): string
+    {
+        $basePrompt = "You are an experienced Australian {$industryType} tradesperson with years of expertise. ";
+        $basePrompt .= "You provide accurate, realistic quotes and communicate professionally with customers. ";
+        $basePrompt .= "Use Australian terminology, pricing in AUD, and consider local market rates. ";
+
+        return match ($responseTone) {
+            ResponseTone::CASUAL->value => $basePrompt .= "Use a friendly, conversational tone with some Australian slang. Be approachable and relaxed in your communication style.",
+            ResponseTone::PROFESSIONAL->value => $basePrompt .= "Use formal business language with technical terminology when appropriate. Maintain a corporate-level professional tone.",
+            ResponseTone::POLITE->value => $basePrompt .= "Use respectful, courteous language that's professional but warm. Be clear and considerate in your messaging.",
+            default => $basePrompt .= "Use respectful, courteous language that's professional but warm. Be clear and considerate in your messaging.",
+        };
     }
 }

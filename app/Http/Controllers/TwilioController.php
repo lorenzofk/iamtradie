@@ -91,12 +91,12 @@ class TwilioController extends Controller
         throw_unless($settings->auto_send_sms, new Exception('Auto send SMS is not enabled'));
 
         $message = $this->openAIService->generateQuoteResponse(
-            clientMessage: $body,
-            jobType: $settings->industry_type->value,
+            message: $body,
+            industryType: $settings->industry_type->value,
             calloutFee: $settings->callout_fee,
             hourlyRate: $settings->hourly_rate,
             responseTone: $settings->response_tone->value,
-            tradieFirstName: $user->first_name
+            firstName: $user->first_name
         );
 
         $this->twilioService->send(to: $leadNumber, from: $twilioNumber, message: $message);
