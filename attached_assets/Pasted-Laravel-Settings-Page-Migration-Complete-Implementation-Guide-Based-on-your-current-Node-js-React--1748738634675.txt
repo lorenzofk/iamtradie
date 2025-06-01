@@ -1,0 +1,277 @@
+Laravel Settings Page Migration - Complete Implementation Guide
+Based on your current Node.js/React QuoteAI system, here are the complete requirements to migrate the settings functionality to Laravel:
+
+Database Structure
+Create user_settings Migration
+Schema::create('user_settings', function (Blueprint $table) {
+    $table->id();
+    $table->foreignId('user_id')->constrained()->onDelete('cascade');
+    
+    // Business information
+    $table->string('industry_type')->nullable(); // electrical, plumbing, tiling, carpentry, painting, general
+    $table->string('phone')->nullable();
+    
+    // Pricing configuration
+    $table->decimal('callout_fee', 10, 2)->nullable();
+    $table->decimal('hourly_rate', 10, 2)->nullable();
+    
+    // AI response preferences
+    $table->enum('response_tone', ['casual', 'polite', 'professional'])->default('casual');
+    $table->text('preferred_cta')->nullable(); // Custom call-to-action message
+    
+    // Automation settings
+    $table->boolean('auto_send_sms')->default(false);
+    $table->boolean('auto_send_email')->default(false);
+    
+    // SMS integration
+    $table->string('twilio_number')->nullable();
+    
+    // Usage tracking
+    $table->integer('quotes_used')->default(0);
+    $table->integer('quotes_limit')->default(100);
+    
+    $table->timestamps();
+    $table->unique('user_id');
+});
+Update users table
+Schema::table('users', function (Blueprint $table) {
+    $table->string('first_name')->nullable();
+    $table->string('last_name')->nullable();
+    // email already exists in default Laravel auth
+});
+Models
+UserSettings Model
+<?php
+namespace App\Models;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+class UserSettings extends Model
+{
+    protected $fillable = [
+        'user_id', 'industry_type', 'phone', 'callout_fee', 'hourly_rate',
+        'response_tone', 'preferred_cta', 'auto_send_sms', 'auto_send_email',
+        'twilio_number', 'quotes_used', 'quotes_limit'
+    ];
+    protected $casts = [
+        'auto_send_sms' => 'boolean',
+        'auto_send_email' => 'boolean',
+        'callout_fee' => 'decimal:2',
+        'hourly_rate' => 'decimal:2',
+        'quotes_used' => 'integer',
+        'quotes_limit' => 'integer',
+    ];
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+}
+User Model Updates
+<?php
+namespace App\Models;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+class User extends Authenticatable
+{
+    protected $fillable = [
+        'name', 'email', 'password', 'first_name', 'last_name',
+    ];
+    public function settings(): HasOne
+    {
+        return $this->hasOne(UserSettings::class);
+    }
+    
+    public function getOrCreateSettings(): UserSettings
+    {
+        return $this->settings ?? $this->settings()->create();
+    }
+}
+Form Request Validation
+<?php
+namespace App\Http\Requests;
+use Illuminate\Foundation\Http\FormRequest;
+class UpdateUserSettingsRequest extends FormRequest
+{
+    public function authorize(): bool
+    {
+        return true;
+    }
+    public function rules(): array
+    {
+        return [
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email,' . auth()->id(),
+            'phone' => 'nullable|string|max:20',
+            'industry_type' => 'required|in:electrical,plumbing,tiling,carpentry,painting,general',
+            'callout_fee' => 'required|numeric|min:0',
+            'hourly_rate' => 'required|numeric|min:0',
+            'response_tone' => 'required|in:casual,polite,professional',
+            'auto_send_sms' => 'boolean',
+            'auto_send_email' => 'boolean',
+            'preferred_cta' => 'nullable|string|max:500',
+        ];
+    }
+    public function messages(): array
+    {
+        return [
+            'first_name.required' => 'First name is required',
+            'last_name.required' => 'Last name is required',
+            'industry_type.required' => 'Please select your industry',
+            'callout_fee.required' => 'Callout fee is required',
+            'hourly_rate.required' => 'Hourly rate is required',
+        ];
+    }
+}
+Controller Implementation
+<?php
+namespace App\Http\Controllers;
+use App\Http\Requests\UpdateUserSettingsRequest;
+use App\Models\UserSettings;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\View\View;
+class SettingsController extends Controller
+{
+    public function show(): View
+    {
+        $user = auth()->user()->load('settings');
+        return view('settings.index', compact('user'));
+    }
+    
+    public function update(UpdateUserSettingsRequest $request): RedirectResponse
+    {
+        $user = auth()->user();
+        
+        // Update user profile
+        $user->update([
+            'first_name' => $request->first_name,
+            'last_name' => $request->last_name,
+            'email' => $request->email,
+        ]);
+        
+        // Update or create settings
+        $user->settings()->updateOrCreate(
+            ['user_id' => $user->id],
+            [
+                'phone' => $request->phone,
+                'industry_type' => $request->industry_type,
+                'callout_fee' => $request->callout_fee,
+                'hourly_rate' => $request->hourly_rate,
+                'response_tone' => $request->response_tone,
+                'auto_send_sms' => $request->boolean('auto_send_sms'),
+                'auto_send_email' => $request->boolean('auto_send_email'),
+                'preferred_cta' => $request->preferred_cta,
+            ]
+        );
+        
+        return back()->with('success', 'Settings updated successfully!');
+    }
+    
+    public function assignTwilioNumber(): JsonResponse
+    {
+        $user = auth()->user();
+        $settings = $user->getOrCreateSettings();
+        
+        try {
+            // Implement Twilio phone number assignment logic
+            $phoneNumber = $this->twilioService->assignNumber($user->id);
+            
+            $settings->update(['twilio_number' => $phoneNumber]);
+            
+            return response()->json([
+                'success' => true,
+                'phone_number' => $phoneNumber,
+                'message' => 'Phone number assigned successfully'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+    
+    public function updateField(Request $request): JsonResponse
+    {
+        $request->validate([
+            'field' => 'required|string',
+            'value' => 'required'
+        ]);
+        
+        $user = auth()->user();
+        $settings = $user->getOrCreateSettings();
+        
+        $allowedFields = [
+            'auto_send_sms', 'auto_send_email', 'response_tone',
+            'callout_fee', 'hourly_rate'
+        ];
+        
+        if (in_array($request->field, $allowedFields)) {
+            $settings->update([$request->field => $request->value]);
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Setting updated successfully'
+            ]);
+        }
+        
+        return response()->json([
+            'success' => false,
+            'error' => 'Invalid field'
+        ], 400);
+    }
+}
+API Resource (for JSON responses)
+<?php
+namespace App\Http\Resources;
+use Illuminate\Http\Resources\Json\JsonResource;
+class UserSettingsResource extends JsonResource
+{
+    public function toArray($request): array
+    {
+        return [
+            'id' => $this->id,
+            'first_name' => $this->first_name,
+            'last_name' => $this->last_name,
+            'email' => $this->email,
+            'settings' => [
+                'phone' => $this->settings?->phone,
+                'industry_type' => $this->settings?->industry_type,
+                'callout_fee' => $this->settings?->callout_fee,
+                'hourly_rate' => $this->settings?->hourly_rate,
+                'response_tone' => $this->settings?->response_tone ?? 'casual',
+                'auto_send_sms' => $this->settings?->auto_send_sms ?? false,
+                'auto_send_email' => $this->settings?->auto_send_email ?? false,
+                'preferred_cta' => $this->settings?->preferred_cta,
+                'twilio_number' => $this->settings?->twilio_number,
+                'quotes_used' => $this->settings?->quotes_used ?? 0,
+                'quotes_limit' => $this->settings?->quotes_limit ?? 100,
+            ]
+        ];
+    }
+}
+Routes Configuration
+Route::middleware(['auth'])->group(function () {
+    Route::get('/settings', [SettingsController::class, 'show'])->name('settings.show');
+    Route::patch('/settings', [SettingsController::class, 'update'])->name('settings.update');
+    Route::post('/settings/twilio-number', [SettingsController::class, 'assignTwilioNumber'])->name('settings.twilio');
+    Route::patch('/settings/field', [SettingsController::class, 'updateField'])->name('settings.field');
+});
+Frontend Features Required
+Form Sections:
+Profile Information: First/Last name, Email, Phone, Industry Type
+Base Pricing: Callout fee, Hourly rate
+Response Preferences: Tone, Call-to-action, Auto-send toggles
+SMS Integration: Twilio number management
+JavaScript Features:
+Form validation and submission
+Toggle switches for boolean fields
+Copy to clipboard for SMS number
+AJAX form updates
+Toast notifications
+Loading states
+CSS Framework:
+Tailwind CSS for responsive design
+Card-based layout
+Form styling with validation states
+This implementation provides complete separation of user profile from settings data, proper validation, and follows Laravel best practices.
