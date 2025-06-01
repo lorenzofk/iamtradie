@@ -1,9 +1,11 @@
-
 <?php
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
+use App\Services\OpenAIService;
 use App\Services\TwilioService;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
@@ -12,7 +14,8 @@ use Illuminate\Support\Facades\Validator;
 class TwilioController extends Controller
 {
     public function __construct(
-        private readonly TwilioService $twilioService
+        private readonly TwilioService $twilioService,
+        private readonly OpenAIService $openAIService
     ) {}
 
     public function sendMessage(Request $request): JsonResponse
@@ -74,56 +77,30 @@ class TwilioController extends Controller
         ]);
     }
 
-    public function validatePhone(Request $request): JsonResponse
-    {
-        $validator = Validator::make($request->all(), [
-            'phone' => 'required|string|max:20',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'errors' => $validator->errors()
-            ], 422);
-        }
-
-        $isValid = $this->twilioService->validatePhoneNumber($request->input('phone'));
-
-        return response()->json([
-            'valid' => $isValid,
-            'message' => $isValid ? 'Valid phone number' : 'Invalid phone number'
-        ]);
-    }
-
-    public function getAccountInfo(): JsonResponse
-    {
-        $balance = $this->twilioService->getAccountBalance();
-        $phoneNumbers = $this->twilioService->listPhoneNumbers();
-
-        return response()->json([
-            'balance' => $balance,
-            'phone_numbers' => $phoneNumbers,
-            'success' => true
-        ]);
-    }
-
     public function webhook(Request $request): JsonResponse
     {
-        // Handle incoming Twilio webhooks (SMS replies, delivery receipts, etc.)
-        $messageBody = $request->input('Body');
-        $fromNumber = $request->input('From');
-        $toNumber = $request->input('To');
+        $twilioNumber = $request->input('To');
+        $leadNumber = $request->input('From');
+        $body = $request->input('Body');
 
-        // Log the incoming message
-        \Log::info('Twilio webhook received', [
-            'from' => $fromNumber,
-            'to' => $toNumber,
-            'body' => $messageBody
-        ]);
+        $user = User::whereHas('twilioSettings', fn ($query) => $query->where('twilio_number', $twilioNumber))->firstOrFail();
 
-        // You can add custom logic here to handle incoming messages
-        // For example, auto-replies, saving to database, etc.
+        $settings = $user->getOrCreateSettings();
 
-        return response()->json(['status' => 'success']);
+        throw_if(empty($settings), new Exception('Twilio number not configured for user'));
+        throw_unless($settings->auto_send_sms, new Exception('Auto send SMS is not enabled'));
+
+        $message = $this->openAIService->generateQuoteResponse(
+            clientMessage: $body,
+            jobType: $settings->industry_type->value,
+            calloutFee: $settings->callout_fee,
+            hourlyRate: $settings->hourly_rate,
+            responseTone: $settings->response_tone->value,
+            tradieFirstName: $user->first_name
+        );
+
+        $this->twilioService->send(to: $leadNumber, from: $twilioNumber, message: $message);
+
+        return response()->json();
     }
 }

@@ -8,21 +8,34 @@ enum ResponseTone: string
     case POLITE = 'polite';
     case PROFESSIONAL = 'professional';
 
-    public function getDescription(): string
+    /**
+     * Get the values of the response tones.
+     */
+    public static function values(): array
     {
-        return match($this) {
-            self::CASUAL => 'Friendly, conversational tone with Australian slang',
-            self::POLITE => 'Respectful and courteous, professional but warm',
-            self::PROFESSIONAL => 'Formal business language with technical terminology',
+        return array_map(fn (ResponseTone $type) => $type->value, self::cases());
+    }
+
+    /**
+     * Get the label for the response tone.
+     */
+    public function label(): string
+    {
+        return match ($this) {
+            self::CASUAL => 'Casual',
+            self::POLITE => 'Polite',
+            self::PROFESSIONAL => 'Professional',
         };
     }
 
-    public static function getOptions(): array
+    /**
+     * Get the response tones as a dropdown array.
+     */
+    public static function toDropdown(): array
     {
-        return [
-            ['value' => self::CASUAL->value, 'label' => 'Casual', 'description' => self::CASUAL->getDescription()],
-            ['value' => self::POLITE->value, 'label' => 'Polite', 'description' => self::POLITE->getDescription()],
-            ['value' => self::PROFESSIONAL->value, 'label' => 'Professional', 'description' => self::PROFESSIONAL->getDescription()],
-        ];
+        return array_map(fn (ResponseTone $type) => [
+            'id' => $type->value,
+            'label' => $type->label(),
+        ], self::cases());
     }
 }

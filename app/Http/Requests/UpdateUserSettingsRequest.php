@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Enums\IndustryType;
+use App\Enums\ResponseTone;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -53,9 +54,14 @@ class UpdateUserSettingsRequest extends FormRequest
                 'numeric',
                 'min:0',
             ],
+            'hourly_rate' => [
+                'required',
+                'numeric',
+                'min:1',
+            ],
             'response_tone' => [
                 'required',
-                Rule::in(['casual', 'polite', 'professional']),
+                Rule::in(ResponseTone::values()),
             ],
             'preferred_cta' => [
                 'nullable',
@@ -63,6 +69,9 @@ class UpdateUserSettingsRequest extends FormRequest
                 'max:500',
             ],
             'auto_send_email' => [
+                'boolean',
+            ],
+            'auto_send_sms' => [
                 'boolean',
             ],
         ];

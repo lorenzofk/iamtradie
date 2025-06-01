@@ -1,12 +1,13 @@
 
 <script setup>
-import { useForm } from '@inertiajs/vue3'
-import App from '@/Layouts/App.vue'
-import Button from '@/Shared/Ui/Button/Button.vue'
+import { usePage } from '@inertiajs/vue3';
+import { useForm } from 'laravel-precognition-vue-inertia';
+import App from '@/Layouts/App.vue';
+import Button from '@/Shared/Ui/Button/Button.vue';
 import FormElement from '@/Shared/Ui/Form/FormElement.vue'
-import FormLabel from '@/Shared/Ui/Form/FormLabel.vue'
-import Input from '@/Shared/Ui/Form/Input.vue'
-import InputNumber from '@/Shared/Ui/Form/InputNumber.vue'
+import FormLabel from '@/Shared/Ui/Form/FormLabel.vue';
+import Input from '@/Shared/Ui/Form/Input.vue';
+import InputNumber from '@/Shared/Ui/Form/InputNumber.vue';
 import Select from '@/Shared/Ui/Form/Select.vue'
 import TextArea from '@/Shared/Ui/Form/TextArea.vue'
 import ToggleSwitch from '@/Shared/Ui/Form/ToggleSwitch.vue'
@@ -16,41 +17,41 @@ const { showToast } = useToast();
 
 defineOptions({
   layout: App
-})
+});
 
 const props = defineProps({
-  user: Object,
   settings: Object,
   industryTypes: Array,
   responseTones: Array
-})
+});
 
-const form = useForm({
-  first_name: props.user?.first_name || '',
-  last_name: props.user?.last_name || '',
-  email: props.user?.email || '',
+const user = usePage().props.auth?.user;
+
+const form = useForm('post', route('settings.update'), {
+  first_name: user?.first_name || '',
+  last_name: user?.last_name || '',
+  email: user?.email || '',
   phone: props.settings?.phone || '',
-  industry_type: props.settings?.industry_type || '',
+  industry_type: props.settings?.industry_type || 'plumbing',
   callout_fee: props.settings?.callout_fee || 0,
   hourly_rate: props.settings?.hourly_rate || 0,
   response_tone: props.settings?.response_tone || 'casual',
   preferred_cta: props.settings?.preferred_cta || '',
   auto_send_sms: props.settings?.auto_send_sms || false,
   auto_send_email: props.settings?.auto_send_email || false,
-  twilio_number: props.settings?.twilio_number || ''
-})
+});
 
-const submit = () => {
-  form.put(route('settings.update'), {
+const onFormSubmit = () => {
+  form.submit({
     preserveScroll: true,
-    onSuccess: () =>
-      showToast(
-        'success',
-        'If an account exists for this email address, you will receive a password reset link shortly.'
-      ),
-    onError: () => showToast('error', 'There was an error sending the reset link.'),
-  })
-}
+    onSuccess: () => {
+      showToast('success', 'Settings updated successfully.');
+    },
+    onError: error => {
+      showToast('error', error.message);
+    },
+  });
+};
 </script>
 
 
@@ -60,7 +61,7 @@ const submit = () => {
       <div class="px-4 py-5 sm:p-6">
         <h1 class="text-2xl font-bold text-gray-900 mb-6">Account Settings</h1>
         
-        <form @submit.prevent="submit" class="space-y-6">
+        <form @submit.prevent="onFormSubmit" class="space-y-6">
           <!-- Personal Information -->
           <div class="border-b border-gray-200 pb-6">
             <h2 class="text-lg font-medium text-gray-900 mb-4">Personal Information</h2>
@@ -141,7 +142,7 @@ const submit = () => {
                   id="hourly_rate"
                   v-model="form.hourly_rate"
                   :error="form.errors.hourly_rate"
-                  :min="0"
+                  :min="1"
                   :step="0.01"
                   required
                 />
@@ -184,42 +185,20 @@ const submit = () => {
             <h2 class="text-lg font-medium text-gray-900 mb-4">Automation Settings</h2>
             <div class="space-y-4">
               <div class="flex items-center">
-                <ToggleSwitch
-                  id="auto_send_sms"
-                  v-model="form.auto_send_sms"
-                />
+                <ToggleSwitch id="auto_send_sms" v-model="form.auto_send_sms" :error="form.errors.auto_send_sms" />
                 <FormLabel for="auto_send_sms" class="ml-3">Auto Send SMS</FormLabel>
               </div>
               
               <div class="flex items-center">
-                <ToggleSwitch
-                  id="auto_send_email"
-                  v-model="form.auto_send_email"
-                />
+                <ToggleSwitch id="auto_send_email" v-model="form.auto_send_email" :error="form.errors.auto_send_email" />
                 <FormLabel for="auto_send_email" class="ml-3">Auto Send Email</FormLabel>
               </div>
-              
-              <FormElement v-if="form.auto_send_sms">
-                <FormLabel for="twilio_number">Twilio Phone Number</FormLabel>
-                <Input
-                  id="twilio_number"
-                  v-model="form.twilio_number"
-                  :error="form.errors.twilio_number"
-                  placeholder="+1234567890"
-                />
-              </FormElement>
             </div>
           </div>
 
           <!-- Submit Button -->
           <div class="flex justify-end">
-            <Button 
-              type="submit" 
-              :loading="form.processing"
-              class="px-6 py-2"
-            >
-              Save Settings
-            </Button>
+            <Button type="submit" label="Save Settings" :disabled="form.processing" class="px-6 py-2" />
           </div>
         </form>
       </div>
