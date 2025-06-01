@@ -1,11 +1,12 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
+use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\Auth\ResetPasswordController;
-use App\Http\Controllers\Auth\ForgotPasswordController;
+use App\Http\Controllers\SettingsController;
+use Illuminate\Support\Facades\Route;
+use Inertia\Inertia;
 
 Route::get('/', fn () => Inertia::render('Home'));
 
@@ -19,6 +20,8 @@ Route::middleware('guest')->group(function () {
 });
 
 Route::middleware('auth')->group(function () {
-    Route::get('/', fn () => Inertia::render('Home'))->name('home');
+    Route::get('/', fn() => Inertia::render('Home'))->name('home');
     Route::post('/logout', [LogoutController::class, 'logout'])->name('logout');
+    Route::get('/settings', [SettingsController::class, 'show'])->name('settings');
+    Route::put('/settings', [SettingsController::class, 'update'])->name('settings.update');
 });

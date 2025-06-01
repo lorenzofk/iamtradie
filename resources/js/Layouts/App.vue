@@ -22,12 +22,12 @@ const onLogout = (e) => {
 function userInitials(user) {
   if (!user) return 'U';
   if (user.initials) return user.initials;
-  
+
   if (user.name) {
     const names = user.name.split(' ');
     return names.map(n => n[0]).join('').toUpperCase();
   }
-  
+
   if (user.first_name || user.last_name) {
     return `${user.first_name?.[0] || ''}${user.last_name?.[0] || ''}`.toUpperCase() || 'U';
   }
@@ -73,4 +73,5 @@ function userInitials(user) {
       <slot />
     </main>
   </div>
-</template> 
+</template>
+```
