@@ -45,6 +45,16 @@ const onDeleteClick = quote => {
       });
   }
 };
+
+const onSendClick = async (quote) => {
+  await axios.post(route('quotes.send', quote.id)).then(() => {
+    showToast('success', 'Quote sent successfully.');
+  }).catch(() => {
+    showToast('error', 'Failed to send quote.');
+  });
+
+  router.reload({ only: ['quotes'] });
+};
 </script>
 
 <template>
@@ -89,10 +99,9 @@ const onDeleteClick = quote => {
                 <span
                   class="px-3 py-1 rounded-full text-xs font-medium"
                   :class="{
-                    'bg-green-50 text-green-700': quote.status === 'sent',
-                    'bg-yellow-50 text-yellow-700': quote.status === 'pending',
-                    'bg-red-50 text-red-700': quote.status === 'rejected',
-                    'bg-gray-50 text-gray-700': quote.status === 'draft',
+                    'bg-green-100 text-green-700': quote.status === 'sent',
+                    'bg-yellow-100 text-yellow-700': quote.status === 'pending',
+                    'bg-red-100 text-red-700': quote.status === 'rejected',
                   }"
                 >
                   <font-awesome-icon 
@@ -100,17 +109,6 @@ const onDeleteClick = quote => {
                     class="mr-1.5"
                   />
                   {{ quote.status }}
-                </span>
-
-                <!-- Industry Type -->
-                <span class="text-sm text-gray-600 capitalize font-medium">
-                  {{ quote.industry_type }}
-                </span>
-
-                <!-- Location -->
-                <span v-if="quote.location" class="text-sm text-gray-500">
-                  <font-awesome-icon :icon="['fas', 'fa-map-marker-alt']" class="mr-1" />
-                  {{ quote.location }}
                 </span>
               </div>
 
@@ -187,6 +185,14 @@ const onDeleteClick = quote => {
                   size="small"
                   outlined
                   :icon="['fas', 'fa-eye']"
+                />
+
+                <Button
+                  v-if="quote.status === 'pending'"
+                  @click="onSendClick(quote)"
+                  label="Send SMS"
+                  size="small"
+                  :icon="['fas', 'fa-paper-plane']"
                 />
               </div>
             </div>

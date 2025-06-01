@@ -15,6 +15,9 @@ class TwilioService
         $this->client = new Client(config('services.twilio.sid'), config('services.twilio.token'));
     }
 
+    /**
+     * Send an SMS message.
+     */
     public function send(string $to, string $from, string $message): void
     {
         Log::withContext(['to' => $to, 'from' => $from, 'message' => $message]);
