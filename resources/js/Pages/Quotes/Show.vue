@@ -42,8 +42,6 @@ const onClickSave = async () => {
     }).catch(() => {
       showToast('error', 'Error updating quote');
     });
-
-    emit('success');
   } catch (error) {
     emit('error');
     showToast('error', 'Error updating quote');
@@ -52,10 +50,16 @@ const onClickSave = async () => {
   }
 };
 
-// Send quote
 const onClickSend = async () => {
   isSending.value = true;
+  
   try {
+    await axios.post(route('quotes.send', props.quote.id)).then(() => {
+      showToast('success', 'Quote sent successfully');
+    }).catch(() => {
+      showToast('error', 'Error sending quote');
+    });
+
     emit('success');
   } catch (error) {
     emit('error');
@@ -63,6 +67,7 @@ const onClickSend = async () => {
   } finally {
     isSending.value = false;
   }
+
 };
 
 const currentResponse = computed(() => {
@@ -111,10 +116,9 @@ const currentResponse = computed(() => {
             <span
               class="px-3 py-1 rounded-full text-xs font-medium"
               :class="{
-                'bg-green-50 text-green-700': quote.status === 'sent',
-                'bg-yellow-50 text-yellow-700': quote.status === 'pending',
-                'bg-red-50 text-red-700': quote.status === 'rejected',
-                'bg-gray-50 text-gray-700': quote.status === 'draft',
+                'bg-green-100 text-green-700': quote.status === 'sent',
+                'bg-yellow-100 text-yellow-700': quote.status === 'pending',
+                'bg-red-100 text-red-700': quote.status === 'rejected',
               }"
             >
               <font-awesome-icon 
@@ -122,15 +126,6 @@ const currentResponse = computed(() => {
                 class="mr-1.5"
               />
               {{ quote.status }}
-            </span>
-            <!-- Industry Type -->
-            <span class="text-sm text-gray-600 capitalize font-medium">
-              {{ quote.industry_type }}
-            </span>
-            <!-- Location -->
-            <span v-if="quote.location" class="text-sm text-gray-500">
-              <font-awesome-icon :icon="['fas', 'fa-map-marker-alt']" class="mr-1" />
-              {{ quote.location }}
             </span>
           </div>
           <!-- Quote ID -->
@@ -157,14 +152,14 @@ const currentResponse = computed(() => {
               <h3 class="text-sm font-medium text-gray-900 flex items-center gap-2">
                 <font-awesome-icon :icon="['fas', 'fa-robot']" class="text-blue-500" />
                 Your Response
-                <span v-if="quote.edited_response" class="text-xs text-orange-600 bg-orange-50 px-2 py-0.5 rounded-full">
-                  Edited
+                <span v-if="quote.edited_response" class="text-xs text-gray-500">
+                  edited
                 </span>
               </h3>
               
               <!-- Edit Toggle -->
               <button
-                v-if="!isEditing && quote.status == 'sent'"
+                v-if="!isEditing && quote.status !== 'sent'"
                 @click="startEditing"
                 class="text-xs text-blue-600 hover:text-blue-700 flex items-center gap-1 cursor-pointer"
               >
@@ -219,7 +214,7 @@ const currentResponse = computed(() => {
           class="flex-1"
         />
         <Button
-          v-if="quote.status === 'draft'"
+          v-if="quote.status === 'pending'"
           @click="onClickSend"
           :disabled="isSending || isEditing"
           size="small"

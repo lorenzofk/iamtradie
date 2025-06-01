@@ -39,5 +39,6 @@ Route::middleware('auth')->group(function () {
         Route::get('/{quote}', [QuoteController::class, 'show'])->name('show');
         Route::delete('/{quote}', [QuoteController::class, 'destroy'])->name('destroy');
         Route::put('/{quote}', [QuoteController::class, 'update'])->name('update');
+        Route::post('/{quote}/send', [QuoteController::class, 'send'])->name('send');
     });
 });

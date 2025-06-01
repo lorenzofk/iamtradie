@@ -45,6 +45,16 @@ const onDeleteClick = quote => {
       });
   }
 };
+
+const onSendClick = async (quote) => {
+  await axios.post(route('quotes.send', quote.id)).then(() => {
+    showToast('success', 'Quote sent successfully.');
+  }).catch(() => {
+    showToast('error', 'Failed to send quote.');
+  });
+
+  router.reload({ only: ['quotes'] });
+};
 </script>
 
 <template>
