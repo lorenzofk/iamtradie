@@ -47,8 +47,25 @@ function userInitials(user) {
         </div>
         <!-- Navigation -->
         <nav class="flex-1 px-2 space-y-1">
-          <SidebarItem v-for="item in navLinks" :key="item.label" :label="item.label" :href="item.href" :icon="item.icon" />
-        </nav>
+          <SidebarItem
+                    label="Dashboard"
+                    :href="route('home')"
+                    :active="route().current('home')"
+                    icon="house"
+                />
+                <SidebarItem
+                    label="AI Quotes"
+                    :href="route('ai.quotes')"
+                    :active="route().current('ai.*')"
+                    icon="quote-right"
+                />
+                <SidebarItem
+                    label="Settings"
+                    :href="route('settings.index')"
+                    :active="route().current('settings.*')"
+                    icon="cog"
+                />
+            </nav>
       </div>
       <!-- User Profile -->
       <div class="flex-shrink-0 flex border-t border-gray-200 p-4 items-center w-full">
@@ -70,4 +87,3 @@ function userInitials(user) {
     </main>
   </div>
 </template>
-```
