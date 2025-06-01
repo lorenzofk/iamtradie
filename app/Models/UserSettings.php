@@ -1,20 +1,29 @@
-
 <?php
 
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Enums\IndustryType;
 
 class UserSettings extends Model
 {
     protected $fillable = [
-        'user_id', 'industry_type', 'phone', 'callout_fee', 'hourly_rate',
-        'response_tone', 'preferred_cta', 'auto_send_sms', 'auto_send_email',
-        'twilio_number', 'quotes_used', 'quotes_limit'
+        'user_id', 
+        'industry_type',
+        'phone', 
+        'callout_fee',
+        'hourly_rate',
+        'response_tone',
+        'preferred_cta',
+        'auto_send_sms',
+        'auto_send_email',
+        'quotes_used',
+        'quotes_limit',
     ];
 
     protected $casts = [
+        'industry_type' => IndustryType::class,
         'auto_send_sms' => 'boolean',
         'auto_send_email' => 'boolean',
         'callout_fee' => 'decimal:2',

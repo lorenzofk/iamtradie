@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\IndustryType;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -15,8 +16,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
 
-            // Business information
-            $table->string('industry_type')->nullable(); // electrical, plumbing, tiling, carpentry, painting, general
+            // Industry type as enum
+            $table->enum('industry_type', IndustryType::values())->nullable();
             $table->string('phone')->nullable();
 
             // Pricing configuration
@@ -30,9 +31,6 @@ return new class extends Migration
             // Automation settings
             $table->boolean('auto_send_sms')->default(false);
             $table->boolean('auto_send_email')->default(false);
-
-            // SMS integration
-            $table->string('twilio_number')->nullable();
 
             // Usage tracking
             $table->integer('quotes_used')->default(0);
