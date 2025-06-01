@@ -28,6 +28,7 @@ import {
   faPaperPlane,
   faRedo,
   faArrowLeft,
+  faCopy,
 } from '@fortawesome/free-solid-svg-icons';
 
 // Regular Icons
@@ -62,6 +63,7 @@ library.add(
   faPaperPlane,
   faRedo,
   faArrowLeft,
+  faCopy,
 );
 
 export default function SetupFontAwesome(app) {
