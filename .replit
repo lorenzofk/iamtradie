@@ -1,0 +1,28 @@
+modules = ["php-8.2", "vue-node-20", "nodejs-20", "web", "postgresql-16"]
+run = "npm run dev"
+
+[nix]
+channel = "stable-24_05"
+
+[deployment]
+run = ["sh", "-c", "npm run dev"]
+
+[workflows]
+runButton = "Laravel Dev Server"
+
+[[workflows.workflow]]
+name = "Laravel Dev Server"
+author = 43301904
+mode = "parallel"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "php artisan serve --host=0.0.0.0 --port=5000"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm run dev"
+
+[[ports]]
+localPort = 5000
+externalPort = 80
