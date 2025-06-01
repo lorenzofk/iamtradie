@@ -5,6 +5,8 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\SettingsController;
+use App\Http\Controllers\TwilioController;
+use App\Http\Controllers\OpenAIController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -25,12 +27,25 @@ Route::middleware('auth')->group(function () {
     Route::get('/settings', [SettingsController::class, 'show'])->name('settings');
     Route::put('/settings', [SettingsController::class, 'update'])->name('settings.update');
 
+    // AI Quote Generator
+    Route::get('/ai/quotes', function () {
+        return Inertia::render('AI/QuoteGenerator');
+    })->name('ai.quotes');
+
     // Twilio routes
     Route::prefix('twilio')->name('twilio.')->group(function () {
         Route::post('/send-message', [App\Http\Controllers\TwilioController::class, 'sendMessage'])->name('send-message');
         Route::post('/send-quote', [App\Http\Controllers\TwilioController::class, 'sendQuote'])->name('send-quote');
         Route::post('/validate-phone', [App\Http\Controllers\TwilioController::class, 'validatePhone'])->name('validate-phone');
         Route::get('/account-info', [App\Http\Controllers\TwilioController::class, 'getAccountInfo'])->name('account-info');
+    });
+
+    // OpenAI routes
+    Route::prefix('ai')->name('ai.')->group(function () {
+        Route::post('/generate-quote', [OpenAIController::class, 'generateQuote'])->name('generate-quote');
+        Route::post('/improve-quote', [OpenAIController::class, 'improveQuote'])->name('improve-quote');
+        Route::post('/analyze-job', [OpenAIController::class, 'analyzeJob'])->name('analyze-job');
+        Route::post('/generate-sms', [OpenAIController::class, 'generateSmsResponse'])->name('generate-sms');
     });
 });
 
