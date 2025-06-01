@@ -27,10 +27,10 @@ class TwilioController extends Controller
         $smsId = $request->input('SmsMessageSid');
 
         $user = User::whereHas('twilioSettings', fn ($query) => $query->where('twilio_number', $twilioNumber))->firstOrFail();
+
         $settings = $user->getOrCreateSettings();
 
         throw_if(empty($settings), new Exception('Twilio number not configured for user'));
-        throw_unless($settings->auto_send_sms, new Exception('Auto send SMS is not enabled'));
 
         $aiResponse = $this->openAIService->generateQuoteResponse(
             message: $body,
@@ -41,23 +41,24 @@ class TwilioController extends Controller
             firstName: $user->first_name
         );
 
-        // Store the quote
-        Quote::create([
+        $quoteData = [
             'user_id' => $user->id,
             'message' => $body,
-            'location' => null, // You may extract from message or add logic
             'industry_type' => $settings->industry_type,
             'ai_response' => $aiResponse,
-            'edited_response' => null,
-            'sent_at' => now(),
             'from_number' => $leadNumber,
             'to_number' => $twilioNumber,
             'sms_id' => $smsId,
-            'status' => QuoteStatus::SENT,
             'source' => QuoteSource::SMS,
-        ]);
+            'status' => $settings->auto_send_sms ? QuoteStatus::SENT : QuoteStatus::PENDING,
+            'sent_at' => $settings->auto_send_sms ? now() : null,
+        ];
 
-        $this->twilioService->send(to: $leadNumber, from: $twilioNumber, message: $aiResponse);
+        Quote::create($quoteData);
+
+        if ($settings->auto_send_sms) {
+            $this->twilioService->send(to: $leadNumber, from: $twilioNumber, message: $aiResponse);
+        }
 
         return response()->json();
     }
