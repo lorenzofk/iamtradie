@@ -11,7 +11,7 @@ const navLinks = [
   { label: 'Quote History', href: route('home'), icon: ['fas', 'fa-history'] },
   { label: 'SMS Integration', href: route('home'), icon: ['fas', 'fa-mobile-alt'] },
   { label: 'Embed Form', href: route('home'), icon: ['fas', 'fa-code'] },
-  { label: 'Settings', href: route('home'), icon: ['fas', 'fa-cog'] },
+  { label: 'Settings', href: route('settings'), icon: ['fas', 'fa-cog'] },
 ];
 
 const onLogout = (e) => {
@@ -21,16 +21,12 @@ const onLogout = (e) => {
 
 function userInitials(user) {
   if (!user) return 'U';
-  if (user.initials) return user.initials;
 
-  if (user.name) {
-    const names = user.name.split(' ');
+  if (user.first_name || user.last_name) {
+    const names = `${user.first_name} ${user.last_name}`.split(' ');
     return names.map(n => n[0]).join('').toUpperCase();
   }
 
-  if (user.first_name || user.last_name) {
-    return `${user.first_name?.[0] || ''}${user.last_name?.[0] || ''}`.toUpperCase() || 'U';
-  }
   return 'U';
 }
 </script>

@@ -1,203 +1,5 @@
 
-<template>
-  <App title="Settings">
-    <div class="max-w-4xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-      <div class="bg-white shadow rounded-lg">
-        <div class="px-4 py-5 sm:p-6">
-          <h1 class="text-2xl font-bold text-gray-900 mb-6">Account Settings</h1>
-          
-          <form @submit.prevent="submit" class="space-y-6">
-            <!-- Personal Information -->
-            <div class="border-b border-gray-200 pb-6">
-              <h2 class="text-lg font-medium text-gray-900 mb-4">Personal Information</h2>
-              <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <FormElement>
-                  <FormLabel for="first_name">First Name</FormLabel>
-                  <Input
-                    id="first_name"
-                    v-model="form.first_name"
-                    :error="form.errors.first_name"
-                    required
-                  />
-                </FormElement>
-                
-                <FormElement>
-                  <FormLabel for="last_name">Last Name</FormLabel>
-                  <Input
-                    id="last_name"
-                    v-model="form.last_name"
-                    :error="form.errors.last_name"
-                    required
-                  />
-                </FormElement>
-                
-                <FormElement class="sm:col-span-2">
-                  <FormLabel for="email">Email</FormLabel>
-                  <Input
-                    id="email"
-                    type="email"
-                    v-model="form.email"
-                    :error="form.errors.email"
-                    required
-                  />
-                </FormElement>
-                
-                <FormElement>
-                  <FormLabel for="phone">Phone</FormLabel>
-                  <Input
-                    id="phone"
-                    v-model="form.phone"
-                    :error="form.errors.phone"
-                  />
-                </FormElement>
-              </div>
-            </div>
-
-            <!-- Business Information -->
-            <div class="border-b border-gray-200 pb-6">
-              <h2 class="text-lg font-medium text-gray-900 mb-4">Business Information</h2>
-              <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <FormElement>
-                  <FormLabel for="industry_type">Industry Type</FormLabel>
-                  <Select
-                    id="industry_type"
-                    v-model="form.industry_type"
-                    :options="industryOptions"
-                    :error="form.errors.industry_type"
-                    required
-                  />
-                </FormElement>
-                
-                <FormElement>
-                  <FormLabel for="callout_fee">Callout Fee ($)</FormLabel>
-                  <InputNumber
-                    id="callout_fee"
-                    v-model="form.callout_fee"
-                    :error="form.errors.callout_fee"
-                    :min="0"
-                    :step="0.01"
-                    required
-                  />
-                </FormElement>
-                
-                <FormElement>
-                  <FormLabel for="hourly_rate">Hourly Rate ($)</FormLabel>
-                  <InputNumber
-                    id="hourly_rate"
-                    v-model="form.hourly_rate"
-                    :error="form.errors.hourly_rate"
-                    :min="0"
-                    :step="0.01"
-                    required
-                  />
-                </FormElement>
-              </div>
-            </div>
-
-            <!-- AI Preferences -->
-            <div class="border-b border-gray-200 pb-6">
-              <h2 class="text-lg font-medium text-gray-900 mb-4">AI Response Preferences</h2>
-              <div class="grid grid-cols-1 gap-4">
-                <FormElement>
-                  <FormLabel for="response_tone">Response Tone</FormLabel>
-                  <Select
-                    id="response_tone"
-                    v-model="form.response_tone"
-                    :options="responseToneOptions"
-                    :error="form.errors.response_tone"
-                    required
-                  />
-                </FormElement>
-                
-                <FormElement>
-                  <FormLabel for="preferred_cta">Preferred Call-to-Action Message</FormLabel>
-                  <TextArea
-                    id="preferred_cta"
-                    v-model="form.preferred_cta"
-                    :error="form.errors.preferred_cta"
-                    rows="3"
-                    placeholder="Enter your custom call-to-action message..."
-                  />
-                </FormElement>
-              </div>
-            </div>
-
-            <!-- Automation Settings -->
-            <div class="border-b border-gray-200 pb-6">
-              <h2 class="text-lg font-medium text-gray-900 mb-4">Automation Settings</h2>
-              <div class="space-y-4">
-                <div class="flex items-center">
-                  <ToggleSwitch
-                    id="auto_send_sms"
-                    v-model="form.auto_send_sms"
-                  />
-                  <FormLabel for="auto_send_sms" class="ml-3">Auto Send SMS</FormLabel>
-                </div>
-                
-                <div class="flex items-center">
-                  <ToggleSwitch
-                    id="auto_send_email"
-                    v-model="form.auto_send_email"
-                  />
-                  <FormLabel for="auto_send_email" class="ml-3">Auto Send Email</FormLabel>
-                </div>
-                
-                <FormElement v-if="form.auto_send_sms">
-                  <FormLabel for="twilio_number">Twilio Phone Number</FormLabel>
-                  <Input
-                    id="twilio_number"
-                    v-model="form.twilio_number"
-                    :error="form.errors.twilio_number"
-                    placeholder="+1234567890"
-                  />
-                </FormElement>
-              </div>
-            </div>
-
-            <!-- Usage Information -->
-            <div class="pb-6">
-              <h2 class="text-lg font-medium text-gray-900 mb-4">Usage Information</h2>
-              <div class="bg-gray-50 rounded-lg p-4">
-                <div class="grid grid-cols-2 gap-4 text-sm">
-                  <div>
-                    <span class="font-medium text-gray-700">Quotes Used:</span>
-                    <span class="ml-2 text-gray-900">{{ settings?.quotes_used || 0 }}</span>
-                  </div>
-                  <div>
-                    <span class="font-medium text-gray-700">Quotes Limit:</span>
-                    <span class="ml-2 text-gray-900">{{ settings?.quotes_limit || 100 }}</span>
-                  </div>
-                </div>
-                <div class="mt-2">
-                  <div class="bg-gray-200 rounded-full h-2">
-                    <div 
-                      class="bg-blue-600 h-2 rounded-full" 
-                      :style="{ width: usagePercentage + '%' }"
-                    ></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Submit Button -->
-            <div class="flex justify-end">
-              <Button 
-                type="submit" 
-                :loading="form.processing"
-                class="px-6 py-2"
-              >
-                Save Settings
-              </Button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
-  </App>
-</template>
-
 <script setup>
-import { computed } from 'vue'
 import { useForm } from '@inertiajs/vue3'
 import App from '@/Layouts/App.vue'
 import Button from '@/Shared/Ui/Button/Button.vue'
@@ -208,12 +10,19 @@ import InputNumber from '@/Shared/Ui/Form/InputNumber.vue'
 import Select from '@/Shared/Ui/Form/Select.vue'
 import TextArea from '@/Shared/Ui/Form/TextArea.vue'
 import ToggleSwitch from '@/Shared/Ui/Form/ToggleSwitch.vue'
+import { useToast } from '@Shared/Ui/Hooks/useToast';
+
+const { showToast } = useToast();
+
+defineOptions({
+  layout: App
+})
 
 const props = defineProps({
   user: Object,
   settings: Object,
-  industryTypes: Object,
-  responseTones: Object
+  industryTypes: Array,
+  responseTones: Array
 })
 
 const form = useForm({
@@ -231,27 +40,189 @@ const form = useForm({
   twilio_number: props.settings?.twilio_number || ''
 })
 
-const industryOptions = computed(() => {
-  return Object.entries(props.industryTypes).map(([value, label]) => ({
-    value,
-    label
-  }))
-})
-
-const responseToneOptions = computed(() => {
-  return Object.entries(props.responseTones).map(([value, label]) => ({
-    value,
-    label
-  }))
-})
-
-const usagePercentage = computed(() => {
-  const used = props.settings?.quotes_used || 0
-  const limit = props.settings?.quotes_limit || 100
-  return Math.min((used / limit) * 100, 100)
-})
-
 const submit = () => {
-  form.put(route('settings.update'))
+  form.put(route('settings.update'), {
+    preserveScroll: true,
+    onSuccess: () =>
+      showToast(
+        'success',
+        'If an account exists for this email address, you will receive a password reset link shortly.'
+      ),
+    onError: () => showToast('error', 'There was an error sending the reset link.'),
+  })
 }
 </script>
+
+
+<template>
+  <div class="max-w-4xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+    <div class="bg-white shadow rounded-lg">
+      <div class="px-4 py-5 sm:p-6">
+        <h1 class="text-2xl font-bold text-gray-900 mb-6">Account Settings</h1>
+        
+        <form @submit.prevent="submit" class="space-y-6">
+          <!-- Personal Information -->
+          <div class="border-b border-gray-200 pb-6">
+            <h2 class="text-lg font-medium text-gray-900 mb-4">Personal Information</h2>
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <FormElement>
+                <FormLabel for="first_name">First Name</FormLabel>
+                <Input
+                  id="first_name"
+                  v-model="form.first_name"
+                  :error="form.errors.first_name"
+                  required
+                />
+              </FormElement>
+              
+              <FormElement>
+                <FormLabel for="last_name">Last Name</FormLabel>
+                <Input
+                  id="last_name"
+                  v-model="form.last_name"
+                  :error="form.errors.last_name"
+                  required
+                />
+              </FormElement>
+              
+              <FormElement class="sm:col-span-2">
+                <FormLabel for="email">Email</FormLabel>
+                <Input
+                  id="email"
+                  type="email"
+                  v-model="form.email"
+                  :error="form.errors.email"
+                  required
+                />
+              </FormElement>
+              
+              <FormElement>
+                <FormLabel for="phone">Phone</FormLabel>
+                <Input
+                  id="phone"
+                  v-model="form.phone"
+                  :error="form.errors.phone"
+                />
+              </FormElement>
+            </div>
+          </div>
+
+          <!-- Business Information -->
+          <div class="border-b border-gray-200 pb-6">
+            <h2 class="text-lg font-medium text-gray-900 mb-4">Business Information</h2>
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <FormElement>
+                <FormLabel for="industry_type">Industry Type</FormLabel>
+                <Select
+                  placeholder="Select Industry Type"
+                  class="w-full"
+                  v-model="form.industry_type"
+                  optionLabel="label"
+                  optionValue="id"
+                  :options="industryTypes"
+                />
+              </FormElement>
+              
+              <FormElement>
+                <FormLabel for="callout_fee">Callout Fee ($)</FormLabel>
+                <InputNumber
+                  id="callout_fee"
+                  v-model="form.callout_fee"
+                  :error="form.errors.callout_fee"
+                  :min="0"
+                  :step="0.01"
+                  required
+                />
+              </FormElement>
+              
+              <FormElement>
+                <FormLabel for="hourly_rate">Hourly Rate ($)</FormLabel>
+                <InputNumber
+                  id="hourly_rate"
+                  v-model="form.hourly_rate"
+                  :error="form.errors.hourly_rate"
+                  :min="0"
+                  :step="0.01"
+                  required
+                />
+              </FormElement>
+            </div>
+          </div>
+
+          <!-- AI Preferences -->
+          <div class="border-b border-gray-200 pb-6">
+            <h2 class="text-lg font-medium text-gray-900 mb-4">AI Response Preferences</h2>
+            <div class="grid grid-cols-1 gap-4">
+              <FormElement>
+                <FormLabel for="response_tone">Response Tone</FormLabel>
+                <Select
+                  id="response_tone"
+                  v-model="form.response_tone"
+                  optionLabel="label"
+                  optionValue="id"
+                  :options="responseTones"
+                  :error="form.errors.response_tone"
+                  required
+                />
+              </FormElement>
+              
+              <FormElement>
+                <FormLabel for="preferred_cta">Preferred Call-to-Action Message</FormLabel>
+                <TextArea
+                  id="preferred_cta"
+                  v-model="form.preferred_cta"
+                  :error="form.errors.preferred_cta"
+                  rows="3"
+                  placeholder="Enter your custom call-to-action message..."
+                />
+              </FormElement>
+            </div>
+          </div>
+
+          <!-- Automation Settings -->
+          <div class="border-b border-gray-200 pb-6">
+            <h2 class="text-lg font-medium text-gray-900 mb-4">Automation Settings</h2>
+            <div class="space-y-4">
+              <div class="flex items-center">
+                <ToggleSwitch
+                  id="auto_send_sms"
+                  v-model="form.auto_send_sms"
+                />
+                <FormLabel for="auto_send_sms" class="ml-3">Auto Send SMS</FormLabel>
+              </div>
+              
+              <div class="flex items-center">
+                <ToggleSwitch
+                  id="auto_send_email"
+                  v-model="form.auto_send_email"
+                />
+                <FormLabel for="auto_send_email" class="ml-3">Auto Send Email</FormLabel>
+              </div>
+              
+              <FormElement v-if="form.auto_send_sms">
+                <FormLabel for="twilio_number">Twilio Phone Number</FormLabel>
+                <Input
+                  id="twilio_number"
+                  v-model="form.twilio_number"
+                  :error="form.errors.twilio_number"
+                  placeholder="+1234567890"
+                />
+              </FormElement>
+            </div>
+          </div>
+
+          <!-- Submit Button -->
+          <div class="flex justify-end">
+            <Button 
+              type="submit" 
+              :loading="form.processing"
+              class="px-6 py-2"
+            >
+              Save Settings
+            </Button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</template>

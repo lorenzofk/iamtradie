@@ -11,9 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('user_settings', function (Blueprint $table) {
+        Schema::create('twilio_settings', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->string('twilio_number')->nullable();
+            $table->string('twilio_auth_token')->nullable();
+            $table->string('twilio_account_sid')->nullable();
             $table->timestamps();
+            $table->unique('user_id');
         });
     }
 
@@ -22,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('user_settings');
+        Schema::dropIfExists('twilio_settings');
     }
-};
+}; 

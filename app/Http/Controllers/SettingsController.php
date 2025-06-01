@@ -2,14 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\IndustryType;
+use App\Enums\ResponseTone;
 use App\Http\Requests\UpdateUserSettingsRequest;
-use App\Models\UserSettings;
-use Illuminate\Http\Request;
+use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
+use Inertia\Response;
 
 class SettingsController extends Controller
 {
-    public function show()
+    public function show(): Response
     {
         $user = auth()->user();
         $settings = $user->settings;
@@ -17,23 +19,12 @@ class SettingsController extends Controller
         return Inertia::render('Settings/Index', [
             'user' => $user,
             'settings' => $settings,
-            'industryTypes' => [
-                'electrical' => 'Electrical',
-                'plumbing' => 'Plumbing',
-                'tiling' => 'Tiling',
-                'carpentry' => 'Carpentry',
-                'painting' => 'Painting',
-                'general' => 'General'
-            ],
-            'responseTones' => [
-                'casual' => 'Casual',
-                'polite' => 'Polite',
-                'professional' => 'Professional'
-            ]
+            'industryTypes' => IndustryType::toDropdown(),
+            'responseTones' => ResponseTone::toDropdown(),
         ]);
     }
 
-    public function update(UpdateUserSettingsRequest $request)
+    public function update(UpdateUserSettingsRequest $request): RedirectResponse
     {
         $user = auth()->user();
         $validated = $request->validated();
