@@ -3,6 +3,7 @@ import { createInertiaApp } from '@inertiajs/vue3';
 import { createHead } from '@unhead/vue/client';
 import SetupPrimeVue from './Plugins/prime-vue';
 import SetupFontAwesome from './Plugins/icons';
+import axios from 'axios';
 
 const setupVueApp = ({ el, App, props, plugin }) => {
   const head = createHead();
@@ -29,12 +30,13 @@ const setupVueApp = ({ el, App, props, plugin }) => {
 createInertiaApp({
   resolve: name => {
     const pages = import.meta.glob('./Pages/**/*.vue', { eager: true });
-    console.log('Pages loaded:', Object.keys(pages));
-    console.log('Trying to resolve:', name);
-    return pages[`./Pages/${name}.vue`]; // check this value
+    return pages[`./Pages/${name}.vue`];
   },
   setup: setupVueApp,
 });
+
+window.axios = axios;
+window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
 window.asset = path => {
   const prefix = import.meta.env.VITE_ASSET_URL || '';

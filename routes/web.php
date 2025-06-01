@@ -6,6 +6,7 @@ use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\OpenAIController;
+use App\Http\Controllers\QuoteController;
 use Illuminate\Foundation\Http\Middleware\HandlePrecognitiveRequests;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -27,15 +28,16 @@ Route::middleware('auth')->group(function () {
     Route::get('/settings', [SettingsController::class, 'show'])->name('settings');
     Route::post('/settings', [SettingsController::class, 'update'])->name('settings.update')->middleware([HandlePrecognitiveRequests::class]);
 
-    Route::get('/ai/quotes', fn () => Inertia::render('AI/QuoteGenerator'))->name('ai.quotes');
-
-    Route::prefix('twilio')->name('twilio.')->group(function () {
-        Route::post('/send-quote', [App\Http\Controllers\TwilioController::class, 'sendQuote'])->name('send-quote');
-        Route::post('/send-message', [App\Http\Controllers\TwilioController::class, 'sendMessage'])->name('send-message');
-    });
-
     Route::prefix('ai')->name('ai.')->group(function () {
+        Route::get('/quotes', fn () => Inertia::render('AI/QuoteGenerator'))->name('quotes');
         Route::post('/generate-quote', [OpenAIController::class, 'generateQuote'])->name('generate-quote');
         Route::post('/improve-quote', [OpenAIController::class, 'improveQuote'])->name('improve-quote');
+    });
+
+    Route::prefix('quotes')->name('quotes.')->group(function () {
+        Route::get('/', [QuoteController::class, 'index'])->name('index');
+        Route::get('/{quote}', [QuoteController::class, 'show'])->name('show');
+        Route::delete('/{quote}', [QuoteController::class, 'destroy'])->name('destroy');
+        Route::put('/{quote}', [QuoteController::class, 'update'])->name('update');
     });
 });
