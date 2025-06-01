@@ -13,14 +13,23 @@ use Exception;
 
 class SettingsController extends Controller
 {
-    public function show(): Response
+    /**
+     * Display the settings page.
+     */
+    public function index(): Response
     {
-        $settings = auth()->user()->settings;
+        $user = auth()->user();
+
+        $settings = $user->settings->toArray();
+        $phone = $user->twilioSettings->twilio_number;
 
         return Inertia::render('Settings/Index', [
-            'settings' => $settings,
-            'industryTypes' => IndustryType::toDropdown(),
-            'responseTones' => ResponseTone::toDropdown(),
+            'settings' => [
+                ...$settings,
+                'twilio_number' => $phone,
+            ],
+            'industry_types' => IndustryType::toDropdown(),
+            'response_tones' => ResponseTone::toDropdown(),
         ]);
     }
 

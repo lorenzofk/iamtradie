@@ -25,7 +25,7 @@ Route::middleware('guest')->group(function () {
 Route::middleware('auth')->group(function () {
     Route::get('/', fn() => Inertia::render('Home'))->name('home');
     Route::post('/logout', [LogoutController::class, 'logout'])->name('logout');
-    Route::get('/settings', [SettingsController::class, 'show'])->name('settings');
+    Route::get('/settings', [SettingsController::class, 'index'])->name('settings');
     Route::post('/settings', [SettingsController::class, 'update'])->name('settings.update')->middleware([HandlePrecognitiveRequests::class]);
 
     Route::prefix('ai')->name('ai.')->group(function () {
