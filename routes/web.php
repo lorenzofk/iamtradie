@@ -7,11 +7,12 @@ use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\OpenAIController;
 use App\Http\Controllers\QuoteController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\LandingPageController;
+use App\Http\Controllers\OnboardingController;
+use App\Http\Controllers\SmsController;
 use Illuminate\Foundation\Http\Middleware\HandlePrecognitiveRequests;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
-
-Route::get('/', fn () => Inertia::render('Home'));
 
 Route::middleware('guest')->group(function () {
     Route::get('/login', [LoginController::class, 'index'])->name('login');
@@ -23,13 +24,13 @@ Route::middleware('guest')->group(function () {
 });
 
 Route::middleware('auth')->group(function () {
-    Route::get('/', fn() => Inertia::render('Home'))->name('home');
+    Route::get('/dashboard', [HomeController::class, 'index'])->name('dashboard');
     Route::post('/logout', [LogoutController::class, 'logout'])->name('logout');
     Route::get('/settings', [SettingsController::class, 'index'])->name('settings');
     Route::post('/settings', [SettingsController::class, 'update'])->name('settings.update')->middleware([HandlePrecognitiveRequests::class]);
 
     Route::prefix('ai')->name('ai.')->group(function () {
-        Route::get('/quotes', fn () => Inertia::render('AI/QuoteGenerator'))->name('quotes');
+        Route::get('/quote', [OpenAIController::class, 'index'])->name('index');
         Route::post('/generate-quote', [OpenAIController::class, 'generateQuote'])->name('generate-quote');
         Route::post('/improve-quote', [OpenAIController::class, 'improveQuote'])->name('improve-quote');
     });
@@ -41,4 +42,11 @@ Route::middleware('auth')->group(function () {
         Route::put('/{quote}', [QuoteController::class, 'update'])->name('update');
         Route::post('/{quote}/send', [QuoteController::class, 'send'])->name('send');
     });
+
+    Route::prefix('integrations')->name('integrations.')->group(function () {
+        Route::get('/sms', [SmsController::class, 'index'])->name('sms.index');
+    });
 });
+
+Route::get('/', [LandingPageController::class, 'index'])->name('landing');
+Route::get('/onboarding/{plan}', [OnboardingController::class, 'show'])->name('onboarding.show');

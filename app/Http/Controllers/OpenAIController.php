@@ -6,10 +6,17 @@ use App\Http\Requests\GenerateQuoteRequest;
 use App\Http\Requests\ImproveQuoteRequest;
 use App\Services\OpenAIService;
 use Illuminate\Http\JsonResponse;
+use Inertia\Inertia;
+use Inertia\Response;
 
 class OpenAIController extends Controller
 {
     public function __construct(private readonly OpenAIService $openAIService) {}
+
+    public function index(): Response
+    {
+        return Inertia::render('AI/QuoteGenerator');
+    }
 
     /**
      * Generate a quote response using OpenAI
@@ -20,13 +27,13 @@ class OpenAIController extends Controller
         $userSettings = $user->getOrCreateSettings();
 
         $response = $this->openAIService->generateQuoteResponse(
-            clientMessage: $request->input('client_message'),
-            jobType: $userSettings->industry_type->value,
+            message: $request->input('message'),
+            industryType: $userSettings->industry_type->value,
             calloutFee: $userSettings->callout_fee,
             hourlyRate: $userSettings->hourly_rate,
             responseTone: $userSettings->response_tone->value,
             preferredCta: $userSettings->preferred_cta,
-            tradieFirstName: $user->first_name
+            firstName: $user->first_name,
         );
 
         return response()->json([

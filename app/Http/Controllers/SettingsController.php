@@ -23,7 +23,7 @@ class SettingsController extends Controller
         $settings = $user->settings->toArray();
         $phone = $user->twilioSettings->twilio_number;
 
-        return Inertia::render('Settings/Index', [
+        return Inertia::render('Settings/index', [
             'settings' => [
                 ...$settings,
                 'twilio_number' => $phone,
