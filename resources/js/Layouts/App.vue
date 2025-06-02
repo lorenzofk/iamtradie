@@ -9,11 +9,10 @@ import Toast from '@Shared/Ui/Messages/Toast.vue';
 const { setToast } = useToast();
 
 const navLinks = [
-  { label: 'Dashboard', href: route('home'), icon: ['fas', 'fa-chart-bar'] },
-  { label: 'New Quote', href: route('home'), icon: ['fas', 'fa-plus'] },
+  { label: 'Dashboard', href: route('dashboard'), icon: ['fas', 'fa-chart-bar'] },
+  { label: 'New Quote', href: route('ai.index'), icon: ['fas', 'fa-plus'] },
   { label: 'Quote History', href: route('quotes.index'), icon: ['fas', 'fa-history'] },
-  { label: 'SMS Integration', href: route('home'), icon: ['fas', 'fa-mobile-alt'] },
-  { label: 'Embed Form', href: route('home'), icon: ['fas', 'fa-code'] },
+  { label: 'SMS Integration', href: route('integrations.sms.index'), icon: ['fas', 'fa-mobile-alt'] },
   { label: 'Settings', href: route('settings'), icon: ['fas', 'fa-cog'] },
 ];
 

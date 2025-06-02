@@ -1,284 +1,255 @@
+<script setup>
+import { ref, computed } from 'vue';
+import Layout from '@/Layouts/App.vue';
+import Button from '@/Shared/Ui/Button/Button.vue';
+
+defineOptions({
+  layout: Layout,
+});
+
+// Form data
+const form = ref({
+  clientMessage: '',
+  location: '',
+  jobType: ''
+});
+
+// AI Response state
+const aiResponse = ref('');
+const isGenerating = ref(false);
+const isEditing = ref(false);
+const editedResponse = ref('');
+
+// Job type options
+const jobTypes = ref([
+  { label: 'Electrical', value: 'electrical' },
+  { label: 'Plumbing', value: 'plumbing' },
+  { label: 'General Maintenance', value: 'general' },
+  { label: 'HVAC', value: 'hvac' },
+  { label: 'Carpentry', value: 'carpentry' }
+]);
+
+// Generate AI response
+const generateResponse = async () => {
+  if (!form.value.clientMessage.trim() || !form.value.jobType) return;
+  
+  isGenerating.value = true;
+  aiResponse.value = '';
+  
+  try {
+    // Replace with actual API call to your Laravel backend
+    const response = await fetch('/api/quotes/generate', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+      },
+      body: JSON.stringify({
+        client_message: form.value.clientMessage,
+        location: form.value.location,
+        job_type: form.value.jobType
+      })
+    });
+    
+    const data = await response.json();
+    aiResponse.value = data.response;
+    editedResponse.value = data.response;
+  } catch (error) {
+    console.error('Error generating response:', error);
+    // Show error toast
+  } finally {
+    isGenerating.value = false;
+  }
+};
+
+// Toggle edit mode
+const toggleEdit = () => {
+  isEditing.value = !isEditing.value;
+  if (!isEditing.value) {
+    aiResponse.value = editedResponse.value;
+  }
+};
+
+// Save edited response
+const saveResponse = async () => {
+  try {
+    // Save to backend
+    aiResponse.value = editedResponse.value;
+    isEditing.value = false;
+    // Show success toast
+  } catch (error) {
+    console.error('Error saving response:', error);
+  }
+};
+
+// Send response actions
+const sendResponse = async (method) => {
+  try {
+    // Send via SMS or Email
+    const response = await fetch(`/api/quotes/send-${method}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+      },
+      body: JSON.stringify({
+        response: aiResponse.value,
+        client_message: form.value.clientMessage,
+        location: form.value.location,
+        job_type: form.value.jobType
+      })
+    });
+    
+    if (response.ok) {
+      // Show success message
+      console.log(`Sent via ${method}`);
+    }
+  } catch (error) {
+    console.error(`Error sending via ${method}:`, error);
+  }
+};
+
+const characterCount = computed(() => aiResponse.value.length);
+</script>
 
 <template>
-  <div class="max-w-4xl mx-auto p-6">
-    <div class="bg-white rounded-lg shadow-md p-8">
-      <h1 class="text-3xl font-bold text-gray-900 mb-8">AI Quote Generator</h1>
-      
-      <form @submit.prevent="generateQuote" class="space-y-6">
-        <div>
-          <label for="client_message" class="block text-sm font-medium text-gray-700 mb-2">
-            Customer Message
-          </label>
-          <textarea
-            id="client_message"
-            v-model="form.client_message"
-            rows="4"
-            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="Enter the customer's inquiry here..."
-            required
-          ></textarea>
+  <div class="max-w-6xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-6 bg-white rounded-xl shadow-sm border-0 p-6">
+      <h1 class="text-2xl font-bold text-gray-900">AI Quote Generator</h1>
+    </div>
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <!-- Left Column - Quote Request Details -->
+      <div class="bg-white rounded-xl shadow-sm border-0 p-6">
+        <div class="mb-6">
+          <h2 class="text-xl font-semibold text-gray-900">Quote Request Details</h2>
+          <p class="text-sm text-gray-600 mt-1">Enter the client's message and job details to generate an AI response.</p>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="space-y-6">
+          <!-- Client Message -->
           <div>
-            <label for="location" class="block text-sm font-medium text-gray-700 mb-2">
-              Location (Optional)
+            <label for="clientMessage" class="block text-sm font-medium text-gray-700 mb-2">
+              Client Message <span class="text-red-500">*</span>
             </label>
-            <input
-              id="location"
-              v-model="form.location"
-              type="text"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="e.g., Bondi, NSW"
-            />
+            <textarea
+              id="clientMessage"
+              v-model="form.clientMessage"
+              rows="6"
+              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
+              placeholder="Enter the client's inquiry or message..."
+              required
+            ></textarea>
           </div>
 
-          <div>
-            <label for="response_tone" class="block text-sm font-medium text-gray-700 mb-2">
-              Response Tone
-            </label>
-            <select
-              id="response_tone"
-              v-model="form.response_tone"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="casual">Casual</option>
-              <option value="polite">Polite</option>
-              <option value="professional">Professional</option>
-            </select>
-          </div>
-        </div>
-
-        <div>
-          <label for="preferred_cta" class="block text-sm font-medium text-gray-700 mb-2">
-            Preferred Call-to-Action (Optional)
-          </label>
-          <input
-            id="preferred_cta"
-            v-model="form.preferred_cta"
-            type="text"
-            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="e.g., Call me on 0412 345 678 to book"
+          <!-- Generate Button -->
+          <Button
+            @click="generateResponse"
+            label="Generate AI Reply"
+            :disabled="isGenerating || !form.clientMessage.trim()"
+            :icon="['fas', 'fa-bolt']"
+            class="w-full justify-center"
           />
         </div>
-
-        <button
-          type="submit"
-          :disabled="isGenerating"
-          class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          <span v-if="isGenerating" class="flex items-center justify-center">
-            <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
-            Generating...
-          </span>
-          <span v-else>Generate Quote</span>
-        </button>
-      </form>
-
-      <!-- Generated Quote Display -->
-      <div v-if="generatedQuote" class="mt-8 p-6 bg-gray-50 rounded-lg">
-        <div class="flex justify-between items-center mb-4">
-          <h3 class="text-lg font-semibold text-gray-900">Generated Quote</h3>
-          <span class="text-sm text-gray-500">{{ characterCount }} characters</span>
-        </div>
-        
-        <div class="bg-white p-4 rounded border">
-          <p class="whitespace-pre-wrap">{{ generatedQuote }}</p>
-        </div>
-
-        <div class="mt-4 flex space-x-3">
-          <button
-            @click="copyToClipboard"
-            class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
-          >
-            Copy to Clipboard
-          </button>
-          
-          <button
-            @click="showImproveModal = true"
-            class="bg-yellow-600 text-white px-4 py-2 rounded hover:bg-yellow-700"
-          >
-            Improve Response
-          </button>
-
-          <button
-            @click="sendViaSms"
-            class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-          >
-            Send via SMS
-          </button>
-        </div>
       </div>
 
-      <!-- Job Analysis -->
-      <div v-if="jobAnalysis" class="mt-8 p-6 bg-blue-50 rounded-lg">
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">Job Analysis</h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <p><strong>Complexity:</strong> {{ jobAnalysis.complexity_level }}</p>
-            <p><strong>Estimated Hours:</strong> {{ jobAnalysis.estimated_hours }}</p>
-          </div>
-          <div>
-            <p><strong>Required Skills:</strong></p>
-            <ul class="list-disc list-inside">
-              <li v-for="skill in jobAnalysis.required_skills" :key="skill">{{ skill }}</li>
-            </ul>
-          </div>
+      <!-- Right Column - AI Generated Response -->
+      <div class="bg-white rounded-xl shadow-sm border-0 p-6">
+        <div class="mb-6">
+          <h2 class="text-xl font-semibold text-gray-900">AI Generated Response</h2>
+          <p class="text-sm text-gray-600 mt-1">Review and edit the AI response before sending to your client.</p>
         </div>
-      </div>
-    </div>
 
-    <!-- Improve Quote Modal -->
-    <div v-if="showImproveModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div class="bg-white rounded-lg p-6 w-full max-w-md mx-4">
-        <h3 class="text-lg font-semibold mb-4">Improve Quote Response</h3>
-        
-        <textarea
-          v-model="improvements"
-          rows="4"
-          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 mb-4"
-          placeholder="Describe what improvements you'd like to make..."
-        ></textarea>
+        <!-- Empty State -->
+        <div v-if="!aiResponse && !isGenerating" class="flex flex-col items-center justify-center py-16 text-center">
+          <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+            <font-awesome-icon :icon="['fas', 'fa-bolt']" class="text-gray-400 text-xl" />
+          </div>
+          <p class="text-gray-500">Generate an AI response to see it here</p>
+        </div>
 
-        <div class="flex space-x-3">
-          <button
-            @click="improveQuote"
-            :disabled="isImproving"
-            class="flex-1 bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 disabled:opacity-50"
-          >
-            {{ isImproving ? 'Improving...' : 'Improve' }}
-          </button>
-          
-          <button
-            @click="showImproveModal = false"
-            class="flex-1 bg-gray-600 text-white py-2 px-4 rounded hover:bg-gray-700"
-          >
-            Cancel
-          </button>
+        <!-- Loading State -->
+        <div v-else-if="isGenerating" class="flex flex-col items-center justify-center py-16">
+          <div class="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mb-4"></div>
+          <p class="text-gray-600">Generating AI response...</p>
+        </div>
+
+        <!-- Generated Response -->
+        <div v-else class="space-y-4">
+          <!-- Response Content -->
+          <div class="bg-gray-50 rounded-lg p-4 min-h-[200px]">
+            <div v-if="!isEditing" class="whitespace-pre-wrap text-gray-900 leading-relaxed">
+              {{ aiResponse }}
+            </div>
+            <textarea
+              v-else
+              v-model="editedResponse"
+              rows="8"
+              class="w-full bg-white border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
+            ></textarea>
+          </div>
+
+          <!-- Character Count -->
+          <div class="flex justify-between items-center text-sm text-gray-500">
+            <span>{{ characterCount }} characters</span>
+            <span v-if="characterCount > 160" class="text-orange-600">
+              <font-awesome-icon :icon="['fas', 'fa-exclamation-triangle']" class="mr-1" />
+              SMS will be split into {{ Math.ceil(characterCount / 160) }} messages
+            </span>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="space-y-3">
+            <!-- Edit Controls -->
+            <div v-if="isEditing" class="flex gap-2">
+              <Button
+                @click="saveResponse"
+                :icon="['fas', 'fa-check']"
+                class="flex-1 bg-green-600 hover:bg-green-700 text-white"
+              >
+                Save Changes
+              </Button>
+              <Button
+                @click="toggleEdit"
+                :icon="['fas', 'fa-times']"
+                outlined
+                class="flex-1"
+              >
+                Cancel
+              </Button>
+            </div>
+
+            <!-- Main Actions -->
+            <div v-else class="space-y-2">
+              <Button
+                @click="toggleEdit"
+                :icon="['fas', 'fa-edit']"
+                outlined
+                class="w-full"
+              >
+                Edit Response
+              </Button>
+              
+              <div class="grid grid-cols-2 gap-2">
+                <Button
+                  @click="sendResponse('sms')"
+                  :icon="['fas', 'fa-sms']"
+                  class="bg-green-600 hover:bg-green-700 text-white"
+                >
+                  Send SMS
+                </Button>
+                <Button
+                  @click="sendResponse('email')"
+                  :icon="['fas', 'fa-envelope']"
+                  class="bg-blue-600 hover:bg-blue-700 text-white"
+                >
+                  Send Email
+                </Button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   </div>
 </template>
-
-<script setup>
-import { ref, computed } from 'vue'
-import { router } from '@inertiajs/vue3'
-
-const form = ref({
-  client_message: '',
-  location: '',
-  response_tone: 'polite',
-  preferred_cta: ''
-})
-
-const generatedQuote = ref('')
-const jobAnalysis = ref(null)
-const isGenerating = ref(false)
-const isImproving = ref(false)
-const showImproveModal = ref(false)
-const improvements = ref('')
-
-const characterCount = computed(() => generatedQuote.value.length)
-
-const generateQuote = async () => {
-  isGenerating.value = true
-  
-  try {
-    const response = await fetch('/ai/generate-quote', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-      },
-      body: JSON.stringify(form.value)
-    })
-
-    const data = await response.json()
-    
-    if (data.success) {
-      generatedQuote.value = data.response
-      
-      // Also analyze the job
-      analyzeJob()
-    }
-  } catch (error) {
-    console.error('Error generating quote:', error)
-  } finally {
-    isGenerating.value = false
-  }
-}
-
-const analyzeJob = async () => {
-  try {
-    const response = await fetch('/ai/analyze-job', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-      },
-      body: JSON.stringify({
-        client_message: form.value.client_message,
-        job_type: 'general trades'
-      })
-    })
-
-    const data = await response.json()
-    
-    if (data.success) {
-      jobAnalysis.value = data.analysis
-    }
-  } catch (error) {
-    console.error('Error analyzing job:', error)
-  }
-}
-
-const improveQuote = async () => {
-  isImproving.value = true
-  
-  try {
-    const response = await fetch('/ai/improve-quote', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-      },
-      body: JSON.stringify({
-        original_response: generatedQuote.value,
-        improvements: improvements.value
-      })
-    })
-
-    const data = await response.json()
-    
-    if (data.success) {
-      generatedQuote.value = data.improved_response
-      showImproveModal.value = false
-      improvements.value = ''
-    }
-  } catch (error) {
-    console.error('Error improving quote:', error)
-  } finally {
-    isImproving.value = false
-  }
-}
-
-const copyToClipboard = async () => {
-  try {
-    await navigator.clipboard.writeText(generatedQuote.value)
-    alert('Quote copied to clipboard!')
-  } catch (error) {
-    console.error('Error copying to clipboard:', error)
-  }
-}
-
-const sendViaSms = () => {
-  // Integration with SMS functionality
-  router.post('/twilio/send-message', {
-    message: generatedQuote.value
-  })
-}
-</script>
