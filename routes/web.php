@@ -12,9 +12,10 @@ use App\Http\Controllers\LandingPageController;
 use App\Http\Controllers\OnboardingController;
 use App\Http\Controllers\SmsController;
 use App\Http\Controllers\Billing\GuestCheckoutController;
+use App\Http\Middleware\Subscribed;
 use Illuminate\Foundation\Http\Middleware\HandlePrecognitiveRequests;
 use Illuminate\Support\Facades\Route;
-
+use Laravel\Cashier\Http\Controllers\WebhookController;
 
 Route::middleware('guest')->group(function () {
     Route::get('/login', [LoginController::class, 'index'])->name('login');
@@ -25,7 +26,7 @@ Route::middleware('guest')->group(function () {
     Route::post('reset-password', [ResetPasswordController::class, 'update'])->name('password.update')->middleware('throttle:6,1');
 });
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', Subscribed::class])->group(function () {
     Route::get('/dashboard', [HomeController::class, 'index'])->name('dashboard');
     Route::post('/logout', [LogoutController::class, 'logout'])->name('logout');
     Route::get('/settings', [SettingsController::class, 'index'])->name('settings');
@@ -55,3 +56,4 @@ Route::get('/onboarding/{plan}', [OnboardingController::class, 'show'])->name('o
 
 Route::post('/checkout', [GuestCheckoutController::class, 'create'])->name('checkout');
 Route::get('/checkout/success', [GuestCheckoutController::class, 'success'])->name('checkout.success');
+Route::post('/stripe/webhook', [WebhookController::class, 'handleWebhook'])->name('stripe.webhook');

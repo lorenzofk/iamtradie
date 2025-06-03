@@ -8,6 +8,10 @@ enum IndustryType: string
     case PLUMBING = 'plumbing';
     case TILING = 'tiling';
     case CARPENTRY = 'carpentry';
+    case CONSTRUCTION = 'construction';
+    case CLEANING = 'cleaning';
+    case GARDENING = 'gardening';
+    case LANDSCAPING = 'landscaping';
     case PAINTING = 'painting';
     case GENERAL = 'general';
 
@@ -29,6 +33,10 @@ enum IndustryType: string
             self::PLUMBING => 'Plumbing',
             self::TILING => 'Tiling',
             self::CARPENTRY => 'Carpentry',
+            self::CONSTRUCTION => 'Construction',
+            self::CLEANING => 'Cleaning',
+            self::GARDENING => 'Gardening',
+            self::LANDSCAPING => 'Landscaping',
             self::PAINTING => 'Painting',
             self::GENERAL => 'General',
         };
