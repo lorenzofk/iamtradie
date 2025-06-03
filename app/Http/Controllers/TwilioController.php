@@ -26,9 +26,9 @@ class TwilioController extends Controller
         $body = $request->input('Body');
         $smsId = $request->input('SmsMessageSid');
 
-        $user = User::whereHas('twilioSettings', fn ($query) => $query->where('twilio_number', $twilioNumber))->firstOrFail();
+        $user = User::whereHas('settings', fn ($query) => $query->where('agent_sms_number', $twilioNumber))->firstOrFail();
 
-        $settings = $user->getOrCreateSettings();
+        $settings = $user->settings;
 
         throw_if(empty($settings), new Exception('Twilio number not configured for user'));
 

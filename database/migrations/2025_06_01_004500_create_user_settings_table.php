@@ -12,14 +12,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('user_settings', function (Blueprint $table) {
+        Schema::create('settings', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
 
+            $table->string('business_name')->nullable();
+            $table->string('location')->nullable();
+
             // Industry type as enum
             $table->enum('industry_type', IndustryType::values())->nullable();
-            $table->string('phone')->nullable();
-
+            
             // Pricing configuration
             $table->decimal('callout_fee', 10, 2)->nullable();
             $table->decimal('hourly_rate', 10, 2)->nullable();
@@ -35,6 +37,10 @@ return new class extends Migration
             // Usage tracking
             $table->integer('quotes_used')->default(0);
             $table->integer('quotes_limit')->default(100);
+
+            // SMS number
+            $table->string('phone_number')->nullable();
+            $table->string('agent_sms_number')->nullable();
 
             $table->timestamps();
             $table->unique('user_id');

@@ -24,15 +24,15 @@ class OpenAIController extends Controller
     public function generateQuote(GenerateQuoteRequest $request): JsonResponse
     {
         $user = auth()->user();
-        $userSettings = $user->getOrCreateSettings();
+        $settings = $user->settings;
 
         $response = $this->openAIService->generateQuoteResponse(
             message: $request->input('message'),
-            industryType: $userSettings->industry_type->value,
-            calloutFee: $userSettings->callout_fee,
-            hourlyRate: $userSettings->hourly_rate,
-            responseTone: $userSettings->response_tone->value,
-            preferredCta: $userSettings->preferred_cta,
+            industryType: $settings->industry_type->value,
+            calloutFee: $settings->callout_fee,
+            hourlyRate: $settings->hourly_rate,
+            responseTone: $settings->response_tone->value,
+            preferredCta: $settings->preferred_cta,
             firstName: $user->first_name,
         );
 

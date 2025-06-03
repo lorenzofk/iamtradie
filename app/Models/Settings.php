@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Enums\IndustryType;
 use App\Enums\ResponseTone;
 
-class UserSettings extends Model
+class Settings extends Model
 {
     /**
      * The attributes that are mass assignable.
@@ -17,7 +17,10 @@ class UserSettings extends Model
     protected $fillable = [
         'user_id', 
         'industry_type',
-        'phone', 
+        'business_name',
+        'location',
+        'phone_number',
+        'agent_sms_number',
         'callout_fee',
         'hourly_rate',
         'response_tone',

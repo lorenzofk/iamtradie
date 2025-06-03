@@ -7,11 +7,12 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Cashier\Billable;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, Billable;
 
     /**
      * The attributes that are mass assignable.
@@ -53,21 +54,13 @@ class User extends Authenticatable
      */
     public function settings(): HasOne
     {
-        return $this->hasOne(UserSettings::class);
-    }
-
-    /**
-     * Get the twilio settings for the user.
-     */
-    public function twilioSettings(): HasOne
-    {
-        return $this->hasOne(TwilioSettings::class);
+        return $this->hasOne(Settings::class);
     }
     
     /**
      * Get the settings for the user, or create them if they don't exist.
      */
-    public function getOrCreateSettings(): UserSettings
+    public function getOrCreateSettings(): Settings
     {
         return $this->settings ?? $this->settings()->create();
     }

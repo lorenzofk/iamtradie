@@ -26,10 +26,10 @@ const currentStep = ref(0);
 const isLoaded = ref(false);
 
 const form = useForm({
-  businessName: '',
-  firstName: '',
-  tradeType: '',
-  serviceArea: '',
+  businessName: 'Test Business',
+  firstName: 'Dave',
+  tradeType: 'electrician',
+  serviceArea: 'Sydney Metro',
   calloutFee: 120,
   hourlyRate: 85,
   communicationStyle: 'professional',
@@ -74,13 +74,12 @@ const steps = [
   { title: 'Pricing Setup', icon: 'fa-dollar-sign' },
   { title: 'Communication', icon: 'fa-comments' },
   { title: 'Payment', icon: 'fa-credit-card' },
-  { title: 'Phone Setup', icon: 'fa-phone' },
 ];
 
 const progress = computed(() => ((currentStep.value + 1) / steps.length) * 100);
 
 const nextStep = () => {
-  if (currentStep.value < steps.length - 1) {
+  if (currentStep.value < steps.length - 2) {
     currentStep.value++;
   }
 };
@@ -92,8 +91,8 @@ const prevStep = () => {
 };
 
 const onSubmit = () => {
-  if (currentStep.value === steps.length - 1) {
-    form.post(route('onboarding.complete'), {
+  if (currentStep.value === steps.length - 2) {
+    form.post(route('checkout', { plan: props.selectedPlan, email: 'test@test.com' }), {
       onSuccess: () => {
         showToast('success', 'Welcome to I am Tradie! Your AI assistant is ready to capture leads.');
         router.visit(route('dashboard'));
@@ -105,12 +104,6 @@ const onSubmit = () => {
   } else {
     nextStep();
   }
-};
-
-const planPricing = {
-  starter: { price: 47, features: ['100 SMS/month', 'Basic AI', 'Email support'] },
-  professional: { price: 97, features: ['Unlimited SMS', 'Advanced AI', 'Priority support', 'Custom branding'] },
-  enterprise: { price: 197, features: ['Everything in Pro', 'Multiple numbers', 'API access', 'Dedicated support'] }
 };
 
 // Animation on mount
@@ -385,114 +378,12 @@ setTimeout(() => {
                     </template>
                   </Card>
                 </div>
-
-                <div>
-                  <label class="block text-sm font-semibold text-gray-700 mb-2">
-                    Custom Greeting (Optional)
-                  </label>
-                  <Input
-                    v-model="form.customGreeting"
-                    placeholder="e.g., Thanks for choosing Miller Electrical!"
-                    class="w-full"
-                  />
-                </div>
               </div>
 
-              <!-- Step 4: Payment -->
-              <div v-if="currentStep === 3" class="space-y-6">
-                <div class="text-center mb-8">
-                  <div class="w-20 h-20 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
-                    <font-awesome-icon :icon="['fas', 'fa-credit-card']" class="w-8 h-8 text-white" />
-                  </div>
-                  <h3 class="text-2xl font-bold text-gray-900 mb-2">Complete your subscription</h3>
-                  <p class="text-gray-600">Start your 14-day free trial today</p>
-                </div>
-
-                <Card class="border-2 border-blue-500 bg-blue-50">
-                  <template #content>
-                    <div class="p-6 text-center">
-                      <Badge 
-                        :value="selectedPlan === 'professional' ? 'Most Popular' : 'Selected Plan'"
-                        :severity="selectedPlan === 'professional' ? 'success' : 'info'" 
-                        class="mb-3" 
-                      />
-                      <h4 class="text-2xl font-bold text-gray-900 capitalize mb-2">
-                        {{ selectedPlan }} Plan
-                      </h4>
-                      <div class="text-4xl font-black text-blue-600 mb-4">
-                        ${{ planPricing[selectedPlan]?.price }}
-                        <span class="text-lg font-normal">/month</span>
-                      </div>
-                      <div class="space-y-2 text-sm text-gray-700">
-                        <div 
-                          v-for="(feature, index) in planPricing[selectedPlan]?.features" 
-                          :key="index"
-                          class="flex items-center justify-center"
-                        >
-                          <font-awesome-icon :icon="['fas', 'fa-check-circle']" class="w-4 h-4 text-green-600 mr-2" />
-                          {{ feature }}
-                        </div>
-                      </div>
-                    </div>
-                  </template>
-                </Card>
-
-                <div class="bg-gray-50 p-6 rounded-xl text-center">
-                  <div class="flex items-center justify-center text-gray-600">
-                    <font-awesome-icon :icon="['fas', 'fa-check-circle']" class="w-5 h-5 text-green-600 mr-2" />
-                    <span>14-day free trial • No setup fees • Cancel anytime</span>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Step 5: Phone Setup -->
-              <div v-if="currentStep === 4" class="space-y-6">
-                <div class="text-center mb-8">
-                  <div class="w-20 h-20 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
-                    <font-awesome-icon :icon="['fas', 'fa-phone']" class="w-8 h-8 text-white" />
-                  </div>
-                  <h3 class="text-2xl font-bold text-gray-900 mb-2">Your Australian SMS number</h3>
-                  <p class="text-gray-600">We're setting up your dedicated business line</p>
-                </div>
-
-                <div class="text-center">
-                  <Card class="border-2 border-green-500 bg-green-50 inline-block">
-                    <template #content>
-                      <div class="p-6">
-                        <h4 class="font-semibold text-gray-900 mb-2">Your New Number</h4>
-                        <div class="text-2xl font-bold text-green-600 mb-3">
-                          +61 2 8123 4567
-                        </div>
-                        <p class="text-sm text-gray-600">Ready to receive SMS quotes!</p>
-                      </div>
-                    </template>
-                  </Card>
-                </div>
-
-                <div class="bg-blue-50 p-6 rounded-xl">
-                  <h4 class="font-semibold text-gray-900 mb-3 flex items-center">
-                    <font-awesome-icon :icon="['fas', 'fa-star']" class="w-5 h-5 text-yellow-500 mr-2" />
-                    What happens next?
-                  </h4>
-                  <div class="space-y-3 text-sm text-gray-700">
-                    <div class="flex items-center">
-                      <font-awesome-icon :icon="['fas', 'fa-check-circle']" class="w-4 h-4 text-green-600 mr-3" />
-                      Your AI assistant is trained and ready
-                    </div>
-                    <div class="flex items-center">
-                      <font-awesome-icon :icon="['fas', 'fa-check-circle']" class="w-4 h-4 text-green-600 mr-3" />
-                      SMS forwarding is automatically configured
-                    </div>
-                    <div class="flex items-center">
-                      <font-awesome-icon :icon="['fas', 'fa-check-circle']" class="w-4 h-4 text-green-600 mr-3" />
-                      Start receiving and responding to leads instantly
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <hr class="my-8 border-gray-200">
 
               <!-- Navigation -->
-              <div class="flex justify-between pt-8 border-t">
+              <div class="flex justify-between">
                 <Button
                   type="button"
                   outlined

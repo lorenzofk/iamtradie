@@ -12,7 +12,6 @@ class SmsController extends Controller
     {
         $user = Auth::user();
         $settings = $user->getOrCreateSettings();
-        $twilio = $user->twilioSettings;
 
         $quotesUsed = $settings->quotes_used ?? 0;
         $quotesLimit = $settings->quotes_limit ?? 100;
@@ -23,7 +22,7 @@ class SmsController extends Controller
 
         return Inertia::render('Integrations/SMS/index', [
             'sms_data' => [
-                'phone_number' => $twilio?->twilio_number,
+                'agent_sms_number' => $settings->agent_sms_number,
                 'quotes_used' => $quotesUsed,
                 'quotes_limit' => $quotesLimit,
                 'total_messages' => $totalMessages,

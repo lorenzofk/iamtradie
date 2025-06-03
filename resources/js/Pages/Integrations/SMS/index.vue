@@ -110,7 +110,7 @@ const copyPhoneNumber = () => {
             </div>
             <div>
               <p class="text-sm font-medium text-gray-900">Active SMS Number</p>
-              <p class="text-lg font-semibold text-green-800">{{ props.sms_data.phone_number }}</p>
+              <p class="text-lg font-semibold text-green-800">{{ props.sms_data.agent_sms_number }}</p>
             </div>
           </div>
           <Button

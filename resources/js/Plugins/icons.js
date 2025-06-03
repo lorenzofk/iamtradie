@@ -49,6 +49,11 @@ import {
   faBuilding,
   faCreditCard,
   faRocket,
+  faTachometerAlt,
+  faForward,
+  faCrown,
+  faHeadset,
+  faBook,
 } from '@fortawesome/free-solid-svg-icons';
 
 // Regular Icons
@@ -104,6 +109,11 @@ library.add(
   faBuilding,
   faCreditCard,
   faRocket,
+  faTachometerAlt,
+  faForward,
+  faCrown,
+  faHeadset,
+  faBook,
 );
 
 export default function SetupFontAwesome(app) {

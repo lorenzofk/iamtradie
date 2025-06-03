@@ -7,7 +7,7 @@ use App\Enums\ResponseTone;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class UpdateUserSettingsRequest extends FormRequest
+class UpdateSettingsRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -40,10 +40,23 @@ class UpdateUserSettingsRequest extends FormRequest
                 'email',
                 'unique:users,email,' . auth()->id(),
             ],
-            'phone' => [
+            'business_name' => [
                 'nullable',
                 'string',
+                'max:255',
+            ],
+            'location' => [
+                'nullable',
+                'string',
+                'max:255',
+            ],
+            'phone_number' => [
+                'required',
+                'string',
                 'max:20',
+            ],
+            'agent_sms_number' => [
+                'exclude',
             ],
             'industry_type' => [
                 'required',

@@ -34,7 +34,7 @@ const scrollToSection = (sectionId) => {
             <a href="/login" class="inline-flex items-center px-4 py-2 border border-blue-600 rounded-md text-sm font-medium text-blue-600 bg-white hover:bg-blue-50 transition-colors">
               Login
             </a>
-            <a href="/login" class="inline-flex items-center px-4 py-2 rounded-md text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700 shadow-lg transition-all">
+            <a href="" class="inline-flex items-center px-4 py-2 rounded-md text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700 shadow-lg transition-all">
               Get Started Free
             </a>
           </div>
@@ -77,7 +77,7 @@ const scrollToSection = (sectionId) => {
         </div>
 
         <div class="flex flex-col sm:flex-row justify-center gap-6 mb-12">
-          <a href="/login" class="inline-flex items-center justify-center px-12 py-4 text-lg bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-white shadow-2xl transform hover:scale-105 transition-all duration-200 rounded-2xl font-bold">
+          <a :href="route('onboarding.show', 'starter')" class="inline-flex items-center justify-center px-12 py-4 text-lg bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-white shadow-2xl transform hover:scale-105 transition-all duration-200 rounded-2xl font-bold">
             Start Free 14-Day Trial
           </a>
           <button @click="scrollToSection('how-it-works')" class="inline-flex items-center justify-center px-12 py-4 text-lg border-2 border-sky-400/80 text-sky-200 bg-sky-500/10 backdrop-blur-sm hover:bg-sky-400 hover:text-slate-900 shadow-2xl transform hover:scale-105 transition-all duration-200 rounded-2xl font-bold">

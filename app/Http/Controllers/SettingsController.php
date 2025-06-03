@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Enums\IndustryType;
 use App\Enums\ResponseTone;
-use App\Http\Requests\UpdateUserSettingsRequest;
+use App\Http\Requests\UpdateSettingsRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
@@ -20,20 +20,16 @@ class SettingsController extends Controller
     {
         $user = auth()->user();
 
-        $settings = $user->settings->toArray();
-        $phone = $user->twilioSettings->twilio_number;
+        $settings = $user->getOrCreateSettings()->toArray();
 
         return Inertia::render('Settings/index', [
-            'settings' => [
-                ...$settings,
-                'twilio_number' => $phone,
-            ],
+            'settings' => $settings,
             'industry_types' => IndustryType::toDropdown(),
             'response_tones' => ResponseTone::toDropdown(),
         ]);
     }
 
-    public function update(UpdateUserSettingsRequest $request): RedirectResponse
+    public function update(UpdateSettingsRequest $request): RedirectResponse
     {
         $user = auth()->user();
 
