@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\QuoteStatus;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Inertia\Response;
-use App\Services\TwilioService;
 
 class HomeController extends Controller
 {
@@ -18,9 +18,9 @@ class HomeController extends Controller
 
         $today = now()->startOfDay();
 
-        $newInquiries = $user->quotes()->where('status', 'pending')->count();
-        $sentToday = $user->quotes()->where('status', 'sent')->whereDate('sent_at', $today)->count();
-        $pendingReview = $user->quotes()->where('status', 'pending')->count();
+        $newInquiries = $user->quotes()->whereStatus(QuoteStatus::PENDING)->count();
+        $pendingReview = $user->quotes()->whereStatus(QuoteStatus::PENDING)->count();
+        $sentToday = $user->quotes()->whereStatus(QuoteStatus::SENT)->whereDate('sent_at', $today)->count();
 
         $recentQuotes = $user->quotes()->latest()->take(7)->get()->map(function ($quote) {
             return [
