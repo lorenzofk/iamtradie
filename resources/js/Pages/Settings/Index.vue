@@ -31,7 +31,9 @@ const form = useForm('post', route('settings.update'), {
   first_name: user?.first_name || '',
   last_name: user?.last_name || '',
   email: user?.email || '',
-  phone: props.settings?.phone || '',
+  phone_number: props.settings?.phone_number || '',
+  business_name: props.settings?.business_name || '',
+  location: props.settings?.location || '',
   industry_type: props.settings?.industry_type || 'plumbing',
   callout_fee: props.settings?.callout_fee || 0,
   hourly_rate: props.settings?.hourly_rate || 0,
@@ -110,8 +112,8 @@ const copyToClipboard = (text) => {
             <FormLabel for="phone">Phone Number</FormLabel>
             <Input
               id="phone"
-              v-model="form.phone"
-              :error="form.errors.phone"
+              v-model="form.phone_number"
+              :error="form.errors.phone_number"
             />
           </FormElement>
           <FormElement>
@@ -226,7 +228,7 @@ const copyToClipboard = (text) => {
               </div>
               <div>
                 <h4 class="text-sm font-semibold text-gray-900">SMS Number Assigned</h4>
-                <p class="text-sm text-green-700 font-medium">{{ props.settings.twilio_number }}</p>
+                <p class="text-sm text-green-700 font-medium">{{ props.settings.agent_sms_number }}</p>
               </div>
             </div>
             <Button 
@@ -234,7 +236,7 @@ const copyToClipboard = (text) => {
               outlined 
               :icon="['fas', 'fa-copy']"
               label="Copy"
-              @click="copyToClipboard(props.settings.twilio_number)"
+              @click="copyToClipboard(props.settings.agent_sms_number)"
             />
           </div>
         </div>
