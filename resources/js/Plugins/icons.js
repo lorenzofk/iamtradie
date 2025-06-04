@@ -54,6 +54,10 @@ import {
   faCrown,
   faHeadset,
   faBook,
+  faDownload,
+  faExternalLinkAlt,
+  faExclamationTriangle,
+  faFileInvoice,
 } from '@fortawesome/free-solid-svg-icons';
 
 // Regular Icons
@@ -114,6 +118,10 @@ library.add(
   faCrown,
   faHeadset,
   faBook,
+  faDownload,
+  faExternalLinkAlt,
+  faFileInvoice,
+  faExclamationTriangle
 );
 
 export default function SetupFontAwesome(app) {
