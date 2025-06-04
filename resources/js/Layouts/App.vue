@@ -10,9 +10,10 @@ const { setToast } = useToast();
 
 const navLinks = [
   { label: 'Dashboard', href: route('dashboard'), icon: ['fas', 'fa-chart-bar'] },
-  { label: 'New Quote', href: route('ai.index'), icon: ['fas', 'fa-plus'] },
+  { label: 'Test AI', href: route('ai.index'), icon: ['fas', 'fa-robot'] },
   { label: 'Quote History', href: route('quotes.index'), icon: ['fas', 'fa-history'] },
   { label: 'SMS Integration', href: route('integrations.sms.index'), icon: ['fas', 'fa-mobile-alt'] },
+  { label: 'Billing', href: route('billing.index'), icon: ['fas', 'fa-credit-card'] },
   { label: 'Settings', href: route('settings'), icon: ['fas', 'fa-cog'] },
 ];
 

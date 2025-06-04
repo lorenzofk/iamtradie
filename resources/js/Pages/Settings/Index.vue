@@ -72,7 +72,10 @@ const copyToClipboard = (text) => {
       <!-- Profile Information Card -->
       <div class="bg-white shadow-sm rounded-xl border-0 p-6">
         <div class="mb-6">
-          <h2 class="text-xl font-semibold text-gray-900">Profile Information</h2>
+          <h2 class="text-xl font-semibold text-gray-900 flex items-center gap-2">
+            <font-awesome-icon :icon="['fas', 'fa-user']" class="text-blue-600" />
+            Profile Information
+          </h2>
           <p class="text-sm text-gray-600 mt-1">Update your personal information and contact details.</p>
         </div>
         
@@ -107,6 +110,27 @@ const copyToClipboard = (text) => {
               required
             />
           </FormElement>
+
+          <FormElement>
+            <FormLabel for="business_name">Business Name</FormLabel>
+            <Input
+              id="business_name"
+              v-model="form.business_name"
+              :error="form.errors.business_name"
+              required
+            />
+          </FormElement>
+          
+          <FormElement>
+            <FormLabel for="location">Location</FormLabel>
+            <Input
+              id="location"
+              v-model="form.location"
+              :error="form.errors.location"
+              placeholder="Suburb, State"
+              required
+            />
+          </FormElement>
           
           <FormElement>
             <FormLabel for="phone">Phone Number</FormLabel>
@@ -132,7 +156,10 @@ const copyToClipboard = (text) => {
       <!-- Base Pricing Card -->
       <div class="bg-white shadow-sm rounded-xl border-0 p-6">
         <div class="mb-6">
-          <h2 class="text-xl font-semibold text-gray-900">Base Pricing</h2>
+          <h2 class="text-xl font-semibold text-gray-900 flex items-center gap-2">
+            <font-awesome-icon :icon="['fas', 'fa-dollar-sign']" class="text-green-600" />
+            Base Pricing
+          </h2>
           <p class="text-sm text-gray-600 mt-1">Set your standard rates for AI to include in quote responses.</p>
         </div>
         
@@ -165,7 +192,10 @@ const copyToClipboard = (text) => {
       <!-- Response Preferences Card -->
       <div class="bg-white shadow-sm rounded-xl border-0 p-6">
         <div class="mb-6">
-          <h2 class="text-xl font-semibold text-gray-900">Response Preferences</h2>
+          <h2 class="text-xl font-semibold text-gray-900 flex items-center gap-2">
+            <font-awesome-icon :icon="['fas', 'fa-robot']" class="text-purple-600" />
+            Response Preferences
+          </h2>
           <p class="text-sm text-gray-600 mt-1">Customize how AI generates your quote responses.</p>
         </div>
         
@@ -216,7 +246,10 @@ const copyToClipboard = (text) => {
       <!-- SMS Integration Card -->
       <div class="bg-white shadow-sm rounded-xl border-0 p-6">
         <div class="mb-6">
-          <h2 class="text-xl font-semibold text-gray-900">SMS Integration</h2>
+          <h2 class="text-xl font-semibold text-gray-900 flex items-center gap-2">
+            <font-awesome-icon :icon="['fas', 'fa-mobile-alt']" class="text-green-600" />
+            SMS Integration
+          </h2>
           <p class="text-sm text-gray-600 mt-1">Manage your SMS number for receiving quote requests.</p>
         </div>
         <!-- SMS Number Display -->
@@ -224,7 +257,7 @@ const copyToClipboard = (text) => {
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-3">
               <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                <font-awesome-icon :icon="['fas', 'fa-mobile-alt']" class="text-green-600" />
+                <font-awesome-icon :icon="['fas', 'fa-check-circle']" class="text-green-600" />
               </div>
               <div>
                 <h4 class="text-sm font-semibold text-gray-900">SMS Number Assigned</h4>

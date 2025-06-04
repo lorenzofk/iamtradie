@@ -12,6 +12,7 @@ use App\Http\Controllers\LandingPageController;
 use App\Http\Controllers\OnboardingController;
 use App\Http\Controllers\SmsController;
 use App\Http\Controllers\Billing\GuestCheckoutController;
+use App\Http\Controllers\BillingController;
 use App\Http\Middleware\Subscribed;
 use Illuminate\Foundation\Http\Middleware\HandlePrecognitiveRequests;
 use Illuminate\Support\Facades\Route;
@@ -48,6 +49,14 @@ Route::middleware(['auth', Subscribed::class])->group(function () {
 
     Route::prefix('integrations')->name('integrations.')->group(function () {
         Route::get('/sms', [SmsController::class, 'index'])->name('sms.index');
+    });
+
+    Route::prefix('billing')->name('billing.')->group(function () {
+        Route::get('/', [BillingController::class, 'index'])->name('index');
+        Route::post('/cancel', [BillingController::class, 'cancel'])->name('cancel');
+        Route::post('/resume', [BillingController::class, 'resume'])->name('resume');
+        Route::get('/manage', [BillingController::class, 'manage'])->name('manage');
+        Route::post('/subscribe', [BillingController::class, 'subscription'])->name('subscribe');
     });
 });
 

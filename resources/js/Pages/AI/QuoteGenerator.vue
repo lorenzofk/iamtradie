@@ -7,27 +7,16 @@ defineOptions({
   layout: Layout,
 });
 
-// Form data
 const form = ref({
   clientMessage: '',
   location: '',
   jobType: ''
 });
 
-// AI Response state
 const aiResponse = ref('');
 const isGenerating = ref(false);
 const isEditing = ref(false);
 const editedResponse = ref('');
-
-// Job type options
-const jobTypes = ref([
-  { label: 'Electrical', value: 'electrical' },
-  { label: 'Plumbing', value: 'plumbing' },
-  { label: 'General Maintenance', value: 'general' },
-  { label: 'HVAC', value: 'hvac' },
-  { label: 'Carpentry', value: 'carpentry' }
-]);
 
 // Generate AI response
 const generateResponse = async () => {
@@ -37,7 +26,6 @@ const generateResponse = async () => {
   aiResponse.value = '';
   
   try {
-    // Replace with actual API call to your Laravel backend
     const response = await fetch('/api/quotes/generate', {
       method: 'POST',
       headers: {
@@ -122,7 +110,10 @@ const characterCount = computed(() => aiResponse.value.length);
       <!-- Left Column - Quote Request Details -->
       <div class="bg-white rounded-xl shadow-sm border-0 p-6">
         <div class="mb-6">
-          <h2 class="text-xl font-semibold text-gray-900">Quote Request Details</h2>
+          <h2 class="text-xl font-semibold text-gray-900 flex items-center gap-2">
+            <font-awesome-icon :icon="['fas', 'fa-file-invoice']" class="text-blue-600" />
+            Quote Request Details
+          </h2>
           <p class="text-sm text-gray-600 mt-1">Enter the client's message and job details to generate an AI response.</p>
         </div>
 
@@ -156,7 +147,10 @@ const characterCount = computed(() => aiResponse.value.length);
       <!-- Right Column - AI Generated Response -->
       <div class="bg-white rounded-xl shadow-sm border-0 p-6">
         <div class="mb-6">
-          <h2 class="text-xl font-semibold text-gray-900">AI Generated Response</h2>
+          <h2 class="text-xl font-semibold text-gray-900 flex items-center gap-2">
+            <font-awesome-icon :icon="['fas', 'fa-robot']" class="text-purple-600" />
+            AI Generated Response
+          </h2>
           <p class="text-sm text-gray-600 mt-1">Review and edit the AI response before sending to your client.</p>
         </div>
 
