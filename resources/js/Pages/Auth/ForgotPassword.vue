@@ -57,10 +57,8 @@ onMounted(() => {
         <div class="max-w-lg">
           <!-- Logo -->
           <div class="flex items-center mb-8">
-            <div class="bg-gradient-to-r from-blue-600 to-green-600 p-3 rounded-xl mr-4 shadow-2xl">
-              <font-awesome-icon :icon="['fas', 'fa-bolt']" class="text-white text-2xl" />
-            </div>
-            <span class="text-3xl font-bold">I am Tradie</span>
+            <img src="/images/logo.png" alt="I am Tradie Logo" class="h-24 w-24 transform scale-200 mr-2" />
+            <span class="text-5xl font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">I am Tradie</span>
           </div>
 
           <!-- Headline -->
@@ -127,9 +125,7 @@ onMounted(() => {
         <!-- Mobile Logo (visible only on small screens) -->
         <div class="lg:hidden flex justify-center mb-6">
           <div class="flex items-center">
-            <div class="bg-gradient-to-r from-blue-600 to-green-600 p-3 rounded-xl mr-3 shadow-lg">
-              <font-awesome-icon :icon="['fas', 'fa-bolt']" class="text-white text-xl" />
-            </div>
+            <img src="/images/logo.png" alt="I am Tradie Logo" class="h-10 w-auto mr-3 rounded-xl shadow-lg" />
             <span class="text-2xl font-bold text-white">I am Tradie</span>
           </div>
         </div>

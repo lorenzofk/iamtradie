@@ -61,7 +61,7 @@ Route::middleware(['auth', Subscribed::class])->group(function () {
 });
 
 Route::get('/', [LandingPageController::class, 'index'])->name('landing');
-Route::get('/onboarding/{plan}', [OnboardingController::class, 'show'])->name('onboarding.show');
+Route::get('/onboarding', [OnboardingController::class, 'show'])->name('onboarding.show');
 
 Route::post('/checkout', [GuestCheckoutController::class, 'create'])->name('checkout');
 Route::get('/checkout/success', [GuestCheckoutController::class, 'success'])->name('checkout.success');

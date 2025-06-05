@@ -1,10 +1,11 @@
 <script setup>
 import { ref } from 'vue';
 import Layout from '@/Layouts/App.vue';
-import Button from '@/Shared/Ui/Button/Button.vue';
 import { router } from '@inertiajs/vue3';
 import Select from '@/Shared/Ui/Form/Select.vue';
 import Input from '@/Shared/Ui/Form/Input.vue';
+import Drawer from '@Shared/Ui/Overlay/Drawer.vue';
+import ShowQuote from './Quotes/Show.vue';
 
 defineOptions({
   layout: Layout,
@@ -16,6 +17,8 @@ const props = defineProps({
 });
 
 const searchQuery = ref('');
+const showDrawer = ref(false);
+const selectedQuote = ref(null);
 const statusFilter = ref('All Status');
 
 const statusOptions = [
@@ -36,19 +39,19 @@ const getStatusBadgeClass = (status) => {
   }
 };
 
-const onNewQuoteClick = () => {
+const openQuoteDrawer = (quote) => {
+  selectedQuote.value = quote;
+  showDrawer.value = true;
+};
+
+const closeDrawer = () => {
+  showDrawer.value = false;
+  selectedQuote.value = null;
+
   router.visit(route('quotes.index'));
 };
 
-const reviewQuote = (quote) => {
-  router.visit(`/quotes/${quote.id}`);
-};
 
-const deleteQuote = (quote) => {
-  if (confirm('Are you sure you want to delete this quote?')) {
-    console.log('Delete quote:', quote.id);
-  }
-};
 </script>
 
 <template>
@@ -140,13 +143,6 @@ const deleteQuote = (quote) => {
               />
             </div>
           </div>
-
-          <!-- New Quote Button -->
-          <Button
-            @click="onNewQuoteClick"
-            label="New Quote"
-            :icon="['fas', 'fa-plus']"
-          />
         </div>
       </div>
 
@@ -197,16 +193,10 @@ const deleteQuote = (quote) => {
                 <td class="py-4 px-2 text-right">
                   <div class="flex items-center justify-end gap-2">
                     <button
-                      @click="reviewQuote(quote)"
-                      class="text-blue-600 hover:text-blue-700 text-sm font-medium"
+                      @click="openQuoteDrawer(quote)"
+                      class="text-blue-600 hover:text-blue-700 text-sm font-medium cursor-pointer"
                     >
-                      Review
-                    </button>
-                    <button
-                      @click="deleteQuote(quote)"
-                      class="text-gray-400 hover:text-red-600 ml-2"
-                    >
-                      <font-awesome-icon :icon="['fas', 'fa-trash']" class="text-sm" />
+                      View
                     </button>
                   </div>
                 </td>
@@ -217,4 +207,20 @@ const deleteQuote = (quote) => {
       </div>
     </div>
   </div>
+   <!-- Drawer -->
+   <Drawer
+    v-model:visible="showDrawer"
+    position="right"
+    :modal="true"
+    :dismissableMask="true"
+    :style="{ width: '480px' }"
+  >
+    <template #header>
+      <div class="flex flex-col w-full py-2 border-b border-gray-200">
+        <h2 class="text-lg font-semibold text-gray-900">Quote Details</h2>
+        <p class="text-sm text-gray-500 mt-1">Review and manage this quote</p>
+      </div>
+    </template>
+    <ShowQuote :quote="selectedQuote" @success="closeDrawer" @cancel="closeDrawer" />
+  </Drawer>
 </template>

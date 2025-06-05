@@ -10,7 +10,6 @@ const { setToast } = useToast();
 
 const navLinks = [
   { label: 'Dashboard', href: route('dashboard'), icon: ['fas', 'fa-chart-bar'] },
-  { label: 'Test AI', href: route('ai.index'), icon: ['fas', 'fa-robot'] },
   { label: 'Quote History', href: route('quotes.index'), icon: ['fas', 'fa-history'] },
   { label: 'SMS Integration', href: route('integrations.sms.index'), icon: ['fas', 'fa-mobile-alt'] },
   { label: 'Billing', href: route('billing.index'), icon: ['fas', 'fa-credit-card'] },
@@ -49,14 +48,15 @@ setToast(PrimeVueUseToast());
     <aside class="w-64 bg-white border-r border-gray-200 flex flex-col justify-between min-h-screen">
       <div class="flex flex-col flex-grow pt-6 pb-4 overflow-y-auto">
         <!-- Logo -->
-        <div class="flex items-center flex-shrink-0 px-6 mb-8">
+        <div class="flex items-center flex-shrink-0 px-6 mb-2">
           <div class="flex items-center space-x-2">
-            <div class="w-10 h-10 bg-blue-300 rounded-lg flex items-center justify-center">
-              <font-awesome-icon :icon="['fas', 'fa-quote-right']" class="text-white text-xl" />
+            <div class="w-10 h-10 rounded-lg flex items-center justify-center">
+              <img src="/images/logo.png" alt="I am Tradie Logo" class="h-10 w-10 transform scale-200 mr-2" />
             </div>
-            <h1 class="text-2xl font-bold text-gray-900 tracking-tight">QuoteAI</h1>
+            <h1 class="text-2xl font-bold text-gray-900 tracking-tight">I am Tradie</h1>
           </div>
         </div>
+        <hr class="my-4 border-gray-200">
         <!-- Navigation -->
         <nav class="flex-1 px-2 space-y-1">
           <SidebarItem v-for="link in navLinks" :key="link.label" :label="link.label" :href="link.href" :icon="link.icon" />

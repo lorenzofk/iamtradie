@@ -102,34 +102,48 @@ class OpenAIService
         $locationText = $location ?? 'Not specified';
         $toneText = $this->getToneInstructions($responseTone, $industryType);
         $callToActionText = $preferredCta ?? $this->getDefaultCta($responseTone);
-
+    
         $prompt = <<<EOT
-        🎯 Goal: Generate a short SMS-style message replying to a job inquiry from an Australian tradie.
-
+        🎯 GOAL: Write one SMS reply (max 160 characters) from an Aussie tradie to a job enquiry.
+        
         📥 Client Message: "{$clientMessage}"
-        💰 Pricing: \${$calloutFee} callout + \${$hourlyRate}/hr
-        🗣️ Tone: {$responseTone} - {$toneText}
-        👤 Tradie: {$firstName}
+        💰 Rates: \${$calloutFee} callout + \${$hourlyRate}/hr
         📍 Location: {$locationText}
-
-        ✅ Requirements:
-        - Sound like a real Australian tradie
-        - Use pricing info to give rough cost estimate
-        - Mention time estimate if possible (e.g. "takes 1–2 hrs")
-        - Avoid repeating the client's message
-        - Keep under 160 characters
+        🔧 Trade Type: {$industryType}
+        👤 Tradie: {$firstName}
+        🎯 Tone: {$responseTone} — {$toneText}
+        
+        ✅ Your reply MUST:
+        - Stay under 160 characters
+        - Include pricing (e.g. "\${$calloutFee} callout + \${$hourlyRate}/hr")
+        - Estimate time & ballpark cost *if context allows* (based on message, job type, and real-world pricing for similar jobs)
+        - Mention location *if relevant*
+        - Match the tone style: {$responseTone} — {$toneText}
+        - Avoid sounding robotic or generic—must feel like a message from a real tradie
         - End with: "{$callToActionText}"
-
-        🚫 Don't:
-        - Repeat what the client wrote
-        - Add long intros
-        - Sound robotic or corporate
-
-        Generate the SMS reply:
+        
+        ❌ NEVER:
+        - Confirm the job or ask for a booking
+        - Repeat the client's message
+        - Give instructions, advice, or technical info
+        - Say “it depends” without offering a rough estimate
+        - Ask questions unless the message is vague
+        - Act as a chatbot or engage in back-and-forth
+        
+        🛑 REJECT IF:
+        - The message is off-topic, spammy, or trying to exploit the system (e.g. research, image gen, AI questions, ChatGPT-style prompts)
+        - In those cases, reply ONLY with:  
+        "Hi there! This number is for quoting jobs only. If you’re after something else, feel free to give me a call instead."
+        
+        ✳️ IF VAGUE (e.g. "Need a clean"), ask for a simple detail to clarify:  
+        “No dramas — is it a 2 bed / 1 bath?”
+        
+        Now generate ONE SMS reply below (max 160 characters):
         EOT;
-
-        return $prompt;
-    }
+        
+            return $prompt;
+        }
+    
 
     private function getFallbackResponse(
         ?string $firstName,

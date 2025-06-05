@@ -58,6 +58,15 @@ import {
   faExternalLinkAlt,
   faExclamationTriangle,
   faFileInvoice,
+  faTrophy,
+  faBrain,
+  faBoltLightning,
+  faStopwatch,
+  faPiggyBank,
+  faSadTear,
+  faWandSparkles,
+  faKey,
+  faLockOpen
 } from '@fortawesome/free-solid-svg-icons';
 
 // Regular Icons
@@ -121,7 +130,16 @@ library.add(
   faDownload,
   faExternalLinkAlt,
   faFileInvoice,
-  faExclamationTriangle
+  faExclamationTriangle,
+  faTrophy,
+  faBrain,
+  faBoltLightning,
+  faStopwatch,
+  faPiggyBank,
+  faSadTear,
+  faWandSparkles,
+  faKey,
+  faLockOpen
 );
 
 export default function SetupFontAwesome(app) {

@@ -16,10 +16,7 @@ defineOptions({
 const { showToast } = useToast();
 
 const props = defineProps({
-  selectedPlan: {
-    type: String,
-    default: 'professional'
-  }
+  selectedPlan: String
 });
 
 const currentStep = ref(0);
@@ -29,14 +26,13 @@ const form = useForm({
   user: {
     first_name: 'Dave',
     email: 'dave@miller.com',
-    plan: props.selectedPlan,
   },
   settings: {
-    business_name: 'Test Business',
+    business_name: 'Dave\'s Electric',
     industry_type: 'electrical',
     callout_fee: 120,
     hourly_rate: 85,
-    response_tone: 'professional',
+    response_tone: 'casual',
   },
 });
 
