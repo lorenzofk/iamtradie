@@ -7,10 +7,10 @@ use Inertia\Response;
 
 class OnboardingController extends Controller
 {
-    public function show(string $plan): Response
+    public function show(): Response
     {
         return Inertia::render('Public/Onboarding/index', [
-            'plan' => $plan,
+            'plan' => 'Founders Plan',
         ]);
     }
 } 

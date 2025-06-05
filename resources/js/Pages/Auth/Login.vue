@@ -51,14 +51,12 @@ onMounted(() => {
       </div>
 
       <!-- Content -->
-      <div class="relative z-10 flex flex-col justify-center items-start p-12 text-white">
-        <div class="max-w-lg">
+      <div class="relative z-10 flex flex-col items-start p-12 text-white">
+        <div>
           <!-- Logo -->
           <div class="flex items-center mb-8">
-            <div class="bg-gradient-to-r from-blue-600 to-green-600 p-3 rounded-xl mr-4 shadow-2xl">
-              <font-awesome-icon :icon="['fas', 'fa-bolt']" class="text-white text-2xl" />
-            </div>
-            <span class="text-3xl font-bold">I am Tradie</span>
+            <img src="/images/logo.png" alt="I am Tradie Logo" class="h-24 w-24 transform scale-200 mr-2" />
+            <span class="text-5xl font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">I am Tradie</span>
           </div>
 
           <!-- Headline -->
@@ -125,10 +123,8 @@ onMounted(() => {
         <!-- Mobile Logo (visible only on small screens) -->
         <div class="lg:hidden flex justify-center mb-6">
           <div class="flex items-center">
-            <div class="bg-gradient-to-r from-blue-600 to-green-600 p-3 rounded-xl mr-3 shadow-lg">
-              <font-awesome-icon :icon="['fas', 'fa-bolt']" class="text-white text-xl" />
-            </div>
-            <span class="text-2xl font-bold text-white">I am Tradie</span>
+            <img src="/images/logo.png" alt="I am Tradie Logo" class="h-24 w-24 transform scale-200 mr-2" />
+            <span class="text-5xl font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">I am Tradie</span>
           </div>
         </div>
 
@@ -216,11 +212,11 @@ onMounted(() => {
 
             <!-- Contact for Access -->
             <div class="text-center">
-              <p class="text-gray-600 mb-4">Ready to never miss another SMS lead?</p>
+              <p class="text-gray-600 mb-4">Need help?</p>
               <a href="mailto:hello@iamtradie.com.au" 
                  class="inline-flex items-center px-6 py-3 border-2 border-blue-600 text-blue-600 font-bold rounded-xl hover:bg-blue-600 hover:text-white transition-all duration-300 hover:scale-105">
-                <font-awesome-icon :icon="['fas', 'fa-envelope-open']" class="mr-2" />
-                Contact Us for Access
+                <font-awesome-icon :icon="['fas', 'fa-envelope']" class="mr-2" />
+                Contact Us
               </a>
             </div>
           </form>
@@ -229,7 +225,7 @@ onMounted(() => {
           <div class="mt-6 text-center">
             <div class="inline-flex items-center text-sm text-gray-500">
               <font-awesome-icon :icon="['fas', 'fa-shield-alt']" class="text-green-500 mr-2" />
-              Your data is protected with enterprise-grade security
+              Your data is protected with enterprise-grade security.
             </div>
           </div>
         </div>

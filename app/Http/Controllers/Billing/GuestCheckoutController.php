@@ -14,9 +14,6 @@ use Inertia\Inertia;
 use Inertia\Response as InertiaResponse;
 use Stripe\Checkout\Session;
 use Stripe\Stripe;
-use Illuminate\Support\Facades\Log;
-use Laravel\Cashier\Http\Controllers\WebhookController as CashierWebhookController;
-use App\Services\TwilioService;
 
 class GuestCheckoutController extends Controller
 {
