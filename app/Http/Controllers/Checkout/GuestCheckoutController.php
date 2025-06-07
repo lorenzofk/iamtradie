@@ -24,7 +24,9 @@ class GuestCheckoutController extends Controller
     {
         $data = $request->validated();
         $userData = $data['user'];
-        $settingsData = $data['settings'];
+        $settingsData = array_merge($data['settings'], [
+            'agent_sms_number' => '+61489279785',
+        ]);
 
         try {
             $user = User::create([
@@ -35,7 +37,7 @@ class GuestCheckoutController extends Controller
             ]);
 
             $user->settings()->create($settingsData);
-        } catch (Exception $e) {
+        } catch (Exception) {
             return redirect()->back()->with('error', 'Failed to create user');
         }
 
@@ -48,7 +50,7 @@ class GuestCheckoutController extends Controller
                 ]);
 
             return Inertia::location($subscription->url);
-        } catch (Exception $e) {
+        } catch (Exception) {
             $user->delete();
 
             return redirect()->back()->with('error', 'Failed to create checkout session');

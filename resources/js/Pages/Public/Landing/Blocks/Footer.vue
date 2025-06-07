@@ -6,8 +6,7 @@
         <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>
             <div class="flex items-center mb-4">
-              <img src="/images/logo.png" alt="PingMate Logo" class="h-12 w-12 transform scale-200 mr-2" />
-              <span class="text-2xl font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">PingMate</span>
+              <img src="/images/logo.png" alt="PingMate Logo" class="bg-white rounded-lg p-2 h-24 w-24 transform scale-120" />
             </div>
             <p class="text-gray-400 text-sm leading-relaxed">
               AI-powered SMS responses for Australian tradies. Never miss another lead.

@@ -48,12 +48,11 @@ setToast(PrimeVueUseToast());
     <aside class="w-64 bg-white border-r border-gray-200 flex flex-col justify-between min-h-screen">
       <div class="flex flex-col flex-grow pt-6 pb-4 overflow-y-auto">
         <!-- Logo -->
-        <div class="flex items-center flex-shrink-0 px-6 mb-2">
+        <div class="flex items-center justify-center flex-shrink-0 px-6 mb-2">
           <div class="flex items-center space-x-2">
             <div class="w-10 h-10 rounded-lg flex items-center justify-center">
-              <img src="/images/logo.png" alt="PingMate Logo" class="h-10 w-10 transform scale-200 mr-2" />
+              <img src="/images/logo.png" alt="PingMate Logo" class="h-10 w-10 transform scale-220" />
             </div>
-            <h1 class="text-2xl font-bold text-gray-900 tracking-tight">PingMate</h1>
           </div>
         </div>
         <hr class="my-4 border-gray-200">
