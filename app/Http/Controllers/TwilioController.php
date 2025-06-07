@@ -26,16 +26,21 @@ class TwilioController extends Controller
         Log::info('Recording complete', $request->all());
     }
 
-    public function missedCall(): Response
+    public function missedCall(Request $request): Response
     {
+        $called = $request->input('To');
+        $user = User::whereHas('settings', fn ($query) => $query->where('agent_sms_number', $called))->firstOrFail();
+
+        $settings = $user->settings;
+
         try {
             $response = new VoiceResponse();
     
-            $response->say("Sorry I missed your call. Leave a quick message with the job and we'll text asap.");
+            $response->say($settings->voicemail_message);
             $response->record([
                 'transcribe' => true,
                 'transcribeCallback' => route('twilio.transcription'),
-                'action' => route('twilio.afterRecord'),
+                'action' => route('twilio.after-record'),
                 'method' => 'POST',
                 'maxLength' => 30,
                 'timeout' => 3,
@@ -138,23 +143,29 @@ class TwilioController extends Controller
         }
 
         if ($settings->call_forward_enabled) {
+            Log::info('Forwarding call to', [
+                'phoneNumber' => $settings->phone_number,
+                'twilioNumber' => $twilioNumber,
+                'route' => route('twilio.missed-call'),
+            ]);
+
             $dial = $response->dial($settings->phone_number, [
                 'timeout' => $settings->call_ring_duration,
                 'maxLength' => 30,
-                'action' => route('twilio.missedCall'),
+                'action' => route('twilio.missed-call'),
                 'method' => 'POST',
             ]);
 
             $dial->setCallerId($twilioNumber);
             
-            return response($dial)->header('Content-Type', 'text/xml');
+            return response($response)->header('Content-Type', 'text/xml');
         }
 
         $response->say($settings->voicemail_message);
         $response->record([
             'transcribe' => true,
             'transcribeCallback' => route('twilio.transcription'),
-            'action' => route('twilio.afterRecord'),
+            'action' => route('twilio.after-record'),
             'method' => 'POST',
             'maxLength' => 30,
             'timeout' => $settings->call_ring_duration,
