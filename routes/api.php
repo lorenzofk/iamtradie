@@ -1,10 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Laravel\Cashier\Http\Controllers\WebhookController;
 use App\Http\Controllers\TwilioController;
-
-Route::post('/stripe/webhook', [WebhookController::class, 'handleWebhook'])->name('stripe.webhook');
 
 Route::group(['prefix' => 'twilio', 'as' => 'twilio.'], function () {
     Route::post('/text', [TwilioController::class, 'text'])->name('text');
