@@ -18,7 +18,7 @@ const scrollToSection = (sectionId) => {
 </script>
 
 <template>
-  <Head title="I am Tradie - AI Quote System for Australian Tradies">
+  <Head title="PingMate - AI Quote System for Australian Tradies">
     <meta name="description" content="AI responds to customer texts in seconds with professional quotes using your pricing. Get your own Australian phone number and embedded website forms." />
   </Head>
 

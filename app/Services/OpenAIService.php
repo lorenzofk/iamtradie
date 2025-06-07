@@ -60,35 +60,6 @@ class OpenAIService
         }
     }
 
-    public function improveQuoteResponse(string $originalResponse, string $improvements): string
-    {
-        $prompt = "Please improve this quote response based on the following feedback:\n\n" .
-                  "Original response:\n{$originalResponse}\n\n" .
-                  "Improvements requested:\n{$improvements}\n\n" .
-                  "Return an improved version that addresses the feedback while maintaining the Australian tradie tone and keeping it suitable for SMS.";
-
-        try {
-            $response = OpenAI::chat()->create([
-                'model' => $this->model,
-                'messages' => [
-                    ['role' => 'user', 'content' => $prompt]
-                ],
-                'max_tokens' => $this->maxTokens,
-                'temperature' => $this->temperature,
-            ]);
-
-            return $response->choices[0]->message->content ?? $originalResponse;
-        } catch (Exception $e) {
-            Log::error('OpenAI quote improvement failed', [
-                'error' => $e->getMessage(),
-                'original_response' => $originalResponse,
-                'improvements' => $improvements
-            ]);
-
-            return $originalResponse;
-        }
-    }
-
     private function buildQuotePrompt(
         string $clientMessage,
         string $industryType,

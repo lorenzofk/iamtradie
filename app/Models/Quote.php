@@ -13,7 +13,6 @@ class Quote extends Model
     protected $fillable = [
         'user_id',
         'message',
-        'location',
         'industry_type',
         'ai_response',
         'edited_response',

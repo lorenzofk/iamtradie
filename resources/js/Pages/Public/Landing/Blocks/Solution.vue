@@ -6,10 +6,10 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="text-center mb-16">
         <h2 class="text-4xl font-bold text-gray-900 mb-4">
-        I am Tradie: Your AI That Never Sleeps
+        PingMate: Your AI That Never Sleeps
         </h2>
         <p class="text-xl text-gray-600">
-        Capture every lead with instant, professional responses using I am Tradie
+        Capture every lead with instant, professional responses using PingMate
         </p>
     </div>
     
@@ -23,7 +23,7 @@
             <div class="bg-gradient-to-r from-blue-600 to-blue-700 p-6">
             <h3 class="text-2xl font-bold text-white flex items-center">
                 <font-awesome-icon :icon="['fas', 'fa-robot']" class="mr-3" />
-                Same Scenario With I am Tradie
+                Same Scenario With PingMate
             </h3>
             </div>
             
@@ -97,7 +97,7 @@
         <div class="mb-10">
             <h3 class="text-3xl font-bold text-gray-900 mb-4">
             <font-awesome-icon :icon="['fas', 'fa-wand-sparkles']" class="mr-3 text-blue-600" />
-            How I am Tradie AI Works
+            How PingMate AI Works
             </h3>
             <p class="text-gray-600 text-lg">Simple setup, powerful results</p>
         </div>

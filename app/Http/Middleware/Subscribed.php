@@ -13,8 +13,8 @@ class Subscribed
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (! $request->user()?->subscribed()) {
-            return redirect('/billing');
+        if (! $request->user()?->subscribed('default')) {
+            return redirect()->route('billing.index');
         }
 
         return $next($request);

@@ -129,14 +129,6 @@ const proofPoints = [
 
       <!-- Social Proof & Additional Benefits -->
       <div class="mt-12 text-center">
-        <div class="bg-white rounded-xl p-6 shadow-lg border border-gray-100 mb-8">
-          <div class="flex items-center justify-center mb-4">
-            <div class="text-yellow-400 text-2xl mr-3">⭐⭐⭐⭐⭐</div>
-            <div class="text-lg font-semibold text-gray-900">4.9/5 from 100+ Australian tradies</div>
-          </div>
-          <p class="text-gray-600 italic">"Paid for itself in the first week. Three new jobs from weekend texts I would have missed." - Dave, Electrician</p>
-        </div>
-
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div v-for="(point, index) in proofPoints" :key="index" 
                class="flex items-center justify-center bg-white rounded-lg p-4 shadow-md border border-gray-100 hover:shadow-lg transition-shadow">

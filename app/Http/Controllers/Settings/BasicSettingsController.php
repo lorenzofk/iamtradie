@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Settings;
 
 use App\Enums\IndustryType;
 use App\Enums\ResponseTone;
@@ -10,8 +10,9 @@ use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
 use Exception;
+use App\Http\Controllers\Controller;
 
-class SettingsController extends Controller
+class BasicSettingsController extends Controller
 {
     /**
      * Display the settings page.
@@ -22,7 +23,7 @@ class SettingsController extends Controller
 
         $settings = $user->getOrCreateSettings()->toArray();
 
-        return Inertia::render('Settings/index', [
+        return Inertia::render('Settings/Basic', [
             'settings' => $settings,
             'industry_types' => IndustryType::toDropdown(),
             'response_tones' => ResponseTone::toDropdown(),
@@ -38,17 +39,13 @@ class SettingsController extends Controller
         DB::beginTransaction();
 
         try {
-            // Update user basic info
             $user->update([
                 'first_name' => $validated['first_name'],
                 'last_name' => $validated['last_name'],
                 'email' => $validated['email'],
             ]);
 
-            // Update or create settings
             $settingsData = collect($validated)->except(['first_name', 'last_name', 'email'])->toArray();
-            $settingsData['auto_send_sms'] = $request->boolean('auto_send_sms');
-            $settingsData['auto_send_email'] = $request->boolean('auto_send_email');
 
             $user->settings()->updateOrCreate(['user_id' => $user->id], $settingsData);
 

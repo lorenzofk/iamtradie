@@ -86,7 +86,7 @@ setTimeout(() => {
           <div class="bg-gradient-to-r from-blue-600 to-green-600 p-3 rounded-xl mr-4 shadow-lg">
             <font-awesome-icon :icon="['fas', 'fa-bolt']" class="text-white text-2xl" />
           </div>
-          <h1 class="text-3xl font-bold text-white">I am Tradie</h1>
+          <h1 class="text-3xl font-bold text-white">PingMate</h1>
         </div>
         <h2 class="text-4xl font-black text-white mb-4">Get Ready to Never Miss Another Lead</h2>
         <p class="text-xl text-blue-100 mb-6">Set up your AI assistant in under 3 minutes</p>

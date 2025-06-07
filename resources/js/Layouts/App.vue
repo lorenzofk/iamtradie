@@ -11,9 +11,9 @@ const { setToast } = useToast();
 const navLinks = [
   { label: 'Dashboard', href: route('dashboard'), icon: ['fas', 'fa-chart-bar'] },
   { label: 'Quote History', href: route('quotes.index'), icon: ['fas', 'fa-history'] },
-  { label: 'SMS Integration', href: route('integrations.sms.index'), icon: ['fas', 'fa-mobile-alt'] },
   { label: 'Billing', href: route('billing.index'), icon: ['fas', 'fa-credit-card'] },
-  { label: 'Settings', href: route('settings'), icon: ['fas', 'fa-cog'] },
+  { label: 'Settings', href: route('settings.basic.index'), icon: ['fas', 'fa-cog'] },
+  { label: 'Communication Hub', href: route('settings.communication.index'), icon: ['fas', 'fa-mobile-alt'] },
 ];
 
 const onLogout = (e) => {
@@ -51,9 +51,9 @@ setToast(PrimeVueUseToast());
         <div class="flex items-center flex-shrink-0 px-6 mb-2">
           <div class="flex items-center space-x-2">
             <div class="w-10 h-10 rounded-lg flex items-center justify-center">
-              <img src="/images/logo.png" alt="I am Tradie Logo" class="h-10 w-10 transform scale-200 mr-2" />
+              <img src="/images/logo.png" alt="PingMate Logo" class="h-10 w-10 transform scale-200 mr-2" />
             </div>
-            <h1 class="text-2xl font-bold text-gray-900 tracking-tight">I am Tradie</h1>
+            <h1 class="text-2xl font-bold text-gray-900 tracking-tight">PingMate</h1>
           </div>
         </div>
         <hr class="my-4 border-gray-200">

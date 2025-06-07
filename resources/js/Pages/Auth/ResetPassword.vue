@@ -69,8 +69,8 @@ onMounted(() => {
         <div>
           <!-- Logo -->
           <div class="flex items-center mb-8">
-            <img src="/images/logo.png" alt="I am Tradie Logo" class="h-24 w-24 transform scale-200 mr-2" />
-            <span class="text-5xl font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">I am Tradie</span>
+            <img src="/images/logo.png" alt="PingMate Logo" class="h-24 w-24 transform scale-200 mr-2" />
+            <span class="text-5xl font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">PingMate</span>
           </div>
 
           <!-- Headline -->
@@ -137,8 +137,8 @@ onMounted(() => {
         <!-- Mobile Logo (visible only on small screens) -->
         <div class="lg:hidden flex justify-center mb-6">
           <div class="flex items-center">
-            <img src="/images/logo.png" alt="I am Tradie Logo" class="h-24 w-24 transform scale-200 mr-2" />
-            <span class="text-5xl font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">I am Tradie</span>
+            <img src="/images/logo.png" alt="PingMate Logo" class="h-24 w-24 transform scale-200 mr-2" />
+            <span class="text-5xl font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">PingMate</span>
           </div>
         </div>
 
