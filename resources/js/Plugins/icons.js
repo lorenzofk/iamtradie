@@ -66,7 +66,16 @@ import {
   faSadTear,
   faWandSparkles,
   faKey,
-  faLockOpen
+  faLockOpen,
+  faVoicemail,
+  faPhoneVolume,
+  faPhoneSlash,
+  faPercentage,
+  faInbox,
+  faPhoneAlt,
+  faRoute,
+  faFileText,
+  faClipboardList,
 } from '@fortawesome/free-solid-svg-icons';
 
 // Regular Icons
@@ -139,7 +148,16 @@ library.add(
   faSadTear,
   faWandSparkles,
   faKey,
-  faLockOpen
+  faLockOpen,
+  faVoicemail,
+  faPhoneVolume,
+  faPhoneSlash,
+  faPercentage,
+  faInbox,
+  faPhoneAlt,
+  faRoute,
+  faFileText,
+  faClipboardList,
 );
 
 export default function SetupFontAwesome(app) {

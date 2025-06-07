@@ -26,7 +26,7 @@ const props = defineProps({
             <font-awesome-icon :icon="['fas', 'fa-check']" class="text-white text-2xl" />
           </div>
         </div>
-        <h1 class="text-4xl font-black text-white mb-4">Welcome to I am Tradie!</h1>
+        <h1 class="text-4xl font-black text-white mb-4">Welcome to PingMate!</h1>
         <p class="text-xl text-green-100 mb-2">Payment successful – Your AI assistant is locked and loaded</p>
       </div>
 

@@ -31,7 +31,7 @@ class UpdateSettingsRequest extends FormRequest
                 'max:255',
             ],
             'last_name' => [
-                'required',
+                'nullable',
                 'string',
                 'max:255',
             ],
@@ -45,7 +45,7 @@ class UpdateSettingsRequest extends FormRequest
                 'string',
                 'max:255',
             ],
-            'location' => [
+            'business_location' => [
                 'nullable',
                 'string',
                 'max:255',
@@ -71,21 +71,6 @@ class UpdateSettingsRequest extends FormRequest
                 'required',
                 'numeric',
                 'min:1',
-            ],
-            'response_tone' => [
-                'required',
-                Rule::in(ResponseTone::values()),
-            ],
-            'preferred_cta' => [
-                'nullable',
-                'string',
-                'max:500',
-            ],
-            'auto_send_email' => [
-                'boolean',
-            ],
-            'auto_send_sms' => [
-                'boolean',
             ],
         ];
     }

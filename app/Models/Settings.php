@@ -18,17 +18,19 @@ class Settings extends Model
         'user_id', 
         'industry_type',
         'business_name',
-        'location',
+        'business_location',
         'phone_number',
         'agent_sms_number',
         'callout_fee',
         'hourly_rate',
         'response_tone',
-        'preferred_cta',
         'auto_send_sms',
-        'auto_send_email',
+        'call_forward_enabled',
+        'auto_send_sms_after_voicemail',
         'quotes_used',
         'quotes_limit',
+        'call_ring_duration',
+        'voicemail_message',
     ];
 
     /**
@@ -42,11 +44,13 @@ class Settings extends Model
             'industry_type' => IndustryType::class,
             'response_tone' => ResponseTone::class,
             'auto_send_sms' => 'boolean',
-            'auto_send_email' => 'boolean',
+            'call_forward_enabled' => 'boolean',
+            'auto_send_sms_after_voicemail' => 'boolean',
             'callout_fee' => 'decimal:2',
             'hourly_rate' => 'decimal:2',
             'quotes_used' => 'integer',
             'quotes_limit' => 'integer',
+            'call_ring_duration' => 'integer',
         ];
     }
 

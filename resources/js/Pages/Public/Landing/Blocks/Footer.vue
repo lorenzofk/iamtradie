@@ -6,8 +6,8 @@
         <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>
             <div class="flex items-center mb-4">
-              <img src="/images/logo.png" alt="I am Tradie Logo" class="h-12 w-12 transform scale-200 mr-2" />
-              <span class="text-2xl font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">I am Tradie</span>
+              <img src="/images/logo.png" alt="PingMate Logo" class="h-12 w-12 transform scale-200 mr-2" />
+              <span class="text-2xl font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">PingMate</span>
             </div>
             <p class="text-gray-400 text-sm leading-relaxed">
               AI-powered SMS responses for Australian tradies. Never miss another lead.
@@ -42,7 +42,7 @@
         <div class="border-t border-gray-800 mt-12 pt-8">
           <div class="flex flex-col md:flex-row justify-between items-center">
             <p class="text-gray-400 text-sm">
-              © 2025 I am Tradie. All rights reserved.
+              © 2025 PingMate. All rights reserved.
             </p>
             <p class="text-gray-400 text-sm mt-4 md:mt-0">
               🇦🇺 Proudly Australian owned and operated.

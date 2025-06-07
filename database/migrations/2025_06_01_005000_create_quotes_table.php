@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->text('message');
-            $table->string('location')->nullable();
             $table->enum('industry_type', IndustryType::values());
             $table->text('ai_response')->nullable();
             $table->text('edited_response')->nullable();
@@ -23,8 +22,8 @@ return new class extends Migration
             $table->string('from_number', 32);
             $table->string('to_number', 32);
             $table->string('sms_id', 64)->nullable();
-            $table->enum('status', QuoteStatus::values())->default('pending');
-            $table->enum('source', QuoteSource::values())->default('sms');
+            $table->enum('source', QuoteSource::values())->default(QuoteSource::SMS);
+            $table->enum('status', QuoteStatus::values())->default(QuoteStatus::PENDING);
             $table->timestamps();
         });
     }

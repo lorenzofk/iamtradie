@@ -7,8 +7,8 @@ const emit = defineEmits(['scroll-to-section']);
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between items-center py-4">
           <div class="flex items-center">
-            <img src="/images/logo.png" alt="I am Tradie Logo" class="h-12 w-12 transform scale-200 mr-2" />
-            <span class="text-2xl font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">I am Tradie</span>
+            <img src="/images/logo.png" alt="PingMate Logo" class="h-12 w-12 transform scale-200 mr-2" />
+            <span class="text-2xl font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">PingMate</span>
           </div>
           <nav class="hidden md:flex space-x-8">
             <a href="#problem" @click.prevent="emit('scroll-to-section', 'problem')" class="text-gray-700 hover:text-blue-600 font-medium transition-colors">The Problem</a>

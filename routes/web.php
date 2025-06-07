@@ -4,13 +4,12 @@ use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\Auth\ResetPasswordController;
-use App\Http\Controllers\SettingsController;
-use App\Http\Controllers\OpenAIController;
+use App\Http\Controllers\Settings\BasicSettingsController;
+use App\Http\Controllers\Settings\CommunicationSettingsController;
 use App\Http\Controllers\QuoteController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LandingPageController;
 use App\Http\Controllers\OnboardingController;
-use App\Http\Controllers\SmsController;
 use App\Http\Controllers\Billing\GuestCheckoutController;
 use App\Http\Controllers\BillingController;
 use App\Http\Middleware\Subscribed;
@@ -19,6 +18,8 @@ use Illuminate\Support\Facades\Route;
 use Laravel\Cashier\Http\Controllers\WebhookController;
 
 Route::middleware('guest')->group(function () {
+    Route::get('/', [LandingPageController::class, 'index'])->name('landing');
+    Route::get('/onboarding', [OnboardingController::class, 'show'])->name('onboarding.show');
     Route::get('/login', [LoginController::class, 'index'])->name('login');
     Route::post('/login', [LoginController::class, 'authenticate']);
     Route::get('forgot-password', [ForgotPasswordController::class, 'index'])->name('password.request');
@@ -30,14 +31,6 @@ Route::middleware('guest')->group(function () {
 Route::middleware(['auth', Subscribed::class])->group(function () {
     Route::get('/dashboard', [HomeController::class, 'index'])->name('dashboard');
     Route::post('/logout', [LogoutController::class, 'logout'])->name('logout');
-    Route::get('/settings', [SettingsController::class, 'index'])->name('settings');
-    Route::post('/settings', [SettingsController::class, 'update'])->name('settings.update')->middleware([HandlePrecognitiveRequests::class]);
-
-    Route::prefix('ai')->name('ai.')->group(function () {
-        Route::get('/quote', [OpenAIController::class, 'index'])->name('index');
-        Route::post('/generate-quote', [OpenAIController::class, 'generateQuote'])->name('generate-quote');
-        Route::post('/improve-quote', [OpenAIController::class, 'improveQuote'])->name('improve-quote');
-    });
 
     Route::prefix('quotes')->name('quotes.')->group(function () {
         Route::get('/', [QuoteController::class, 'index'])->name('index');
@@ -47,8 +40,12 @@ Route::middleware(['auth', Subscribed::class])->group(function () {
         Route::post('/{quote}/send', [QuoteController::class, 'send'])->name('send');
     });
 
-    Route::prefix('integrations')->name('integrations.')->group(function () {
-        Route::get('/sms', [SmsController::class, 'index'])->name('sms.index');
+    Route::prefix('settings')->name('settings.')->group(function () {
+        Route::get('/basic', [BasicSettingsController::class, 'index'])->name('basic.index');
+        Route::post('/basic', [BasicSettingsController::class, 'update'])->name('basic.update')->middleware([HandlePrecognitiveRequests::class]);
+
+        Route::get('/communication', [CommunicationSettingsController::class, 'index'])->name('communication.index');
+        Route::post('/communication', [CommunicationSettingsController::class, 'update'])->name('communication.update')->middleware([HandlePrecognitiveRequests::class]);
     });
 
     Route::prefix('billing')->name('billing.')->group(function () {
@@ -59,9 +56,6 @@ Route::middleware(['auth', Subscribed::class])->group(function () {
         Route::post('/subscribe', [BillingController::class, 'subscription'])->name('subscribe');
     });
 });
-
-Route::get('/', [LandingPageController::class, 'index'])->name('landing');
-Route::get('/onboarding', [OnboardingController::class, 'show'])->name('onboarding.show');
 
 Route::post('/checkout', [GuestCheckoutController::class, 'create'])->name('checkout');
 Route::get('/checkout/success', [GuestCheckoutController::class, 'success'])->name('checkout.success');
