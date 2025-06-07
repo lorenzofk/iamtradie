@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Billing;
+namespace App\Http\Controllers\Checkout;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Billing\CreateSessionCheckoutRequest;
@@ -14,7 +14,6 @@ use Inertia\Inertia;
 use Inertia\Response as InertiaResponse;
 use Stripe\Checkout\Session;
 use Stripe\Stripe;
-use Illuminate\Support\Facades\Log;
 
 class GuestCheckoutController extends Controller
 {
@@ -23,8 +22,6 @@ class GuestCheckoutController extends Controller
      */
     public function create(CreateSessionCheckoutRequest $request): Response|RedirectResponse
     {
-        Log::info('Creating checkout session');
-
         $data = $request->validated();
         $userData = $data['user'];
         $settingsData = $data['settings'];
@@ -38,10 +35,7 @@ class GuestCheckoutController extends Controller
             ]);
 
             $user->settings()->create($settingsData);
-
-            Log::info('User created', ['user' => $user]);
         } catch (Exception $e) {
-            Log::error('Failed to create user', ['error' => $e->getMessage()]);
             return redirect()->back()->with('error', 'Failed to create user');
         }
 
@@ -53,13 +47,9 @@ class GuestCheckoutController extends Controller
                     'cancel_url' => route('landing'),
                 ]);
 
-            Log::info('Subscription created', ['subscription' => $subscription]);
-
             return Inertia::location($subscription->url);
         } catch (Exception $e) {
             $user->delete();
-
-            Log::error('Failed to create subscription', ['error' => $e->getMessage(), 'user' => $user]);
 
             return redirect()->back()->with('error', 'Failed to create checkout session');
         }

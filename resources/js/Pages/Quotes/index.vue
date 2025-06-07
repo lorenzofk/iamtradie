@@ -62,11 +62,11 @@ const onSendClick = async (quote) => {
     <!-- Header -->
     <div class="flex items-center justify-between mb-6 bg-white rounded-xl shadow-sm border-0 p-6">
       <div>
-        <h1 class="text-2xl font-bold text-gray-900">Quote History</h1>
+        <h1 class="text-2xl font-bold text-gray-900">Messages</h1>
         <p class="text-gray-600 text-sm mt-1">Manage and review your customer conversations</p>
       </div>
       <div class="text-sm text-gray-500 bg-gray-50 rounded-lg px-3 py-1.5">
-        {{ quotes.length }} Quotes
+        {{ quotes.length }} Messages
       </div>
     </div>
     <!-- Main Content Wrapper -->
@@ -79,8 +79,8 @@ const onSendClick = async (quote) => {
             <div class="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-3">
               <font-awesome-icon :icon="['fas', 'fa-comments']" class="text-blue-500 text-lg" />
             </div>
-            <h3 class="text-base font-medium text-gray-900 mb-1">No quotes yet</h3>
-            <p class="text-gray-500 text-sm">Start receiving quotes from your customers</p>
+            <h3 class="text-base font-medium text-gray-900 mb-1">No messages yet</h3>
+            <p class="text-gray-500 text-sm">Start receiving messages from your customers</p>
           </div>
         </div>
         <!-- Quote Cards -->
