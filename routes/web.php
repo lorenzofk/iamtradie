@@ -10,7 +10,7 @@ use App\Http\Controllers\QuoteController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LandingPageController;
 use App\Http\Controllers\OnboardingController;
-use App\Http\Controllers\Billing\GuestCheckoutController;
+use App\Http\Controllers\Checkout\GuestCheckoutController;
 use App\Http\Controllers\BillingController;
 use App\Http\Middleware\Subscribed;
 use Illuminate\Foundation\Http\Middleware\HandlePrecognitiveRequests;
