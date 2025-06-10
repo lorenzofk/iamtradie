@@ -6,158 +6,183 @@ const visit = (url) => {
   router.visit(url);
 };
 
-const benefits = [
+const features = [
   {
-    icon: ['fas', 'fa-phone'],
-    text: '1 Australian SMS number (local to your area)',
-    highlight: 'Local number'
+    category: 'Smart Communication',
+    items: [
+      { icon: ['fas', 'comment-dots'], text: 'Instant AI SMS replies', detail: 'Professional quotes in your voice, 24/7' },
+      { icon: ['fas', 'phone-volume'], text: 'Smart call handling', detail: 'Forward calls + intelligent voicemail summaries' },
+      { icon: ['fas', 'map-marker-alt'], text: 'Local Aussie number', detail: 'Customers see a local business number' }
+    ]
   },
   {
-    icon: ['fas', 'fa-bolt'],
-    text: '100 AI-powered SMS replies/month',
-    highlight: 'AI replies'
+    category: 'Business Tools',
+    items: [
+      { icon: ['fas', 'calculator'], text: 'Your custom pricing', detail: 'AI uses your real rates for accurate quotes' },
+      { icon: ['fas', 'chart-line'], text: 'Professional dashboard', detail: 'Manage quotes, calls, and customer interactions' },
+      { icon: ['fas', 'mobile-alt'], text: 'Lead forwarding', detail: 'Important messages forwarded to your mobile' }
+    ]
   },
   {
-    icon: ['fas', 'fa-dollar-sign'],
-    text: 'Use your own pricing – quotes reflect your real rates',
-    highlight: 'Your rates'
-  },
-  {
-    icon: ['fas', 'fa-chart-line'],
-    text: 'Dashboard to view, edit and send quotes',
-    highlight: 'Full dashboard'
-  },
-  {
-    icon: ['fas', 'fa-forward'],
-    text: 'Hands-free lead alerts straight to your mobile',
-    highlight: 'SMS forwarding'
-  },
-  {
-    icon: ['fas', 'fa-robot'],
-    text: 'Your voice tone and style',
-    highlight: "AI that sounds just like you"
-  },
+    category: 'AI Intelligence',
+    items: [
+      { icon: ['fas', 'robot'], text: 'Sounds like you', detail: 'AI learns your tone and communication style' },
+      { icon: ['fas', 'brain'], text: 'Smart transcription', detail: 'Voice messages converted to text summaries' },
+      { icon: ['fas', 'bolt-lightning'], text: 'Instant responses', detail: 'Reply in seconds, even when unavailable' }
+    ]
+  }
 ];
 
-const proofPoints = [
-  { icon: ['fas', 'fa-clock'], text: 'Reply instantly, even when you\'re on the tools' },
-  { icon: ['fas', 'fa-trophy'], text: 'Secure more jobs without more admin' },
-  { icon: ['fas', 'fa-shield-alt'], text: 'Cancel anytime, no lock-in contracts' }
+const guarantees = [
+  { icon: ['fas', 'piggy-bank'], text: '30-day money back guarantee' },
+  { icon: ['fas', 'times-circle'], text: 'Cancel anytime, no contracts' },
+  { icon: ['fas', 'headset'], text: 'Australian support included' }
 ];
 </script>
 
 <template>
-    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="text-center mb-12 sm:mb-16">
-        <h2 class="text-3xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
-          Simple Pricing That Pays for Itself
-        </h2>
-        <p class="text-lg sm:text-xl text-gray-600 max-w-3xl mx-auto">
-          Just one missed job can cost you $500. For $1 a day, never let it happen again.
-        </p>
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Header -->
+    <div class="text-center mb-12 sm:mb-16">
+      <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-3 sm:mb-4">
+        One Simple Plan, Everything Included
+      </h2>
+      <p class="text-base sm:text-lg lg:text-xl text-gray-600 max-w-3xl mx-auto">
+        Just $1 a day to never miss another job. No hidden fees, no complicated tiers.
+      </p>
+    </div>
+
+    <!-- Main Pricing Container -->
+    <div class="relative -mx-4 sm:-mx-6 lg:-mx-8">
+      <!-- Subtle Popular Badge -->
+      <div class="absolute -top-3 sm:-top-4 left-1/2 transform -translate-x-1/2 z-10">
+        <div class="bg-gradient-to-r from-blue-500 to-green-500 text-white px-4 sm:px-6 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-semibold shadow-lg">
+          Most Popular Choice
+        </div>
       </div>
 
-      <!-- Main Pricing Card -->
-      <div class="relative">
-        <!-- Popular Badge -->
-        <div class="absolute -top-3 sm:-top-4 left-1/2 transform -translate-x-1/2 z-10">
-          <div class="bg-gradient-to-r from-blue-600 to-green-600 text-white px-4 sm:px-6 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-bold shadow-lg">
-            ⭐ Most Popular Plan
+      <div class="bg-white border-t border-b border-gray-100 sm:border sm:rounded-xl lg:rounded-2xl shadow-xl overflow-hidden mx-4 sm:mx-6 lg:mx-8">
+        <!-- Pricing Header -->
+        <div class="bg-gradient-to-br from-slate-50 to-blue-50 p-4 sm:p-6 lg:p-8 text-center border-b border-gray-100">
+          <div class="inline-flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-blue-500 to-green-500 rounded-xl sm:rounded-2xl mb-4 sm:mb-6 shadow-lg">
+            <font-awesome-icon :icon="['fas', 'robot']" class="text-white text-lg sm:text-2xl" />
+          </div>
+          
+          <h3 class="text-xl sm:text-2xl font-bold text-gray-900 mb-2 sm:mb-3">PingMate Complete</h3>
+          
+          <div class="flex items-center justify-center mb-3 sm:mb-4">
+            <span class="text-3xl sm:text-4xl lg:text-5xl font-black text-gray-900">$29</span>
+            <span class="text-base sm:text-lg lg:text-xl text-gray-600 ml-2">/month</span>
+          </div>
+          
+          <p class="text-gray-600 text-base sm:text-lg mb-4 sm:mb-6">
+            SMS + Voice AI for busy Australian tradies
+          </p>
+
+          <!-- Value Proposition -->
+          <div class="bg-green-50 border border-green-200 rounded-lg sm:rounded-xl p-3 sm:p-4 max-w-sm sm:max-w-md mx-auto">
+            <div class="text-xs sm:text-sm font-semibold text-green-800 mb-1">Win just one extra job per month</div>
+            <div class="text-xs sm:text-sm text-green-700">Turn $29 into $500+ → 1,600% ROI</div>
           </div>
         </div>
-        
-        <div class="bg-white rounded-xl sm:rounded-2xl shadow-xl border-2 border-blue-100 overflow-hidden">
-          <!-- Header -->
-          <div class="bg-gradient-to-r from-blue-600 to-blue-700 p-6 sm:p-8 text-center text-white">
-            <h3 class="text-xl sm:text-2xl font-bold mb-2">Tradie SMS Plan</h3>
-            <div class="flex items-center justify-center mb-2">
-              <span class="text-4xl sm:text-5xl font-black">$29.90</span>
-              <span class="text-lg sm:text-xl font-medium ml-2 opacity-80">/month</span>
-            </div>
-            <p class="text-blue-100 text-base sm:text-lg">Never miss a high-paying job again. Perfect for time-poor Aussie tradies.</p>
-            
-            <!-- Value Proposition -->
-            <div class="mt-4 sm:mt-6 bg-blue-500/30 rounded-lg p-3 sm:p-4">
-              <div class="text-sm sm:text-base font-bold text-blue-100 mb-1">Break-even calculation:</div>
-              <div class="text-sm sm:text-base font-semibold">Win one extra job per month and turn $29 into $500.</div>
-              <div class="text-sm sm:text-base font-semibold">That's a 1,567% ROI – no brainer.</div>
-            </div>
-          </div>
 
-          <!-- Features -->
-          <div class="p-6 sm:p-8">
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8">
-              <div v-for="(benefit, index) in benefits" :key="index" 
-                   class="flex items-start group hover:bg-blue-50 rounded-lg p-3 sm:p-4 transition-all duration-300">
-                <div class="bg-green-100 rounded-lg p-2 sm:p-3 mr-3 sm:mr-4 group-hover:bg-green-200 transition-colors flex-shrink-0">
-                  <font-awesome-icon :icon="benefit.icon" class="text-green-600 text-base sm:text-lg" />
-                </div>
-                <div class="flex-1 min-w-0">
-                  <div class="font-semibold text-gray-900 mb-1 text-sm sm:text-base">{{ benefit.highlight }}</div>
-                  <div class="text-gray-600 text-xs sm:text-sm leading-relaxed">{{ benefit.text }}</div>
+        <!-- Features Grid -->
+        <div class="p-4 sm:p-6 lg:p-8">
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8 mb-6 sm:mb-8">
+            <div v-for="category in features" :key="category.category" class="space-y-3 sm:space-y-4">
+              <h4 class="font-bold text-gray-900 text-xs sm:text-sm uppercase tracking-wide border-b border-gray-200 pb-2">
+                {{ category.category }}
+              </h4>
+              <div class="space-y-2 sm:space-y-3">
+                <div v-for="item in category.items" :key="item.text" 
+                     class="group flex items-start hover:bg-gray-50 rounded-lg p-2 sm:p-3 -m-2 sm:-m-3 transition-all duration-200">
+                  <div class="bg-blue-100 rounded-lg p-1.5 sm:p-2 mr-2 sm:mr-3 group-hover:bg-blue-200 transition-colors flex-shrink-0">
+                    <font-awesome-icon :icon="item.icon" class="text-blue-600 text-xs sm:text-sm" />
+                  </div>
+                  <div class="min-w-0 flex-1">
+                    <div class="font-semibold text-gray-900 text-xs sm:text-sm mb-1">{{ item.text }}</div>
+                    <div class="text-gray-600 text-xs">{{ item.detail }}</div>
+                  </div>
                 </div>
               </div>
             </div>
+          </div>
 
-            <!-- CTA Button -->
-            <div class="text-center mb-4 sm:mb-6">
-              <Button unstyled @click="visit(route('onboarding.show'))" class="cursor-pointer inline-flex items-center justify-center px-4 sm:px-6 py-3 bg-gradient-to-r from-sky-600 to-blue-600 hover:from-sky-700 hover:to-blue-700 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 text-sm sm:text-base">
-                <font-awesome-icon :icon="['fas', 'rocket']" class="mr-2" />
-                Get Started for $1 a Day
-              </Button>
-            </div>
-
-            <!-- What Happens Next -->
-            <div class="text-center text-xs sm:text-sm text-gray-600 mb-4 sm:mb-6">
-              <p class="mb-1 font-semibold">What happens next?</p>
-              <p>Enter your rates → get your local number → start replying instantly. All in under 5 minutes.</p>
-            </div>
-
-            <!-- Trust Signals -->
-            <div class="text-center text-xs sm:text-sm text-gray-500 mb-4 sm:mb-6">
-              <div class="flex flex-col sm:flex-row sm:items-center sm:justify-center space-y-2 sm:space-y-0 sm:space-x-6">
-                <span class="flex items-center justify-center sm:justify-start">
-                  <font-awesome-icon :icon="['fas', 'fa-piggy-bank']" class="mr-2" />
-                  30-day money back guarantee
-                </span>
-                <span class="flex items-center justify-center sm:justify-start">
-                  <font-awesome-icon :icon="['fas', 'fa-times-circle']" class="mr-2" />
-                  Cancel anytime
-                </span>
-                <span class="flex items-center justify-center sm:justify-start">
-                  <font-awesome-icon :icon="['fas', 'fa-envelope']" class="mr-2" />
-                  Support included
-                </span>
+          <!-- Usage Limits -->
+          <div class="bg-gray-50 rounded-lg sm:rounded-xl p-4 sm:p-6 mb-6 sm:mb-8">
+            <h4 class="font-bold text-gray-900 mb-3 sm:mb-4 text-center text-sm sm:text-base">What's Included Monthly</h4>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 text-center">
+              <div class="bg-white rounded-lg p-3 sm:p-4 shadow-sm">
+                <div class="text-xl sm:text-2xl font-bold text-blue-600 mb-1">100</div>
+                <div class="text-xs sm:text-sm text-gray-600">AI SMS Replies</div>
+              </div>
+              <div class="bg-white rounded-lg p-3 sm:p-4 shadow-sm">
+                <div class="text-xl sm:text-2xl font-bold text-green-600 mb-1">Unlimited</div>
+                <div class="text-xs sm:text-sm text-gray-600">Call Summaries</div>
+              </div>
+              <div class="bg-white rounded-lg p-3 sm:p-4 shadow-sm">
+                <div class="text-xl sm:text-2xl font-bold text-purple-600 mb-1">24/7</div>
+                <div class="text-xs sm:text-sm text-gray-600">AI Assistant</div>
               </div>
             </div>
           </div>
-        </div>
-      </div>
 
-      <!-- Social Proof & Additional Benefits -->
-      <div class="mt-8 sm:mt-12 text-center">
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
-          <div v-for="(point, index) in proofPoints" :key="index" 
-               class="flex items-center justify-center bg-white rounded-lg p-3 sm:p-4 shadow-md border border-gray-100 hover:shadow-lg transition-shadow">
-            <div class="bg-green-100 rounded-full p-2 mr-3 flex-shrink-0">
-              <font-awesome-icon :icon="point.icon" class="text-green-600 text-sm sm:text-base" />
+          <!-- CTA -->
+          <div class="text-center mb-4 sm:mb-6">
+            <Button unstyled @click="visit(route('onboarding.show'))" 
+                    class="cursor-pointer inline-flex items-center justify-center px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 text-base sm:text-lg w-full sm:w-auto">
+              <font-awesome-icon :icon="['fas', 'rocket']" class="mr-2" />
+              Start Your 30-Day Trial
+            </Button>
+          </div>
+
+          <!-- Setup Promise -->
+          <div class="text-center mb-6 sm:mb-8">
+            <p class="text-gray-600 font-medium mb-2 text-sm sm:text-base">Ready in under 5 minutes</p>
+            <div class="flex flex-col sm:flex-row flex-wrap justify-center items-center text-xs sm:text-sm text-gray-500 gap-2 sm:gap-4">
+              <span class="flex items-center">
+                <span class="w-2 h-2 bg-green-400 rounded-full mr-2"></span>
+                Enter your rates
+              </span>
+              <span class="flex items-center">
+                <span class="w-2 h-2 bg-green-400 rounded-full mr-2"></span>
+                Get local number
+              </span>
+              <span class="flex items-center">
+                <span class="w-2 h-2 bg-green-400 rounded-full mr-2"></span>
+                Start winning jobs
+              </span>
             </div>
-            <span class="text-gray-700 font-medium text-sm sm:text-base">{{ point.text }}</span>
           </div>
-        </div>
-      </div>
 
-      <!-- Money Back Guarantee -->
-      <div class="mt-8 sm:mt-12 text-center">
-        <div class="inline-flex items-center justify-center w-full bg-green-50 border border-green-200 rounded-xl p-4 sm:p-6">
-          <div class="bg-green-100 rounded-full p-2 sm:p-3 mr-3 sm:mr-4 flex-shrink-0">
-            <font-awesome-icon :icon="['fas', 'fa-shield-alt']" class="text-green-600 text-xl sm:text-2xl" />
-          </div>
-          <div class="text-left min-w-0">
-            <div class="font-bold text-green-900 text-base sm:text-lg">30-Day Money Back Guarantee</div>
-            <div class="text-green-700 text-sm sm:text-base">If you don't win at least one extra job in 30 days, get your money back.</div>
+          <!-- Guarantees -->
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+            <div v-for="guarantee in guarantees" :key="guarantee.text" 
+                 class="flex items-center justify-center sm:justify-start bg-gray-50 rounded-lg p-3 sm:p-4 hover:bg-gray-100 transition-colors">
+              <div class="bg-green-100 rounded-lg p-1.5 sm:p-2 mr-2 sm:mr-3 flex-shrink-0">
+                <font-awesome-icon :icon="guarantee.icon" class="text-green-600 text-xs sm:text-sm" />
+              </div>
+              <span class="text-gray-700 font-medium text-xs sm:text-sm text-center sm:text-left">{{ guarantee.text }}</span>
+            </div>
           </div>
         </div>
       </div>
     </div>
+
+    <!-- Bottom Trust Section - Full Width -->
+    <div class="mt-12 sm:mt-16 -mx-4 sm:-mx-6 lg:-mx-8">
+      <div class="bg-green-50 border-t border-b border-green-200 sm:border sm:rounded-2xl p-6 sm:p-8 lg:p-10 mx-4 sm:mx-6 lg:mx-8">
+        <div class="max-w-2xl mx-auto text-center">
+          <div class="inline-flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-green-400 to-green-600 rounded-xl sm:rounded-2xl mb-3 sm:mb-4 shadow-lg">
+            <font-awesome-icon :icon="['fas', 'fa-shield-alt']" class="text-white text-lg sm:text-2xl" />
+          </div>
+          <h4 class="text-lg sm:text-xl font-bold text-green-900 mb-2">Risk-Free 30-Day Trial</h4>
+          <p class="text-sm sm:text-base text-green-800 leading-relaxed">
+            If PingMate doesn't help you win at least one extra job in 30 days, 
+            we'll refund every cent. No questions asked.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>

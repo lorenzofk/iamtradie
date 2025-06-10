@@ -180,7 +180,7 @@ const scenarios = {
 
     <!-- Bottom Section -->
     <div class="mt-12 sm:mt-16 text-center">
-      <div class="bg-gradient-to-r from-green-500/20 to-blue-500/20 backdrop-blur-sm rounded-2xl sm:rounded-3xl p-6 sm:p-8 lg:p-10 max-w-5xl mx-auto border border-white/30 shadow-2xl">
+      <div class="bg-gradient-to-r from-green-500/20 to-blue-500/20 backdrop-blur-sm rounded-2xl sm:rounded-3xl p-6 sm:p-8 lg:p-10  border border-white/30 shadow-2xl">
         <div class="flex items-center justify-center gap-2 sm:gap-4 mb-6">
           <div class="inline-flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 lg:w-20 lg:h-20 bg-gradient-to-br from-green-400 to-blue-500 rounded-2xl shadow-lg">
             <font-awesome-icon :icon="['fas', 'envelope']" class="text-white text-lg sm:text-2xl lg:text-3xl" />

@@ -83,6 +83,7 @@ import {
   faUserTie,
   faUtensils,
   faUserTimes,
+  faCalculator,
 } from '@fortawesome/free-solid-svg-icons';
 
 // Regular Icons
@@ -172,6 +173,7 @@ library.add(
   faUserTie,
   faUtensils,
   faUserTimes,
+  faCalculator,
 );
 
 export default function SetupFontAwesome(app) {
