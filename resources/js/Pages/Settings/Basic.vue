@@ -1,4 +1,3 @@
-
 <script setup>
 import { usePage } from '@inertiajs/vue3';
 import { useForm } from 'laravel-precognition-vue-inertia';
@@ -52,24 +51,24 @@ const onFormSubmit = () => {
 
 
 <template>
-  <div class="max-w-6xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+  <div class="max-w-6xl mx-auto py-4 lg:py-6 px-4 sm:px-6 lg:px-8">
     <!-- Header -->
-    <div class="flex items-center justify-between mb-6 bg-white rounded-xl shadow-sm border-0 p-6">
-      <h1 class="text-2xl font-bold text-gray-900">Settings</h1>
+    <div class="flex items-center justify-between mb-4 lg:mb-6 bg-white rounded-xl shadow-sm border-0 p-4 lg:p-6">
+      <h1 class="text-xl lg:text-2xl font-bold text-gray-900">Settings</h1>
     </div>
 
-    <form @submit.prevent="onFormSubmit" class="space-y-6">
+    <form @submit.prevent="onFormSubmit" class="space-y-4 lg:space-y-6">
       <!-- Profile Information Card -->
-      <div class="bg-white shadow-sm rounded-xl border-0 p-6">
-        <div class="mb-6">
-          <h2 class="text-xl font-semibold text-gray-900 flex items-center gap-2">
+      <div class="bg-white shadow-sm rounded-xl border-0 p-4 lg:p-6">
+        <div class="mb-4 lg:mb-6">
+          <h2 class="text-lg lg:text-xl font-semibold text-gray-900 flex items-center gap-2">
             <font-awesome-icon :icon="['fas', 'fa-user']" class="text-blue-600" />
             Profile Information
           </h2>
           <p class="text-sm text-gray-600 mt-1">Update your personal information and contact details.</p>
         </div>
         
-        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
           <FormElement>
             <FormLabel for="first_name">First Name</FormLabel>
             <Input
@@ -90,7 +89,7 @@ const onFormSubmit = () => {
             />
           </FormElement>
           
-          <FormElement class="sm:col-span-2">
+          <FormElement class="lg:col-span-2">
             <FormLabel for="email">Email</FormLabel>
             <Input
               id="email"
@@ -130,6 +129,7 @@ const onFormSubmit = () => {
               :error="form.errors.phone_number"
             />
           </FormElement>
+          
           <FormElement>
             <FormLabel for="industry_type">Industry Type</FormLabel>
             <Select
@@ -143,10 +143,11 @@ const onFormSubmit = () => {
           </FormElement>
         </div>
       </div>
+      
       <!-- Base Pricing Card -->
-      <div class="bg-white shadow-sm rounded-xl border-0 p-6">
-        <div class="mb-6">
-          <h2 class="text-xl font-semibold text-gray-900 flex items-center gap-2">
+      <div class="bg-white shadow-sm rounded-xl border-0 p-4 lg:p-6">
+        <div class="mb-4 lg:mb-6">
+          <h2 class="text-lg lg:text-xl font-semibold text-gray-900 flex items-center gap-2">
             <font-awesome-icon :icon="['fas', 'fa-dollar-sign']" class="text-green-600" />
             Base Pricing
           </h2>
@@ -179,15 +180,17 @@ const onFormSubmit = () => {
           </FormElement>
         </div>
       </div>
+      
       <!-- Submit Button -->
       <div class="flex justify-end">
         <Button 
           type="submit" 
           size="small"
           :loading="form.processing"
-          label="Update"
+          label="Update Settings"
           :disabled="form.processing"
           :icon="['fas', 'fa-save']"
+          class="w-full sm:w-auto"
         />
       </div>
     </form>
