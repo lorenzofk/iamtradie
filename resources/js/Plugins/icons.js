@@ -81,6 +81,7 @@ import {
   faReply,
   faPlay,
   faUserTie,
+  faUtensils,
 } from '@fortawesome/free-solid-svg-icons';
 
 // Regular Icons
@@ -168,6 +169,7 @@ library.add(
   faReply,
   faPlay,
   faUserTie,
+  faUtensils,
 );
 
 export default function SetupFontAwesome(app) {
