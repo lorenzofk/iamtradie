@@ -29,7 +29,7 @@ const scrollToSection = (sectionId) => {
       <Hero @scroll-to-section="scrollToSection" />
     </section>
 
-    <section id="how-it-works" class="py-16 bg-gradient-to-br from-slate-50 to-sky-50">
+    <section id="how-it-works" class="py-12 bg-gradient-to-br from-slate-50 to-sky-50">
       <HowItWorks />
     </section>
 
