@@ -1,6 +1,5 @@
 <script setup>
 import { Head } from '@inertiajs/vue3';
-import Solution from './Blocks/Solution.vue';
 import Pricing from './Blocks/Pricing.vue';
 import Footer from './Blocks/Footer.vue';
 import Header from './Blocks/Header.vue';
@@ -38,10 +37,6 @@ const scrollToSection = (sectionId) => {
       <Problem />
     </section>
 
-    <!-- Solution Section -->
-    <section id="solution" class="py-16 bg-white">
-      <Solution />
-    </section>
 
     <!-- Pricing Section -->
     <section id="pricing" class="py-16 bg-gradient-to-br from-slate-50 to-blue-200">

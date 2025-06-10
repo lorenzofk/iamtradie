@@ -112,26 +112,28 @@ const scenarios = {
           <p class="text-sm sm:text-base text-gray-600">Here's how you lose a $500 job</p>
         </div>
 
-        <div class="space-y-4 sm:space-y-6">
+        <div class="space-y-6 sm:space-y-8">
           <div 
             v-for="(story, index) in scenarios[activeTab].stories" 
             :key="index"
-            class="group hover:bg-gray-50 rounded-2xl p-3 sm:p-4 -m-3 sm:-m-4 transition-all duration-300 hover:shadow-lg"
+            class="group relative rounded-2xl p-4 sm:p-6 transition-all duration-300 hover:bg-gradient-to-r hover:from-gray-50 hover:to-blue-50/30 hover:shadow-xl hover:scale-[1.02] cursor-pointer border border-transparent hover:border-blue-100"
           >
-            <div class="flex items-start">
+            <div class="flex items-start gap-4 sm:gap-6">
               <div 
                 :class="[
-                  'rounded-xl w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center shadow-md mr-3 sm:mr-4 mt-1 flex-shrink-0 transition-all duration-300 group-hover:scale-110 group-hover:shadow-lg group-hover:-translate-y-1',
+                  'rounded-xl w-12 h-12 sm:w-14 sm:h-14 flex items-center justify-center shadow-md flex-shrink-0 transition-all duration-300 group-hover:scale-110 group-hover:shadow-xl group-hover:-translate-y-1',
                   story.color
                 ]"
               >
                 <font-awesome-icon :icon="['fas', story.icon]" class="text-white text-sm sm:text-base" />
               </div>
-              <div class="min-w-0 flex-1">
-                <h4 class="text-base sm:text-lg font-bold text-gray-900 mb-1 sm:mb-2 group-hover:text-gray-800 transition-colors duration-300">{{ story.time }}</h4>
+              <div class="min-w-0 flex-1 pt-1">
+                <h4 class="text-base sm:text-lg font-bold text-gray-900 mb-2 sm:mb-3 group-hover:text-gray-800 transition-colors duration-300">{{ story.time }}</h4>
                 <p class="text-sm sm:text-base text-gray-700 leading-relaxed group-hover:text-gray-600 transition-colors duration-300">{{ story.message }}</p>
               </div>
             </div>
+            <!-- Subtle hover indicator -->
+            <div class="absolute inset-0 rounded-2xl bg-gradient-to-r from-blue-500/5 to-sky-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
           </div>
         </div>
       </div>
