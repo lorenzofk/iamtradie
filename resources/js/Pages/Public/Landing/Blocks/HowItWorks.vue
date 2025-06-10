@@ -254,6 +254,108 @@ const getBadgeClasses = (status) => {
             </div>
         </div>
         </div>
+
+        <!-- Missed Call AI Summary Card (Styled Like SMS) - SMS to You -->
+<div class="bg-white rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-lg border border-sky-100 hover:scale-105 transition-transform duration-300 md:col-span-2 lg:col-span-1">
+  <div class="text-center mb-4 sm:mb-6">
+    <div class="bg-sky-100 rounded-full w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center mx-auto mb-2 sm:mb-3">
+      <font-awesome-icon :icon="['fas', 'fa-phone-slash']" class="text-sky-600 text-base sm:text-lg lg:text-2xl" />
+    </div>
+    <h3 class="text-base sm:text-lg lg:text-xl font-bold text-slate-900">Call Summary</h3>
+    <p class="text-xs sm:text-sm text-slate-600">Electrician Example</p>
+  </div>
+
+  <div class="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 space-y-2 sm:space-y-3">
+    <div class="flex justify-start">
+      <div class="bg-gray-200 rounded-2xl rounded-bl-md px-2 sm:px-3 py-1.5 sm:py-2 max-w-[85%] sm:max-w-xs">
+        <p class="text-xs sm:text-sm text-gray-800">Hey mate, just need someone to take a look at a fuse box tripping out. Can you swing by this week?</p>
+        <div class="text-xs text-gray-500 mt-1">10:18 AM</div>
+      </div>
+    </div>
+
+    <!-- Typing Indicator -->
+    <div class="flex justify-end">
+      <div class="bg-gray-300 rounded-2xl rounded-br-md px-3 sm:px-4 py-1.5 sm:py-2">
+        <div class="flex space-x-1">
+          <div class="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-gray-600 rounded-full animate-bounce"></div>
+          <div class="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-gray-600 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
+          <div class="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-gray-600 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex justify-end">
+      <div class="bg-blue-500 rounded-2xl rounded-br-md px-2 sm:px-3 py-1.5 sm:py-2 max-w-[85%] sm:max-w-xs">
+        <p class="text-xs sm:text-sm text-white">
+          📞 Missed Call from 0482 123 456<br>
+          💬 Fuse box tripping — wants someone this week<br>
+          💰 Est. Value: $320–$450<br>
+          ⚡ Urgency: Medium
+        </p>
+        <div class="text-xs text-blue-200 mt-1 flex items-center justify-end">
+          <span>10:18 AM</span>
+          <div class="ml-1 text-white">✓✓</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex justify-center">
+      <span class="bg-green-100 text-green-800 px-2 sm:px-3 py-1 rounded-full text-xs font-semibold">
+        🧠 Summary sent in 15 seconds
+      </span>
+    </div>
+  </div>
+</div>
+
+<!-- Auto Reply to Customer Example (Styled Like SMS) -->
+<div class="bg-white rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-lg border border-sky-100 hover:scale-105 transition-transform duration-300 md:col-span-2 lg:col-span-1">
+  <div class="text-center mb-4 sm:mb-6">
+    <div class="bg-sky-100 rounded-full w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center mx-auto mb-2 sm:mb-3">
+      <font-awesome-icon :icon="['fas', 'fa-reply']" class="text-sky-600 text-base sm:text-lg lg:text-2xl" />
+    </div>
+    <h3 class="text-base sm:text-lg lg:text-xl font-bold text-slate-900">Auto-Reply to Caller</h3>
+    <p class="text-xs sm:text-sm text-slate-600">What Your Customer Receives</p>
+  </div>
+
+  <div class="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 space-y-2 sm:space-y-3">
+    <div class="flex justify-start">
+      <div class="bg-gray-200 rounded-2xl rounded-bl-md px-2 sm:px-3 py-1.5 sm:py-2 max-w-[85%] sm:max-w-xs">
+        <p class="text-xs sm:text-sm text-gray-800">Hey mate, just need someone to take a look at a fuse box tripping out. Can you swing by this week?</p>
+        <div class="text-xs text-gray-500 mt-1">10:18 AM</div>
+      </div>
+    </div>
+
+    <!-- Typing Indicator -->
+    <div class="flex justify-end">
+      <div class="bg-gray-300 rounded-2xl rounded-br-md px-3 sm:px-4 py-1.5 sm:py-2">
+        <div class="flex space-x-1">
+          <div class="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-gray-600 rounded-full animate-bounce"></div>
+          <div class="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-gray-600 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
+          <div class="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-gray-600 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex justify-end">
+      <div class="bg-blue-500 rounded-2xl rounded-br-md px-2 sm:px-3 py-1.5 sm:py-2 max-w-[85%] sm:max-w-xs">
+        <p class="text-xs sm:text-sm text-white">
+          Thanks for calling! I didn’t catch you just now but I’ll check your message and get back shortly. If urgent, reply here. - Dave
+        </p>
+        <div class="text-xs text-blue-200 mt-1 flex items-center justify-end">
+          <span>10:19 AM</span>
+          <div class="ml-1 text-white">✓✓</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex justify-center">
+      <span class="bg-green-100 text-green-800 px-2 sm:px-3 py-1 rounded-full text-xs font-semibold">
+        🤖 Auto-Reply Sent Instantly
+      </span>
+    </div>
+  </div>
+</div>
+
     </div>
 
     <!-- Modern Split Workflow: Calls & SMS -->
