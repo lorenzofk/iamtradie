@@ -1,487 +1,299 @@
 <script setup>
-import { router } from '@inertiajs/vue3';
-import Button from '@/Shared/Ui/Button/Button.vue';
+import { Button } from 'primevue';
+import { ref, onMounted } from 'vue';
 
-const visit = (url) => {
-  router.visit(url);
+// Animation states
+const currentStep = ref(0);
+const isAnimating = ref(false);
+const showCallSummary = ref(false);
+const showAutoReply = ref(false);
+
+// Simulate the call workflow animation
+const startWorkflowAnimation = () => {
+  isAnimating.value = true;
+  currentStep.value = 0;
+  showCallSummary.value = false;
+  showAutoReply.value = false;
+  
+  const steps = [
+    () => { currentStep.value = 1; }, // Call received
+    () => { currentStep.value = 2; }, // Forward attempt
+    () => { currentStep.value = 3; }, // Voicemail
+    () => { currentStep.value = 4; }, // Transcription
+    () => { showCallSummary.value = true; }, // Summary to you
+    () => { showAutoReply.value = true; isAnimating.value = false; } // Auto-reply to customer
+  ];
+  
+  steps.forEach((step, index) => {
+    setTimeout(step, (index + 1) * 1000);
+  });
 };
 
-const callWorkflowSteps = [
+onMounted(() => {
+  setTimeout(startWorkflowAnimation, 1000);
+});
+
+const smsExamples = [
   {
-    id: 1,
-    title: "Customer calls your business number",
-    subtitle: "Looks local with your own Aussie number",
-    color: "sky",
-    status: "primary"
+    icon: 'bolt',
+    title: 'SMS Response',
+    subtitle: 'Electrician Example',
+    customerMessage: 'Need power points installed in new kitchen',
+    aiResponse: 'G\'day! Power point install typically $380-$520 incl. callout. Takes 2-3 hours. Happy to give you a proper quote! Cheers, Dave.',
+    responseTime: '2 seconds'
   },
   {
-    id: 2,
-    title: "Forward to your mobile",
-    subtitle: null,
-    color: "blue",
-    status: "optional",
-    badge: "Optional"
+    icon: 'robot',
+    title: 'SMS Response', 
+    subtitle: 'Plumber Example',
+    customerMessage: 'Hot water system leaking, need urgent repair',
+    aiResponse: 'No worries mate! Hot water repairs $420-$680 incl. callout. Can come out tonight if urgent. Give us a bell! - Mike',
+    responseTime: '3 seconds'
   },
   {
-    id: 3,
-    title: "Custom voicemail plays if unanswered",
-    subtitle: "You can define your custom message",
-    color: "blue",
-    status: "secondary"
-  },
-  {
-    id: 4,
-    title: "Voicemail transcribed instantly",
-    subtitle: null,
-    color: "blue",
-    status: "secondary"
-  },
-  {
-    id: 5,
-    title: "Smart SMS sent to you",
-    subtitle: "Your AI agent summarises what they said, what they want, and potential price",
-    color: "blue",
-    status: "secondary"
-  },
-  {
-    id: 6,
-    title: "Auto-reply sent to caller",
-    subtitle: "Your AI agent summarises what they said and send them an instant quote based on your pricing",
-    color: "green",
-    status: "success",
-    badge: "Optional"
+    icon: 'wand-sparkles',
+    title: 'SMS Response',
+    subtitle: 'Cleaner Example', 
+    customerMessage: 'Bond clean for 3 bedroom house next week?',
+    aiResponse: 'Hi there! 3BR bond clean typically $680-$950. Includes all rooms, kitchen, bathrooms. Guaranteed to pass inspection! - Sarah',
+    responseTime: '4 seconds'
   }
 ];
-
-const smsWorkflowSteps = [
-  {
-    id: 1,
-    title: "Customer texts your number",
-    subtitle: "24/7 — even weekends or after hours",
-    color: "sky",
-    status: "primary"
-  },
-  {
-    id: 2,
-    title: "AI reads the message and understands intent and the customer's needs",
-    subtitle: null,
-    color: "blue",
-    status: "secondary"
-  },
-  {
-    id: 3,
-    title: "Instant quote based on your pricing and the job description",
-    subtitle: null,
-    color: "blue",
-    status: "secondary"
-  },
-  {
-    id: 4,
-    title: "You're first to respond",
-    subtitle: "Which often means you win the job!",
-    color: "green",
-    status: "success"
-  }
-];
-
-const getStepClasses = (color, status) => {
-  const colorMap = {
-    sky: status === 'primary' ? 'bg-sky-500' : 'bg-sky-400',
-    blue: 'bg-blue-400',
-    green: 'bg-green-500'
-  };
-  return colorMap[color] || 'bg-gray-400';
-};
-
-const getBadgeClasses = (status) => {
-  if (status === 'optional') return 'text-blue-600 bg-blue-100';
-  if (status === 'success') return 'text-green-600 bg-green-100';
-  return 'text-gray-600 bg-gray-100';
-};
 </script>
 
 <template>
-
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="text-center mb-8 sm:mb-12">
-        <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 mb-4">
-        Beat Competitors with Lightning-Fast SMS Replies
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-16">
+        <h2 class="text-4xl sm:text-5xl font-extrabold text-slate-900 mb-6">
+          Beat Competitors with Lightning-Fast SMS Replies
         </h2>
-        <p class="text-base sm:text-lg lg:text-xl text-slate-600 max-w-3xl mx-auto">
-        Customer texts you at 8:30 PM? AI replies instantly with a professional quote using your rates. Weekend inquiry? No worries, you're always first to respond.
+        <p class="text-xl text-slate-600 max-w-4xl mx-auto">
+          Customer texts you at 8:30 PM? AI replies instantly with a professional quote using your rates. Weekend inquiry? No worries, you're always first to respond.
         </p>
-    </div>
-    
-    <!-- SMS Examples Row -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 mb-12 sm:mb-16">
-        <!-- Electrician SMS -->
-        <div class="bg-white rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-lg border border-sky-100 hover:scale-105 transition-transform duration-300">
-        <div class="text-center mb-4 sm:mb-6">
-            <div class="bg-sky-100 rounded-full w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center mx-auto mb-2 sm:mb-3">
-            <font-awesome-icon :icon="['fas', 'bolt']" class="text-sky-600 text-base sm:text-lg lg:text-2xl" />
+      </div>
+
+      <!-- SMS Examples Row -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
+        <div 
+          v-for="(example, index) in smsExamples" 
+          :key="index"
+          class="cursor-pointer bg-white rounded-2xl p-6 shadow-xl border border-sky-100 hover:scale-105 transition-transform duration-300"
+        >
+          <div class="text-center mb-6">
+            <div class="bg-sky-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-3">
+              <font-awesome-icon :icon="['fas', example.icon]" class="text-sky-600 text-2xl" />
             </div>
-            <h3 class="text-base sm:text-lg lg:text-xl font-bold text-slate-900">SMS Response</h3>
-            <p class="text-xs sm:text-sm text-slate-600">Electrician Example</p>
-        </div>
-        
-        <div class="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 space-y-2 sm:space-y-3">
+            <h3 class="text-xl font-bold text-slate-900">{{ example.title }}</h3>
+            <p class="text-sm text-slate-600">{{ example.subtitle }}</p>
+          </div>
+          
+          <div class="bg-gray-50 rounded-xl p-4 space-y-3">
+            <!-- Customer Message -->
             <div class="flex justify-start">
-            <div class="bg-gray-200 rounded-2xl rounded-bl-md px-2 sm:px-3 py-1.5 sm:py-2 max-w-[85%] sm:max-w-xs">
-                <p class="text-xs sm:text-sm text-gray-800">Need power points installed in new kitchen</p>
-                <div class="text-xs text-gray-500 mt-1">2:15 PM</div>
-            </div>
+              <div class="bg-gray-200 rounded-2xl rounded-bl-md px-3 py-2 max-w-xs">
+                <p class="text-sm text-gray-800">{{ example.customerMessage }}</p>
+                <div class="text-xs text-gray-500 mt-1">{{ index === 0 ? '2:15 PM' : index === 1 ? '9:22 PM' : '4:45 PM' }}</div>
+              </div>
             </div>
             
             <!-- Typing Indicator -->
             <div class="flex justify-end">
-            <div class="bg-gray-300 rounded-2xl rounded-br-md px-3 sm:px-4 py-1.5 sm:py-2">
+              <div class="bg-gray-300 rounded-2xl rounded-br-md px-4 py-2">
                 <div class="flex space-x-1">
-                <div class="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-gray-600 rounded-full animate-bounce"></div>
-                <div class="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-gray-600 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
-                <div class="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-gray-600 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+                  <div class="w-1.5 h-1.5 bg-gray-600 rounded-full animate-bounce"></div>
+                  <div class="w-1.5 h-1.5 bg-gray-600 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
+                  <div class="w-1.5 h-1.5 bg-gray-600 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
                 </div>
-            </div>
+              </div>
             </div>
             
+            <!-- AI Response -->
             <div class="flex justify-end">
-            <div class="bg-blue-500 rounded-2xl rounded-br-md px-2 sm:px-3 py-1.5 sm:py-2 max-w-[85%] sm:max-w-xs">
-                <p class="text-xs sm:text-sm text-white">G'day! Power point install typically $380-$520 incl. callout. Takes 2-3 hours. Happy to give you a proper quote! Cheers, Dave.</p>
+              <div class="bg-blue-500 rounded-2xl rounded-br-md px-3 py-2 max-w-xs">
+                <p class="text-sm text-white">{{ example.aiResponse }}</p>
                 <div class="text-xs text-blue-200 mt-1 flex items-center justify-end">
-                <span>2:15 PM</span>
-                <div class="ml-1 text-white">✓✓</div>
+                  <span>{{ index === 0 ? '2:15 PM' : index === 1 ? '9:22 PM' : '4:45 PM' }}</span>
+                  <div class="ml-1 text-white">✓✓</div>
                 </div>
-            </div>
+              </div>
             </div>
             
             <div class="flex justify-center">
-            <span class="bg-green-100 text-green-800 px-2 sm:px-3 py-1 rounded-full text-xs font-semibold">
-                ⚡ Replied in 2 seconds
-            </span>
+              <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-semibold">
+                ⚡ Replied in {{ example.responseTime }}
+              </span>
             </div>
+          </div>
         </div>
+      </div>
+
+      <!-- Interactive Call Workflow Section -->
+      <div class="bg-white rounded-3xl p-8 shadow-2xl border border-sky-100 mb-16">
+        <div class="text-center mb-12">
+          <h3 class="text-3xl font-bold text-slate-900 mb-4">Missed Call Handling</h3>
+          <p class="text-lg text-slate-600 mb-6">Never miss another opportunity</p>
+          <button 
+            @click="startWorkflowAnimation"
+            :disabled="isAnimating"
+            class="inline-flex items-center px-6 py-3 bg-sky-600 hover:bg-sky-700 text-white font-semibold rounded-lg transition-colors duration-200"
+            :class="{ 'opacity-50 cursor-not-allowed': isAnimating }"
+          >
+            <font-awesome-icon :icon="['fas', 'fa-play']" class="mr-2" />
+            {{ isAnimating ? 'Watch the Magic...' : 'See How It Works' }}
+          </button>
         </div>
 
-        <!-- Plumber SMS -->
-        <div class="bg-white rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-lg border border-sky-100 hover:scale-105 transition-transform duration-300">
-        <div class="text-center mb-4 sm:mb-6">
-            <div class="bg-sky-100 rounded-full w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center mx-auto mb-2 sm:mb-3">
-            <font-awesome-icon :icon="['fas', 'fa-robot']" class="text-sky-600 text-base sm:text-lg lg:text-2xl" />
+        <!-- Visual Workflow -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+          <!-- Left Side: Flow Diagram -->
+          <div class="space-y-6">
+            <!-- Step 1: Call Received -->
+            <div class="flex items-center gap-4 p-4 rounded-xl transition-all duration-300"
+                 :class="currentStep >= 1 ? 'bg-sky-50 border-2 border-sky-200' : 'bg-gray-50 border-2 border-gray-200'">
+              <div class="w-12 h-12 rounded-full flex items-center justify-center transition-colors duration-300"
+                   :class="currentStep >= 1 ? 'bg-sky-500 text-white' : 'bg-gray-300 text-gray-600'">
+                <font-awesome-icon :icon="['fas', 'fa-phone-alt']" />
+              </div>
+              <div>
+                <h4 class="font-semibold text-slate-800">Customer calls your business number</h4>
+                <p class="text-sm text-slate-600">Looks local with your own Aussie number</p>
+              </div>
             </div>
-            <h3 class="text-base sm:text-lg lg:text-xl font-bold text-slate-900">SMS Response</h3>
-            <p class="text-xs sm:text-sm text-slate-600">Plumber Example</p>
-        </div>
-        
-        <div class="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 space-y-2 sm:space-y-3">
-            <div class="flex justify-start">
-            <div class="bg-gray-200 rounded-2xl rounded-bl-md px-2 sm:px-3 py-1.5 sm:py-2 max-w-[85%] sm:max-w-xs">
-                <p class="text-xs sm:text-sm text-gray-800">Hot water system leaking, need urgent repair</p>
-                <div class="text-xs text-gray-500 mt-1">9:22 PM</div>
-            </div>
-            </div>
-            
-            <!-- Typing Indicator -->
-            <div class="flex justify-end">
-            <div class="bg-gray-300 rounded-2xl rounded-br-md px-3 sm:px-4 py-1.5 sm:py-2">
-                <div class="flex space-x-1">
-                <div class="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-gray-600 rounded-full animate-bounce"></div>
-                <div class="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-gray-600 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
-                <div class="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-gray-600 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+
+            <!-- Step 2: Forward Attempt -->
+            <div class="flex items-center gap-4 p-4 rounded-xl transition-all duration-300"
+                 :class="currentStep >= 2 ? 'bg-blue-50 border-2 border-blue-200' : 'bg-gray-50 border-2 border-gray-200'">
+              <div class="w-12 h-12 rounded-full flex items-center justify-center transition-colors duration-300"
+                   :class="currentStep >= 2 ? 'bg-blue-500 text-white' : 'bg-gray-300 text-gray-600'">
+                <font-awesome-icon :icon="['fas', 'fa-mobile-alt']" />
+              </div>
+              <div>
+                <h4 class="font-semibold text-slate-800">Forward to your mobile</h4>
+                <div class="flex items-center gap-2">
+                  <p class="text-sm text-slate-600">Ring for 20 seconds</p>
+                  <span class="text-xs px-2 py-1 bg-blue-100 text-blue-600 rounded-full font-medium">Optional</span>
                 </div>
-            </div>
-            </div>
-            
-            <div class="flex justify-end">
-            <div class="bg-blue-500 rounded-2xl rounded-br-md px-2 sm:px-3 py-1.5 sm:py-2 max-w-[85%] sm:max-w-xs">
-                <p class="text-xs sm:text-sm text-white">No worries mate! Hot water repairs $420-$680 incl. callout. Can come out tonight if urgent. Give us a bell! - Mike</p>
-                <div class="text-xs text-blue-200 mt-1 flex items-center justify-end">
-                <span>9:22 PM</span>
-                <div class="ml-1 text-white">✓✓</div>
-                </div>
-            </div>
-            </div>
-            
-            <div class="flex justify-center">
-            <span class="bg-green-100 text-green-800 px-2 sm:px-3 py-1 rounded-full text-xs font-semibold">
-                ⚡ Replied in 3 seconds
-            </span>
-            </div>
-        </div>
-        </div>
-
-        <!-- Cleaner SMS -->
-        <div class="bg-white rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-lg border border-sky-100 hover:scale-105 transition-transform duration-300 md:col-span-2 lg:col-span-1">
-        <div class="text-center mb-4 sm:mb-6">
-            <div class="bg-sky-100 rounded-full w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center mx-auto mb-2 sm:mb-3">
-            <font-awesome-icon :icon="['fas', 'fa-wand-sparkles']" class="text-sky-600 text-base sm:text-lg lg:text-2xl" />
-            </div>
-            <h3 class="text-base sm:text-lg lg:text-xl font-bold text-slate-900">SMS Response</h3>
-            <p class="text-xs sm:text-sm text-slate-600">Cleaner Example</p>
-        </div>
-        
-        <div class="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 space-y-2 sm:space-y-3">
-            <div class="flex justify-start">
-            <div class="bg-gray-200 rounded-2xl rounded-bl-md px-2 sm:px-3 py-1.5 sm:py-2 max-w-[85%] sm:max-w-xs">
-                <p class="text-xs sm:text-sm text-gray-800">Bond clean for 3 bedroom house next week?</p>
-                <div class="text-xs text-gray-500 mt-1">4:45 PM</div>
-            </div>
-            </div>
-            
-            <!-- Typing Indicator -->
-            <div class="flex justify-end">
-            <div class="bg-gray-300 rounded-2xl rounded-br-md px-3 sm:px-4 py-1.5 sm:py-2">
-                <div class="flex space-x-1">
-                <div class="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-gray-600 rounded-full animate-bounce"></div>
-                <div class="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-gray-600 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
-                <div class="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-gray-600 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
-                </div>
-            </div>
-            </div>
-            
-            <div class="flex justify-end">
-            <div class="bg-blue-500 rounded-2xl rounded-br-md px-2 sm:px-3 py-1.5 sm:py-2 max-w-[85%] sm:max-w-xs">
-                <p class="text-xs sm:text-sm text-white">Hi there! 3BR bond clean typically $680-$950. Includes all rooms, kitchen, bathrooms. Guaranteed to pass inspection! - Sarah</p>
-                <div class="text-xs text-blue-200 mt-1 flex items-center justify-end">
-                <span>4:45 PM</span>
-                <div class="ml-1 text-white">✓✓</div>
-                </div>
-            </div>
-            </div>
-            
-            <div class="flex justify-center">
-            <span class="bg-green-100 text-green-800 px-2 sm:px-3 py-1 rounded-full text-xs font-semibold">
-                ⚡ Replied in 4 seconds
-            </span>
-            </div>
-        </div>
-        </div>
-
-        <!-- Missed Call AI Summary Card (Styled Like SMS) - SMS to You -->
-<div class="bg-white rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-lg border border-sky-100 hover:scale-105 transition-transform duration-300 md:col-span-2 lg:col-span-1">
-  <div class="text-center mb-4 sm:mb-6">
-    <div class="bg-sky-100 rounded-full w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center mx-auto mb-2 sm:mb-3">
-      <font-awesome-icon :icon="['fas', 'fa-phone-slash']" class="text-sky-600 text-base sm:text-lg lg:text-2xl" />
-    </div>
-    <h3 class="text-base sm:text-lg lg:text-xl font-bold text-slate-900">Call Summary</h3>
-    <p class="text-xs sm:text-sm text-slate-600">Electrician Example</p>
-  </div>
-
-  <div class="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 space-y-2 sm:space-y-3">
-    <div class="flex justify-start">
-      <div class="bg-gray-200 rounded-2xl rounded-bl-md px-2 sm:px-3 py-1.5 sm:py-2 max-w-[85%] sm:max-w-xs">
-        <p class="text-xs sm:text-sm text-gray-800">Hey mate, just need someone to take a look at a fuse box tripping out. Can you swing by this week?</p>
-        <div class="text-xs text-gray-500 mt-1">10:18 AM</div>
-      </div>
-    </div>
-
-    <!-- Typing Indicator -->
-    <div class="flex justify-end">
-      <div class="bg-gray-300 rounded-2xl rounded-br-md px-3 sm:px-4 py-1.5 sm:py-2">
-        <div class="flex space-x-1">
-          <div class="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-gray-600 rounded-full animate-bounce"></div>
-          <div class="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-gray-600 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
-          <div class="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-gray-600 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="flex justify-end">
-      <div class="bg-blue-500 rounded-2xl rounded-br-md px-2 sm:px-3 py-1.5 sm:py-2 max-w-[85%] sm:max-w-xs">
-        <p class="text-xs sm:text-sm text-white">
-          📞 Missed Call from 0482 123 456<br>
-          💬 Fuse box tripping — wants someone this week<br>
-          💰 Est. Value: $320–$450<br>
-          ⚡ Urgency: Medium
-        </p>
-        <div class="text-xs text-blue-200 mt-1 flex items-center justify-end">
-          <span>10:18 AM</span>
-          <div class="ml-1 text-white">✓✓</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="flex justify-center">
-      <span class="bg-green-100 text-green-800 px-2 sm:px-3 py-1 rounded-full text-xs font-semibold">
-        🧠 Summary sent in 15 seconds
-      </span>
-    </div>
-  </div>
-</div>
-
-<!-- Auto Reply to Customer Example (Styled Like SMS) -->
-<div class="bg-white rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-lg border border-sky-100 hover:scale-105 transition-transform duration-300 md:col-span-2 lg:col-span-1">
-  <div class="text-center mb-4 sm:mb-6">
-    <div class="bg-sky-100 rounded-full w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center mx-auto mb-2 sm:mb-3">
-      <font-awesome-icon :icon="['fas', 'fa-reply']" class="text-sky-600 text-base sm:text-lg lg:text-2xl" />
-    </div>
-    <h3 class="text-base sm:text-lg lg:text-xl font-bold text-slate-900">Auto-Reply to Caller</h3>
-    <p class="text-xs sm:text-sm text-slate-600">What Your Customer Receives</p>
-  </div>
-
-  <div class="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 space-y-2 sm:space-y-3">
-    <div class="flex justify-start">
-      <div class="bg-gray-200 rounded-2xl rounded-bl-md px-2 sm:px-3 py-1.5 sm:py-2 max-w-[85%] sm:max-w-xs">
-        <p class="text-xs sm:text-sm text-gray-800">Hey mate, just need someone to take a look at a fuse box tripping out. Can you swing by this week?</p>
-        <div class="text-xs text-gray-500 mt-1">10:18 AM</div>
-      </div>
-    </div>
-
-    <!-- Typing Indicator -->
-    <div class="flex justify-end">
-      <div class="bg-gray-300 rounded-2xl rounded-br-md px-3 sm:px-4 py-1.5 sm:py-2">
-        <div class="flex space-x-1">
-          <div class="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-gray-600 rounded-full animate-bounce"></div>
-          <div class="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-gray-600 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
-          <div class="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-gray-600 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="flex justify-end">
-      <div class="bg-blue-500 rounded-2xl rounded-br-md px-2 sm:px-3 py-1.5 sm:py-2 max-w-[85%] sm:max-w-xs">
-        <p class="text-xs sm:text-sm text-white">
-          Thanks for calling! I didn’t catch you just now but I’ll check your message and get back shortly. If urgent, reply here. - Dave
-        </p>
-        <div class="text-xs text-blue-200 mt-1 flex items-center justify-end">
-          <span>10:19 AM</span>
-          <div class="ml-1 text-white">✓✓</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="flex justify-center">
-      <span class="bg-green-100 text-green-800 px-2 sm:px-3 py-1 rounded-full text-xs font-semibold">
-        🤖 Auto-Reply Sent Instantly
-      </span>
-    </div>
-  </div>
-</div>
-
-    </div>
-
-    <!-- Modern Split Workflow: Calls & SMS -->
-    <div class="bg-gradient-to-br from-slate-50 via-blue-50 to-sky-50">
-        <!-- Modern Split Workflow: Calls & SMS -->
-        <div class="bg-white rounded-2xl p-4 sm:p-6 shadow-xl border border-sky-100 backdrop-blur-sm">
-            <div class="text-center mb-8 sm:mb-12">
-            <h3 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 mb-4 leading-tight">
-                Whether They Text or Call — You're Always Covered
-            </h3>
-            <p class="text-slate-600 text-base sm:text-lg lg:text-xl max-w-4xl mx-auto leading-relaxed">
-                PingMate handles every missed call or message — automatically, professionally, and fast.
-            </p>
+              </div>
             </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-10">
-            <!-- Call Workflow -->
-            <div class="bg-gradient-to-br from-slate-50 to-blue-50 rounded-xl p-4 sm:p-6 lg:p-8 space-y-4 sm:space-y-6 shadow-lg border border-sky-100 hover:shadow-xl transition-all duration-300">
-                <div class="flex items-center gap-3 sm:gap-4 mb-4 sm:mb-6">
-                <div class="bg-gradient-to-br from-sky-100 to-blue-100 p-3 sm:p-4 rounded-2xl shadow-sm">
-                    <font-awesome-icon :icon="['fas', 'fa-phone']" class="text-sky-600 text-lg sm:text-2xl" />
+            <!-- Step 3: Voicemail -->
+            <div class="flex items-center gap-4 p-4 rounded-xl transition-all duration-300"
+                 :class="currentStep >= 3 ? 'bg-purple-50 border-2 border-purple-200' : 'bg-gray-50 border-2 border-gray-200'">
+              <div class="w-12 h-12 rounded-full flex items-center justify-center transition-colors duration-300"
+                   :class="currentStep >= 3 ? 'bg-purple-500 text-white' : 'bg-gray-300 text-gray-600'">
+                <font-awesome-icon :icon="['fas', 'fa-voicemail']" />
+              </div>
+              <div>
+                <h4 class="font-semibold text-slate-800">Custom voicemail plays if unanswered</h4>
+                <p class="text-sm text-slate-600">You can define your custom message</p>
+              </div>
+            </div>
+
+            <!-- Step 4: Transcription -->
+            <div class="flex items-center gap-4 p-4 rounded-xl transition-all duration-300"
+                 :class="currentStep >= 4 ? 'bg-green-50 border-2 border-green-200' : 'bg-gray-50 border-2 border-gray-200'">
+              <div class="w-12 h-12 rounded-full flex items-center justify-center transition-colors duration-300"
+                   :class="currentStep >= 4 ? 'bg-green-500 text-white' : 'bg-gray-300 text-gray-600'">
+                <font-awesome-icon :icon="['fas', 'fa-file-text']" />
+              </div>
+              <div>
+                <h4 class="font-semibold text-slate-800">Voicemail transcribed instantly</h4>
+                <p class="text-sm text-slate-600">AI converts speech to text in seconds</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Side: Live Results -->
+          <div class="space-y-6">
+            <!-- Summary to You -->
+            <div class="bg-white rounded-xl border-2 p-6 transition-all duration-500"
+                 :class="showCallSummary ? 'border-sky-200 shadow-lg scale-105' : 'border-gray-200 opacity-50'">
+              <div class="flex items-center gap-3 mb-4">
+                <div class="bg-sky-100 rounded-full w-12 h-12 flex items-center justify-center">
+                  <font-awesome-icon :icon="['fas', 'fa-user-tie']" class="text-sky-600" />
                 </div>
                 <div>
-                    <h4 class="text-xl sm:text-2xl font-bold text-slate-800">Missed Call Handling</h4>
-                    <p class="text-slate-600 text-xs sm:text-sm">Never miss another opportunity</p>
+                  <h4 class="font-bold text-slate-800">Smart SMS sent to you</h4>
+                  <p class="text-sm text-slate-600">Your AI agent summarises everything</p>
                 </div>
-                </div>
+              </div>
 
-                <div class="space-y-4 sm:space-y-5">
-                <div 
-                    v-for="step in callWorkflowSteps" 
-                    :key="step.id"
-                    class="group relative pl-6 sm:pl-8 hover:pl-8 sm:hover:pl-10 transition-all duration-200"
-                >
-                    <div class="absolute left-0 top-2">
-                    <div :class="[
-                        'w-3 h-3 sm:w-4 sm:h-4 rounded-full shadow-sm',
-                        getStepClasses(step.color, step.status)
-                    ]"></div>
-                    </div>
-                    <div class="pb-1">
-                    <div class="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 mb-1">
-                        <span class="text-sm sm:text-sm font-semibold text-slate-800 leading-relaxed">
-                        {{ step.title }}
-                        </span>
-                        <span 
-                        v-if="step.badge"
-                        :class="[
-                            'text-xs px-2 py-1 rounded-full font-medium self-start sm:self-auto',
-                            getBadgeClasses(step.status)
-                        ]"
-                        >
-                        {{ step.badge }}
-                        </span>
-                    </div>
-                    <p 
-                        v-if="step.subtitle" 
-                        class="text-xs text-slate-500 leading-relaxed pr-2"
-                    >
-                        {{ step.subtitle }}
+              <div class="bg-gray-50 rounded-lg p-4" v-show="showCallSummary">
+                <div class="flex justify-end">
+                  <div class="bg-blue-500 rounded-2xl rounded-br-md px-3 py-2 max-w-xs">
+                    <p class="text-sm text-white">
+                      📞 Missed Call from 0482 123 456<br>
+                      💬 Fuse box tripping — wants someone this week<br>
+                      💰 Est. Value: $320–$450<br>
+                      ⚡ Urgency: Medium
                     </p>
+                    <div class="text-xs text-blue-200 mt-1 flex items-center justify-end">
+                      <span>10:18 AM</span>
+                      <div class="ml-1 text-white">✓✓</div>
                     </div>
+                  </div>
                 </div>
+                <div class="flex justify-center mt-3">
+                  <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-semibold">
+                    🧠 Summary sent in 15 seconds
+                  </span>
                 </div>
+              </div>
             </div>
 
-            <!-- SMS Workflow -->
-            <div class="bg-gradient-to-br from-slate-50 to-sky-50 rounded-xl p-4 sm:p-6 lg:p-8 space-y-4 sm:space-y-6 shadow-lg border border-sky-100 hover:shadow-xl transition-all duration-300">
-                <div class="flex items-center gap-3 sm:gap-4 mb-4 sm:mb-6">
-                <div class="bg-gradient-to-br from-sky-100 to-blue-100 p-3 sm:p-4 rounded-2xl shadow-sm">
-                    <font-awesome-icon :icon="['fas', 'fa-comment-dots']" class="text-sky-600 text-lg sm:text-2xl" />
+            <!-- Auto-Reply to Customer -->
+            <div class="bg-white rounded-xl border-2 p-6 transition-all duration-500"
+                 :class="showAutoReply ? 'border-green-200 shadow-lg scale-105' : 'border-gray-200 opacity-50'">
+              <div class="flex items-center gap-3 mb-4">
+                <div class="bg-green-100 rounded-full w-12 h-12 flex items-center justify-center">
+                  <font-awesome-icon :icon="['fas', 'fa-reply']" class="text-green-600" />
                 </div>
                 <div>
-                    <h4 class="text-xl sm:text-2xl font-bold text-slate-800">SMS Replies</h4>
-                    <p class="text-slate-600 text-xs sm:text-sm">Instant professional responses</p>
+                  <h4 class="font-bold text-slate-800">Auto-reply sent to caller</h4>
+                  <div class="flex items-center gap-2">
+                    <p class="text-sm text-slate-600">Professional quote based on your pricing</p>
+                    <span class="text-xs px-2 py-1 bg-green-100 text-green-600 rounded-full font-medium">Optional</span>
+                  </div>
                 </div>
-                </div>
+              </div>
 
-                <div class="space-y-4 sm:space-y-5">
-                <div 
-                    v-for="step in smsWorkflowSteps" 
-                    :key="step.id"
-                    class="group relative pl-6 sm:pl-8 hover:pl-8 sm:hover:pl-10 transition-all duration-200"
-                >
-                    <div class="absolute left-0 top-2">
-                    <div :class="[
-                        'w-3 h-3 sm:w-4 sm:h-4 rounded-full shadow-sm',
-                        getStepClasses(step.color, step.status)
-                    ]"></div>
+              <div class="bg-gray-50 rounded-lg p-4" v-show="showAutoReply">
+                <div class="flex justify-end">
+                  <div class="bg-blue-500 rounded-2xl rounded-br-md px-3 py-2 max-w-xs">
+                    <p class="text-sm text-white">Thanks for calling! Fuse box issues typically $320-450 incl. callout. I'll check your message and get back shortly. If urgent, reply here. - Dave</p>
+                    <div class="text-xs text-blue-200 mt-1 flex items-center justify-end">
+                      <span>10:19 AM</span>
+                      <div class="ml-1 text-white">✓✓</div>
                     </div>
-                    <div class="pb-1">
-                    <div class="flex items-center gap-2 mb-1">
-                        <span class="text-sm sm:text-sm font-semibold text-slate-800 leading-relaxed">
-                        {{ step.title }}
-                        </span>
-                    </div>
-                    <p 
-                        v-if="step.subtitle" 
-                        class="text-xs text-slate-500 leading-relaxed pr-2"
-                    >
-                        {{ step.subtitle }}
-                    </p>
-                    </div>
+                  </div>
                 </div>
+                <div class="flex justify-center mt-3">
+                  <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-semibold">
+                    🤖 Auto-Reply Sent Instantly
+                  </span>
                 </div>
+              </div>
             </div>
-            </div>
-
-            <!-- Bottom CTA Section -->
-            <div class="mt-8 sm:mt-12 text-center">
-            <div class="bg-gradient-to-r from-sky-50 to-blue-50 rounded-xl p-4 sm:p-6 border border-sky-100">
-                <h5 class="text-base sm:text-lg font-bold text-slate-800 mb-2">
-                Ready to Never Miss Another Lead?
-                </h5>
-                <p class="text-slate-600 text-sm mb-4">
-                Join 200+ Australian tradies who capture every opportunity with PingMate
-                </p>
-                <div class="flex flex-col sm:flex-row gap-3 justify-center">
-                    <Button unstyled @click="visit(route('onboarding.show'))" class="cursor-pointer inline-flex items-center justify-center px-4 sm:px-6 py-3 bg-gradient-to-r from-sky-600 to-blue-600 hover:from-sky-700 hover:to-blue-700 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 text-sm sm:text-base">
-                        <font-awesome-icon :icon="['fas', 'fa-rocket']" class="mr-2" />
-                        Get started now
-                    </Button>
-                </div>
-            </div>
-            </div>
+          </div>
         </div>
+      </div>
+
+      <!-- Bottom CTA -->
+      <div class="text-center">
+        <div class="bg-gradient-to-r from-sky-50 to-blue-50 rounded-2xl p-8 border border-sky-100">
+          <h3 class="text-2xl font-bold text-slate-800 mb-4">
+            Ready to Never Miss Another Lead?
+          </h3>
+          <p class="text-slate-600 mb-6">
+            Join 100+ Australian tradies who capture every opportunity with PingMate
+          </p>
+          <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button unstyled class="inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-sky-600 to-blue-600 hover:from-sky-700 hover:to-blue-700 text-white font-bold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200">
+              <font-awesome-icon :icon="['fas', 'fa-rocket']" class="mr-2" />
+              Get Started Now
+            </Button>
+          </div>
+        </div>
+      </div>
     </div>
-</div>
 </template>

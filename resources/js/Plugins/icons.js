@@ -79,6 +79,8 @@ import {
   faBars,
   faArrowDown,
   faReply,
+  faPlay,
+  faUserTie,
 } from '@fortawesome/free-solid-svg-icons';
 
 // Regular Icons
@@ -164,6 +166,8 @@ library.add(
   faBars,
   faArrowDown,
   faReply,
+  faPlay,
+  faUserTie,
 );
 
 export default function SetupFontAwesome(app) {
