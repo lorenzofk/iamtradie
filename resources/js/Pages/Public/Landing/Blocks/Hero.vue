@@ -36,7 +36,10 @@ const visit = (url) => {
     </p>
 
     <div class="flex flex-col sm:flex-row justify-center gap-4 sm:gap-6 mt-6 sm:mt-8">
-      <Button unstyled label="🚀 Get Started Now" @click="visit(route('onboarding.show'))" class="cursor-pointer inline-flex items-center justify-center px-8 sm:px-12 py-3 sm:py-4 text-base sm:text-lg bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-white shadow-2xl transform hover:scale-105 transition-all duration-200 rounded-2xl font-bold" />
+      <Button unstyled @click="visit(route('onboarding.show'))" class="cursor-pointer inline-flex items-center justify-center px-8 sm:px-12 py-3 sm:py-4 text-base sm:text-lg bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-white shadow-2xl transform hover:scale-105 transition-all duration-200 rounded-2xl font-bold">
+        <font-awesome-icon :icon="['fas', 'rocket']" class="mr-2" />
+        Get Started Now
+      </Button>
       <Button unstyled @click="emit('scroll-to-section', 'how-it-works')" class="cursor-pointer inline-flex items-center justify-center px-8 sm:px-12 py-3 sm:py-4 text-base sm:text-lg border-2 border-sky-400/80 text-sky-200 bg-sky-500/10 backdrop-blur-sm hover:bg-sky-400 hover:text-slate-900 shadow-2xl transform hover:scale-105 transition-all duration-200 rounded-2xl font-bold">
         <font-awesome-icon :icon="['fas', 'fa-comments']" class="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
         See How It Works

@@ -77,7 +77,7 @@ import {
   faFileText,
   faClipboardList,
   faBars,
-  faArrowDown
+  faArrowDown,
 } from '@fortawesome/free-solid-svg-icons';
 
 // Regular Icons
@@ -161,7 +161,7 @@ library.add(
   faFileText,
   faClipboardList,
   faBars,
-  faArrowDown
+  faArrowDown,
 );
 
 export default function SetupFontAwesome(app) {

@@ -1,4 +1,11 @@
 <script setup>
+import { router } from '@inertiajs/vue3';
+import Button from '@/Shared/Ui/Button/Button.vue';
+
+const visit = (url) => {
+  router.visit(url);
+};
+
 const benefits = [
   {
     icon: ['fas', 'fa-phone'],
@@ -94,10 +101,10 @@ const proofPoints = [
 
             <!-- CTA Button -->
             <div class="text-center mb-4 sm:mb-6">
-              <a :href="route('onboarding.show')"
-                 class="inline-flex items-center justify-center w-full sm:w-auto px-8 sm:px-12 py-3 sm:py-4 bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700 text-white text-base sm:text-lg font-bold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200">
-                🚀 Get Started for $1 a Day
-              </a>
+              <Button unstyled @click="visit(route('onboarding.show'))" class="cursor-pointer inline-flex items-center justify-center px-4 sm:px-6 py-3 bg-gradient-to-r from-sky-600 to-blue-600 hover:from-sky-700 hover:to-blue-700 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 text-sm sm:text-base">
+                <font-awesome-icon :icon="['fas', 'rocket']" class="mr-2" />
+                Get Started for $1 a Day
+              </Button>
             </div>
 
             <!-- What Happens Next -->

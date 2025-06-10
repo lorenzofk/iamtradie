@@ -23,7 +23,10 @@ const visit = (url) => {
             <a href="#pricing" @click.prevent="emit('scroll-to-section', 'pricing')" class="text-gray-700 hover:text-blue-600 font-medium transition-colors">Pricing</a>
           </nav>
           <div class="flex space-x-4">
-            <Button unstyled label="Get started for $1 a day" @click="visit(route('onboarding.show'))" class="cursor-pointer inline-flex items-center px-4 py-2 rounded-md text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700 shadow-lg transition-all" />
+            <Button unstyled @click="visit(route('onboarding.show'))" class="cursor-pointer inline-flex items-center px-4 py-2 rounded-md text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700 shadow-lg transition-all">
+              <font-awesome-icon :icon="['fas', 'rocket']" class="mr-2" />
+              Get Started
+            </Button>
             <Button unstyled label="Login" @click="visit(route('login'))" class="cursor-pointer inline-flex items-center px-4 py-2 border border-blue-600 rounded-md text-sm font-medium text-blue-600 bg-white hover:bg-blue-50 transition-colors" />
           </div>
         </div>
