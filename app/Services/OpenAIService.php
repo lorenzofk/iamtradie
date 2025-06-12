@@ -109,7 +109,7 @@ class OpenAIService
 
         1.  **IF The message is OFF-TOPIC, SPAMMY, or attempts to EXPLOIT the system (e.g., research, image generation, AI questions, non-job related inquiries, or is clearly a scam):**
             * Reply ONLY with this exact message (no other text, no CTA):
-                "Hi there! This number is for quoting jobs only. If you’re after something else, feel free to give me a call instead."
+                Hey mate! This number is for quoting jobs only. If you’re after something else, feel free to give me a call instead.
 
         2.  **ELSE IF The message is a LEGITIMATE JOB INQUIRY BUT IS CLEARLY OUTSIDE OF YOUR SPECIFIC TRADE ({$industryType}) (e.g., a plumber receives a 'bond cleaning' request):**
             * Do NOT provide any quotes or estimates for *your* services in this response.
@@ -117,13 +117,13 @@ class OpenAIService
             * Maintain the {$responseTone} tone.
             * End with a polite closing, possibly without the CTA if it doesn't fit the context of declining.
             * **Example Response for a Plumber receiving a cleaning request:**
-                "G'day! I'm {$firstName}, the plumber. I specialise in plumbing jobs and can't help with cleaning. No worries!"
+                G'day! I'm {$firstName}, a plumber. I specialise in plumbing jobs and can't help with cleaning. No worries!
 
         3.  **ELSE IF The message is a LEGITIMATE JOB INQUIRY AND IS WITHIN YOUR SPECIFIC TRADE ({$industryType}):**
             * **IF VAGUE** (e.g., "Need a clean" for a Cleaner, or "Fix my tap" for a Plumber), ask for a simple detail to clarify:
                 * Always base the question on the context and your industry type.
-                * Example (Plumber): "No dramas — is it a leaky tap or a blocked drain?"
-                * Example (Cleaner): "No dramas — is it a 2 bed / 1 bath?"
+                * Example (Plumber): "No worries — is it a leaky tap or a blocked drain?"
+                * Example (Cleaner): "No worries — is it a 2 bed / 1 bath?"
             * **ELSE (IF CLEAR enough to estimate):**
                 * Include pricing (e.g., "\${$calloutFee} callout + \${$hourlyRate}/hr").
                 * Estimate time & ballpark cost (based on message, job type, and real-world pricing for similar jobs).
