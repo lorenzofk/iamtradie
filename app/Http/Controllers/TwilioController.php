@@ -26,6 +26,9 @@ class TwilioController extends Controller
         Log::info('Recording complete', $request->all());
     }
 
+    /**
+     * This method handles the missed call scenario.
+     */
     public function missedCall(Request $request): Response
     {
         Log::withContext(['action' => 'missed-call', 'data' => $request->all()]);
@@ -34,10 +37,9 @@ class TwilioController extends Controller
         $user = User::whereHas('settings', fn ($query) => $query->where('agent_sms_number', $called))->firstOrFail();
 
         $settings = $user->settings;
+        $response = new VoiceResponse();
 
         try {
-            $response = new VoiceResponse();
-    
             $response->say($settings->voicemail_message);
             $response->record([
                 'transcribe' => true,
@@ -50,14 +52,19 @@ class TwilioController extends Controller
 
             Log::info('[MISSED CALL] - Missed call response', ['response' => $response->asXML()]);
 
-            return response($response)->header('Content-Type', 'text/xml');
+            return response($response->asXML())->header('Content-Type', 'text/xml');
         } catch (Exception $e) {
             Log::error('[MISSED CALL] - Error', ['message' => $e->getMessage()]);
 
-            return response('<?xml version="1.0" encoding="UTF-8"?><Response><Say>We had an issue.</Say></Response>', status: 200)->header('Content-Type', 'text/xml');
+            $response->say("Sorry, we have a technical issue. Please try again later.");
+
+            return response($response->asXML())->header('Content-Type', 'text/xml');
         }
     }
 
+    /**
+     * This method handles the transcription of the voicemail.
+     */
     public function transcription(Request $request): Response
     {
         Log::withContext(['action' => 'transcription', 'data' => $request->all()]);
@@ -66,7 +73,9 @@ class TwilioController extends Controller
         $called = $request->input('Called');
         $text = $request->input('TranscriptionText');
 
-        $user = User::whereHas('settings', fn ($query) => $query->where('agent_sms_number', $called))->firstOrFail();
+        $user = User::whereHas('settings', 
+            fn ($query) => $query->where('agent_sms_number', $called)
+        )->firstOrFail();
 
         $settings = $user->settings;
 
@@ -89,12 +98,15 @@ class TwilioController extends Controller
             Log::info('[TRANSCRIPTION] - Quote response generated and SMS sent', ['quote' => $quote]);
         }
 
-        return response('OK', 200);
+        return response()->noContent();
     }
 
-    public function text(Request $request): Response
+    /**
+     * This method handles the text message scenario.
+     */
+    public function incomingText(Request $request): Response
     {
-        Log::withContext(['action' => 'text', 'data' => $request->all()]);
+        Log::withContext(['action' => 'incoming-text', 'data' => $request->all()]);
 
         $body = $request->input('Body');
         $twilioNumber = $request->input('To');
@@ -107,7 +119,7 @@ class TwilioController extends Controller
 
         throw_if(empty($settings), new Exception('Twilio number not configured for user'));
 
-        Log::info('[TEXT] - Generating quote response...');
+        Log::info('[INCOMING TEXT] - Generating quote response...');
 
         $aiResponse = $this->openAIService->generateQuoteResponse(
             message: $body,
@@ -118,7 +130,7 @@ class TwilioController extends Controller
             firstName: $user->first_name
         );
 
-        Log::info('[TEXT] - Quote response generated', ['quote' => $aiResponse]);
+        Log::info('[INCOMING TEXT] - Quote response generated', ['quote' => $aiResponse]);
 
         $data = [
             'user_id' => $user->id,
@@ -135,27 +147,27 @@ class TwilioController extends Controller
 
         Quote::create($data);
 
-        Log::info('[TEXT] - Quote created', ['quote' => $data]);
+        Log::info('[INCOMING TEXT] - Quote created', ['quote' => $data]);
 
         if ($settings->auto_send_sms) {
-            Log::info('[TEXT] - Auto send SMS is enabled. Sending SMS...');
+            Log::info('[INCOMING TEXT] - Auto send SMS is enabled. Sending SMS...');
 
             try {
                 $this->twilioService->send(to: $leadNumber, from: $twilioNumber, message: $aiResponse);
             } catch (Exception $e) {
-                Log::error('[TEXT] - Error sending SMS', ['message' => $e->getMessage()]);
+                Log::error('[INCOMING TEXT] - Error sending SMS', ['message' => $e->getMessage()]);
                 return response('error', 500);
             }
 
-            Log::info('[TEXT] - SMS sent', ['to' => $leadNumber, 'from' => $twilioNumber, 'message' => $aiResponse]);
+            Log::info('[INCOMING TEXT] - SMS sent', ['to' => $leadNumber, 'from' => $twilioNumber, 'message' => $aiResponse]);
         }
 
-        return response('OK', 200);
+        return response()->noContent();
     }
 
-    public function voice(Request $request): Response
+    public function incomingCall(Request $request): Response
     {
-        Log::withContext(['action' => 'voice', 'data' => $request->all()]);
+        Log::withContext(['action' => 'incoming-call', 'data' => $request->all()]);
 
         $twilioNumber = $request->input('To');
 
@@ -168,11 +180,11 @@ class TwilioController extends Controller
             $response->say("Sorry, we have a technical issue. Please try again later.");
             $response->hangup();
 
-            return response($response)->header('Content-Type', 'text/xml');
+            return response($response->asXML())->header('Content-Type', 'text/xml');
         }
 
         if ($settings->call_forward_enabled) {
-            Log::info('[VOICE] - Forwarding call to', ['phoneNumber' => $settings->phone_number, 'twilioNumber' => $twilioNumber]);
+            Log::info('[INCOMING CALL] - Forwarding call to', ['phoneNumber' => $settings->phone_number, 'twilioNumber' => $twilioNumber]);
 
             $dial = $response->dial($settings->phone_number, [
                 'timeout' => $settings->call_ring_duration,
@@ -183,11 +195,11 @@ class TwilioController extends Controller
 
             $dial->setCallerId($twilioNumber);
             
-            return response($response)->header('Content-Type', 'text/xml');
+            return response($response->asXML())->header('Content-Type', 'text/xml');
         }
 
-        Log::info('[VOICE] - Voicemail message', ['message' => $settings->voicemail_message]);
-        Log::info('[VOICE] - Call ring duration', ['duration' => $settings->call_ring_duration]);
+        Log::info('[INCOMING CALL] - Voicemail message', ['message' => $settings->voicemail_message]);
+        Log::info('[INCOMING CALL] - Call ring duration', ['duration' => $settings->call_ring_duration]);
 
         $response->say($settings->voicemail_message);
         $response->record([
@@ -199,6 +211,6 @@ class TwilioController extends Controller
             'timeout' => $settings->call_ring_duration,
         ]);
 
-        return response($response)->header('Content-Type', 'text/xml');
+        return response($response->asXML())->header('Content-Type', 'text/xml');
     }
 }
