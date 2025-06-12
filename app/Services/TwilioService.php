@@ -26,6 +26,7 @@ class TwilioService
             $this->client->messages->create($to, ['from' => $from, 'body' => $message]);
         } catch (Exception $e) {
             Log::error('Failed to send SMS', ['error' => $e->getMessage()]);
+            throw $e;
         }
         
         Log::info('SMS sent successfully');

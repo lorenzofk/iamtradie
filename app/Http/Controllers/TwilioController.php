@@ -140,7 +140,12 @@ class TwilioController extends Controller
         if ($settings->auto_send_sms) {
             Log::info('[TEXT] - Auto send SMS is enabled. Sending SMS...');
 
-            $this->twilioService->send(to: $leadNumber, from: $twilioNumber, message: $aiResponse);
+            try {
+                $this->twilioService->send(to: $leadNumber, from: $twilioNumber, message: $aiResponse);
+            } catch (Exception $e) {
+                Log::error('[TEXT] - Error sending SMS', ['message' => $e->getMessage()]);
+                return response('error', 500);
+            }
 
             Log::info('[TEXT] - SMS sent', ['to' => $leadNumber, 'from' => $twilioNumber, 'message' => $aiResponse]);
         }
