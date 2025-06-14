@@ -16,6 +16,9 @@ class OpenAIService
         $this->temperature = config('services.openai.temperature');
     }
 
+    /**
+     * This method generates a quote response for a given message.
+     */
     public function generateQuoteResponse(
         string $message,
         string $industryType,
@@ -23,7 +26,6 @@ class OpenAIService
         ?float $calloutFee = null,
         ?float $hourlyRate = null,
         string $responseTone = 'polite',
-        ?string $preferredCta = null,
         ?string $firstName = null
     ): string {
         try {
@@ -34,7 +36,6 @@ class OpenAIService
                 $calloutFee,
                 $hourlyRate,
                 $responseTone,
-                $preferredCta,
                 $firstName
             );
 
@@ -47,7 +48,7 @@ class OpenAIService
                 'temperature' => $this->temperature,
             ]);
 
-            return $response->choices[0]->message->content ?? $this->getFallbackResponse($firstName, $calloutFee, $hourlyRate, $preferredCta, $responseTone);
+            return $response->choices[0]->message->content ?? $this->getFallbackResponse($firstName, $calloutFee, $hourlyRate, $responseTone);
 
         } catch (Exception $e) {
             Log::error('OpenAI quote generation failed', [
@@ -56,10 +57,13 @@ class OpenAIService
                 'industry_type' => $industryType
             ]);
 
-            return $this->getFallbackResponse($firstName, $calloutFee, $hourlyRate, $preferredCta, $responseTone);
+            return $this->getFallbackResponse($firstName, $calloutFee, $hourlyRate, $responseTone);
         }
     }
 
+    /**
+     * This method builds the prompt for the quote response.
+     */
     private function buildQuotePrompt(
         string $clientMessage,
         string $industryType,
@@ -67,12 +71,11 @@ class OpenAIService
         ?float $calloutFee,
         ?float $hourlyRate,
         string $responseTone,
-        ?string $preferredCta,
         ?string $firstName
     ): string {
         $locationText = $location ?? 'Not specified but always in Australia';
         $toneText = $this->getToneInstructions($responseTone, $industryType);
-        $callToActionText = $preferredCta ?? $this->getDefaultCta($responseTone);
+        $callToActionText = $this->getDefaultCta($responseTone);
     
         $prompt = <<<EOT
         🎯 GOAL: Write one SMS reply (max 160 characters) from an Aussie tradie to a job enquiry.
@@ -138,14 +141,12 @@ class OpenAIService
     }
     
 
-    private function getFallbackResponse(
-        ?string $firstName,
-        ?float $calloutFee,
-        ?float $hourlyRate,
-        ?string $preferredCta,
-        string $responseTone
-    ): string {
-        $callToActionText = $preferredCta ?? $this->getDefaultCta($responseTone);
+    /**
+     * This method returns the fallback response for a given response tone.
+     */
+    private function getFallbackResponse(?string $firstName, ?float $calloutFee, ?float $hourlyRate, string $tone): string
+    {
+        $callToActionText = $this->getDefaultCta($tone);
 
         $message = "G'day! " .
             ($firstName ? "This is {$firstName}. " : '') .
@@ -155,11 +156,14 @@ class OpenAIService
             "I'll need to assess the job to give you an accurate quote. " .
             $callToActionText;
 
-        return strlen($message) <= 160
-            ? $message
-            : "Hi, happy to help. Callout \${$calloutFee}, \${$hourlyRate}/hr. Call me to discuss the job";
+        $shortMessage = "Hi, happy to help. Callout \${$calloutFee}, \${$hourlyRate}/hr. Call me to discuss the job";
+
+        return strlen($message) <= 160 ? $message : $shortMessage;
     }
 
+    /**
+     * This method returns the default call to action for a given response tone.
+     */
     private function getDefaultCta(string $responseTone): string
     {
         return match ($responseTone) {
@@ -170,6 +174,9 @@ class OpenAIService
         };
     }
 
+    /**
+     * This method returns the tone instructions for a given response tone and industry type.
+     */
     private function getToneInstructions(string $responseTone, string $industryType): string
     {
         $basePrompt = "You are an experienced Australian {$industryType} tradesperson with years of expertise. ";

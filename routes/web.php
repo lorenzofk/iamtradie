@@ -7,7 +7,7 @@ use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\Settings\BasicSettingsController;
 use App\Http\Controllers\Settings\CommunicationSettingsController;
 use App\Http\Controllers\QuoteController;
-use App\Http\Controllers\HomeController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LandingPageController;
 use App\Http\Controllers\OnboardingController;
 use App\Http\Controllers\Checkout\GuestCheckoutController;
@@ -29,7 +29,7 @@ Route::middleware('guest')->group(function () {
 });
 
 Route::middleware(['auth', Subscribed::class])->group(function () {
-    Route::get('/dashboard', [HomeController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::post('/logout', [LogoutController::class, 'logout'])->name('logout');
 
     Route::prefix('quotes')->name('quotes.')->group(function () {
@@ -50,9 +50,9 @@ Route::middleware(['auth', Subscribed::class])->group(function () {
 
     Route::prefix('billing')->name('billing.')->group(function () {
         Route::get('/', [BillingController::class, 'index'])->name('index');
+        Route::get('/manage', [BillingController::class, 'manage'])->name('manage');
         Route::post('/cancel', [BillingController::class, 'cancel'])->name('cancel');
         Route::post('/resume', [BillingController::class, 'resume'])->name('resume');
-        Route::get('/manage', [BillingController::class, 'manage'])->name('manage');
         Route::post('/subscribe', [BillingController::class, 'subscription'])->name('subscribe');
     });
 });

@@ -12,7 +12,10 @@ class TwilioService
 
     public function __construct()
     {
-        $this->client = new Client(config('services.twilio.sid'), config('services.twilio.token'));
+        $this->client = new Client(
+            username: config('services.twilio.sid'),
+            password: config('services.twilio.token')
+        );
     }
 
     /**
@@ -30,17 +33,5 @@ class TwilioService
         }
         
         Log::info('SMS sent successfully');
-    }
-
-    /**
-     * Provision a Twilio number for the user (stub for MVP).
-     */
-    public function provisionTwilioNumber($user): void
-    {
-        // In a real implementation, you would purchase a number from Twilio here.
-        // For MVP, just assign a static or fake number.
-        $number = '+61412345678'; // Replace with real logic or a pool of numbers
-        
-        $user->settings()->updateOrCreate([], ['agent_sms_number' => $number]);
     }
 }

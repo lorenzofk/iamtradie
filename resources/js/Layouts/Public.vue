@@ -11,7 +11,7 @@ const props = defineProps({
 });
 
 useHead({
-  title: () => (props.layout?.title ? `My Boilerplate App :: ${props.layout.title}` : "My Boilerplate App"),
+  title: () => (props.layout?.title ? `PingMate :: ${props.layout.title}` : "PingMate - Never Miss a Lead"),
 });
 
 setToast(PrimeVueUseToast());
