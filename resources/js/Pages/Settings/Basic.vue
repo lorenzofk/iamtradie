@@ -51,7 +51,7 @@ const onFormSubmit = () => {
 
 
 <template>
-  <div class="max-w-6xl mx-auto py-4 lg:py-6 px-4 sm:px-6 lg:px-8">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
     <!-- Header -->
     <div class="flex items-center justify-between mb-4 lg:mb-6 bg-white rounded-xl shadow-sm border-0 p-4 lg:p-6">
       <h1 class="text-xl lg:text-2xl font-bold text-gray-900">Settings</h1>

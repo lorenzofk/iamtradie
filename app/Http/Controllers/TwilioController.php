@@ -8,6 +8,7 @@ use App\Services\TwilioService;
 use Exception;
 use Illuminate\Http\Request;
 use App\Models\Quote;
+use App\Models\Voicemail;
 use App\Enums\QuoteSource;
 use App\Enums\QuoteStatus;
 use Twilio\TwiML\VoiceResponse;
@@ -21,9 +22,42 @@ class TwilioController extends Controller
         private readonly OpenAIService $openAIService
     ) {}
 
+    /**
+     * This method handles the after record scenario.
+     */
     public function afterRecord(Request $request)
     {
-        Log::info('Recording complete', $request->all());
+        Log::withContext(['action' => 'after-record', 'data' => $request->all()]);
+
+        $data = $request->all();
+        
+        $user = User::whereHas('settings', fn ($query) => 
+            $query->where('agent_sms_number', $data['Called'])
+        )->first();
+
+        throw_if(empty($user), new Exception('User not found for number'));
+
+        $data = [
+            'user_id' => $user->id,
+            'call_sid' => $data['CallSid'],
+            'from_number' => $data['From'] ?? $data['Caller'],
+            'caller_country' => $data['CallerCountry'] ?? $data['FromCountry'],
+            'direction' => $data['Direction'] ?? 'inbound',
+            'call_status' => $data['CallStatus'] ?? 'completed',
+            'recording_sid' => $data['RecordingSid'] ?? null,
+            'recording_url' => $data['RecordingUrl'] ?? null,
+            'recording_duration' => isset($data['RecordingDuration']) ? (int) $data['RecordingDuration'] : null,
+            'digits' => $data['Digits'] ?? null,
+        ];
+
+        try {
+            $voicemail = Voicemail::create($data);
+            Log::info('[AFTER RECORD] - Voicemail record created', ['voicemail_id' => $voicemail->id]);
+        } catch (Exception $e) {
+            Log::error('[AFTER RECORD] - Failed to create voicemail record', ['error' => $e->getMessage(), 'data' => $data]);
+        }
+
+        return response()->noContent();
     }
 
     /**
@@ -46,7 +80,6 @@ class TwilioController extends Controller
                 'transcribeCallback' => route('twilio.transcription'),
                 'action' => route('twilio.after-record'),
                 'method' => 'POST',
-                'maxLength' => 30,
                 'timeout' => $settings->call_ring_duration,
             ]);
 
@@ -71,7 +104,8 @@ class TwilioController extends Controller
 
         $caller = $request->input('From');
         $called = $request->input('Called');
-        $text = $request->input('TranscriptionText');
+        $callSid = $request->input('CallSid');
+        $transcription = $request->input('TranscriptionText');
 
         $user = User::whereHas('settings', 
             fn ($query) => $query->where('agent_sms_number', $called)
@@ -81,11 +115,23 @@ class TwilioController extends Controller
 
         throw_if(empty($settings), new Exception('Twilio number not configured for user'));
 
+        $voicemail = $user->voicemails()->where('call_sid', $callSid)->first();
+
+        if ($voicemail) {
+            $voicemail->update([
+                'transcription_text' => $transcription,
+                'transcription_processed' => true,
+            ]);
+            Log::info('[TRANSCRIPTION] - Voicemail record updated with transcription', ['voicemail_id' => $voicemail->id]);
+        } else {
+            Log::warning('[TRANSCRIPTION] - Voicemail record not found', ['call_sid' => $callSid, 'user_id' => $user->id]);
+        }
+
         if ($settings->auto_send_sms_after_voicemail) {
             Log::info('[TRANSCRIPTION] - Auto send SMS after voice mail is enabled. Generating quote response...');
             
             $quote = $this->openAIService->generateQuoteResponse(
-                message: $text,
+                message: $transcription,
                 industryType: $settings->industry_type->value,
                 calloutFee: $settings->callout_fee,
                 hourlyRate: $settings->hourly_rate,
@@ -96,6 +142,16 @@ class TwilioController extends Controller
             $this->twilioService->send(to: $caller, from: $settings->agent_sms_number, message: $quote);
 
             Log::info('[TRANSCRIPTION] - Quote response generated and SMS sent', ['quote' => $quote]);
+
+            if ($voicemail) {
+                $voicemail->update([
+                    'ai_response' => $quote,
+                    'sms_sent' => true,
+                    'sms_sent_at' => now(),
+                ]);
+
+                Log::info('[TRANSCRIPTION] - Voicemail record updated with AI response', ['voicemail_id' => $voicemail->id]);
+            }
         }
 
         return response()->noContent();
@@ -165,6 +221,9 @@ class TwilioController extends Controller
         return response()->noContent();
     }
 
+    /**
+     * This method handles the incoming call scenario.
+     */
     public function incomingCall(Request $request): Response
     {
         Log::withContext(['action' => 'incoming-call', 'data' => $request->all()]);
@@ -188,7 +247,6 @@ class TwilioController extends Controller
 
             $dial = $response->dial($settings->phone_number, [
                 'timeout' => $settings->call_ring_duration,
-                'maxLength' => 30,
                 'action' => route('twilio.missed-call'),
                 'method' => 'POST',
             ]);
@@ -207,7 +265,6 @@ class TwilioController extends Controller
             'transcribeCallback' => route('twilio.transcription'),
             'action' => route('twilio.after-record'),
             'method' => 'POST',
-            'maxLength' => 30,
             'timeout' => $settings->call_ring_duration,
         ]);
 

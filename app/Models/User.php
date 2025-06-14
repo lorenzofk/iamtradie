@@ -72,4 +72,12 @@ class User extends Authenticatable
     {
         return $this->hasMany(Quote::class);
     }
+
+    /**
+     * Get the voicemails for the user.
+     */
+    public function voicemails(): HasMany
+    {
+        return $this->hasMany(Voicemail::class);
+    }
 }
