@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\ServiceProvider;
 
@@ -28,5 +29,21 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Vite::useBuildDirectory('build/vite');
+        
+        $this->registerLogViewerGate();
+    }
+
+    /**
+     * Register the Log Viewer authorization gate
+     */
+    protected function registerLogViewerGate(): void
+    {
+        Gate::define('viewLogViewer', function ($user = null) {
+            if (app()->environment('local')) {
+                return true;
+            }
+            
+            return ! empty($user);
+        });
     }
 }
