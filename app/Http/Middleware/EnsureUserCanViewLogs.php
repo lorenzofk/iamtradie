@@ -25,8 +25,14 @@ class EnsureUserCanViewLogs
             return $next($request);
         }
 
-        // In production/staging, require authentication
+        // Check if user is authenticated
         if (! Auth::check()) {
+            // If it's an API or expects JSON (like Log Viewer frontend), abort
+            if ($request->expectsJson() || $request->is('log-viewer/api/*')) {
+                abort(403, 'Unauthorized access to log viewer.');
+            }
+
+            // Otherwise, allow redirect (e.g., if user directly opens /log-viewer)
             return redirect()->route('login')->with('error', 'Please log in to access the log viewer.');
         }
 
