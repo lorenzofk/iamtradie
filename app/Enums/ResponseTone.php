@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Enums;
 
 enum ResponseTone: string
@@ -17,6 +19,17 @@ enum ResponseTone: string
     }
 
     /**
+     * Get the response tones as a dropdown array.
+     */
+    public static function toDropdown(): array
+    {
+        return array_map(fn (ResponseTone $type) => [
+            'id' => $type->value,
+            'label' => $type->label(),
+        ], self::cases());
+    }
+
+    /**
      * Get the label for the response tone.
      */
     public function label(): string
@@ -26,16 +39,5 @@ enum ResponseTone: string
             self::POLITE => 'Polite',
             self::PROFESSIONAL => 'Professional',
         };
-    }
-
-    /**
-     * Get the response tones as a dropdown array.
-     */
-    public static function toDropdown(): array
-    {
-        return array_map(fn (ResponseTone $type) => [
-            'id' => $type->value,
-            'label' => $type->label(),
-        ], self::cases());
     }
 }

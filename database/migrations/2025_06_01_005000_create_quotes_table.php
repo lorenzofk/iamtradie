@@ -1,17 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
+use App\Enums\IndustryType;
+use App\Enums\QuoteSource;
+use App\Enums\QuoteStatus;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-use App\Enums\IndustryType;
-use App\Enums\QuoteStatus;
-use App\Enums\QuoteSource;
 
-return new class extends Migration
+return new class() extends Migration
 {
     public function up(): void
     {
-        Schema::create('quotes', function (Blueprint $table) {
+        Schema::create('quotes', function (Blueprint $table): void {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->text('message');
@@ -32,4 +34,4 @@ return new class extends Migration
     {
         Schema::dropIfExists('quotes');
     }
-}; 
+};

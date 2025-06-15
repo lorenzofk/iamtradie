@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services;
 
 use App\Enums\ResponseTone;
@@ -42,7 +44,7 @@ class OpenAIService
             $response = OpenAI::chat()->create([
                 'model' => $this->model,
                 'messages' => [
-                    ['role' => 'user', 'content' => $prompt]
+                    ['role' => 'user', 'content' => $prompt],
                 ],
                 'max_tokens' => $this->maxTokens,
                 'temperature' => $this->temperature,
@@ -54,7 +56,7 @@ class OpenAIService
             Log::error('OpenAI quote generation failed', [
                 'error' => $e->getMessage(),
                 'message' => $message,
-                'industry_type' => $industryType
+                'industry_type' => $industryType,
             ]);
 
             return $this->getFallbackResponse($firstName, $calloutFee, $hourlyRate, $responseTone);
@@ -76,7 +78,7 @@ class OpenAIService
         $locationText = $location ?? 'Not specified but always in Australia';
         $toneText = $this->getToneInstructions($responseTone, $industryType);
         $callToActionText = $this->getDefaultCta($responseTone);
-    
+
         $prompt = <<<EOT
         🎯 GOAL: Write one SMS reply (max 160 characters) from an Aussie tradie to a job enquiry.
 
@@ -136,10 +138,9 @@ class OpenAIService
         Now generate ONE SMS reply below (max 160 characters) based on the information provided to respond to the client's message:
             - "{$clientMessage}"
         EOT;
-        
+
         return $prompt;
     }
-    
 
     /**
      * This method returns the fallback response for a given response tone.
@@ -148,17 +149,17 @@ class OpenAIService
     {
         $callToActionText = $this->getDefaultCta($tone);
 
-        $message = "G'day! " .
-            ($firstName ? "This is {$firstName}. " : '') .
-            "Thanks for your inquiry. I'd be happy to help with your job. " .
-            ($calloutFee ? "My standard callout is \${$calloutFee}. " : '') .
-            ($hourlyRate ? "My hourly rate is \${$hourlyRate}. " : '') .
-            "I'll need to assess the job to give you an accurate quote. " .
+        $message = "G'day! ".
+            ($firstName ? "This is {$firstName}. " : '').
+            "Thanks for your inquiry. I'd be happy to help with your job. ".
+            ($calloutFee ? "My standard callout is \${$calloutFee}. " : '').
+            ($hourlyRate ? "My hourly rate is \${$hourlyRate}. " : '').
+            "I'll need to assess the job to give you an accurate quote. ".
             $callToActionText;
 
         $shortMessage = "Hi, happy to help. Callout \${$calloutFee}, \${$hourlyRate}/hr. Call me to discuss the job";
 
-        return strlen($message) <= 160 ? $message : $shortMessage;
+        return mb_strlen($message) <= 160 ? $message : $shortMessage;
     }
 
     /**
@@ -180,12 +181,12 @@ class OpenAIService
     private function getToneInstructions(string $responseTone, string $industryType): string
     {
         $basePrompt = "You are an experienced Australian {$industryType} tradesperson with years of expertise. ";
-        $basePrompt .= "You provide accurate, realistic quotes and communicate professionally with customers. ";
-        $basePrompt .= "Use Australian terminology, pricing in AUD, and consider local market rates. ";
+        $basePrompt .= 'You provide accurate, realistic quotes and communicate professionally with customers. ';
+        $basePrompt .= 'Use Australian terminology, pricing in AUD, and consider local market rates. ';
 
         return match ($responseTone) {
-            ResponseTone::CASUAL->value => $basePrompt .= "Use a friendly, conversational tone with some Australian slang. Be approachable and relaxed in your communication style.",
-            ResponseTone::PROFESSIONAL->value => $basePrompt .= "Use formal business language with technical terminology when appropriate. Maintain a corporate-level professional tone.",
+            ResponseTone::CASUAL->value => $basePrompt .= 'Use a friendly, conversational tone with some Australian slang. Be approachable and relaxed in your communication style.',
+            ResponseTone::PROFESSIONAL->value => $basePrompt .= 'Use formal business language with technical terminology when appropriate. Maintain a corporate-level professional tone.',
             ResponseTone::POLITE->value => $basePrompt .= "Use respectful, courteous language that's professional but warm. Be clear and considerate in your messaging.",
             default => $basePrompt .= "Use respectful, courteous language that's professional but warm. Be clear and considerate in your messaging.",
         };

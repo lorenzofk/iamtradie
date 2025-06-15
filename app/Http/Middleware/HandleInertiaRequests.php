@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Middleware;
 
 use Illuminate\Http\Request;
@@ -41,7 +43,7 @@ class HandleInertiaRequests extends Middleware
                     'id' => $request->user()->id,
                     'first_name' => $request->user()->first_name,
                     'last_name' => $request->user()->last_name,
-                    'name' => $request->user()->first_name . ' ' . $request->user()->last_name,
+                    'name' => $request->user()->first_name.' '.$request->user()->last_name,
                     'email' => $request->user()->email,
                 ] : null,
             ],

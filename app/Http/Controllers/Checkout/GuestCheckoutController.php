@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Checkout;
 
 use App\Http\Controllers\Controller;
@@ -76,4 +78,4 @@ class GuestCheckoutController extends Controller
             'phoneNumber' => $user->settings->agent_sms_number ?? '',
         ]);
     }
-} 
+}

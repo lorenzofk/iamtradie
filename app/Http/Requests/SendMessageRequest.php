@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
@@ -18,13 +20,13 @@ class SendMessageRequest extends FormRequest
                 'required',
                 'string',
                 'max:20',
-                'regex:/^[\+]?[1-9][\d]{0,15}$/'
+                'regex:/^[\+]?[1-9][\d]{0,15}$/',
             ],
             'message' => [
                 'required',
                 'string',
-                'max:1600'
-            ]
+                'max:1600',
+            ],
         ];
     }
 }

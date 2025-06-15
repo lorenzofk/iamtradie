@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
@@ -31,21 +33,6 @@ class Voicemail extends Model
     ];
 
     /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
-    protected function casts(): array
-    {
-        return [
-            'transcription_processed' => 'boolean',
-            'sms_sent' => 'boolean',
-            'sms_sent_at' => 'datetime',
-            'recording_duration' => 'integer',
-        ];
-    }
-
-    /**
      * Get the user that owns the voicemail.
      */
     public function user(): BelongsTo
@@ -58,7 +45,7 @@ class Voicemail extends Model
      */
     public function hasRecording(): bool
     {
-        return !empty($this->recording_url) && !empty($this->recording_sid);
+        return ! empty($this->recording_url) && ! empty($this->recording_sid);
     }
 
     /**
@@ -66,7 +53,7 @@ class Voicemail extends Model
      */
     public function hasTranscription(): bool
     {
-        return !empty($this->transcription_text);
+        return ! empty($this->transcription_text);
     }
 
     /**
@@ -75,5 +62,20 @@ class Voicemail extends Model
     public function wasProcessed(): bool
     {
         return $this->transcription_processed && $this->sms_sent;
+    }
+
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'transcription_processed' => 'boolean',
+            'sms_sent' => 'boolean',
+            'sms_sent_at' => 'datetime',
+            'recording_duration' => 'integer',
+        ];
     }
 }

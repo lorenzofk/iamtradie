@@ -1,9 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Requests;
 
 use App\Enums\IndustryType;
-use App\Enums\ResponseTone;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -38,7 +39,7 @@ class UpdateSettingsRequest extends FormRequest
             'email' => [
                 'required',
                 'email',
-                'unique:users,email,' . auth()->id(),
+                'unique:users,email,'.auth()->id(),
             ],
             'business_name' => [
                 'nullable',

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Enums;
 
 enum QuoteSource: string
@@ -12,14 +14,6 @@ enum QuoteSource: string
         return array_map(fn (QuoteSource $type) => $type->value, self::cases());
     }
 
-    public function label(): string
-    {
-        return match ($this) {
-            self::SMS => 'SMS',
-            self::EMAIL => 'Email',
-        };
-    }
-
     public static function toDropdown(): array
     {
         return array_map(fn (QuoteSource $type) => [
@@ -27,4 +21,12 @@ enum QuoteSource: string
             'label' => $type->label(),
         ], self::cases());
     }
-} 
+
+    public function label(): string
+    {
+        return match ($this) {
+            self::SMS => 'SMS',
+            self::EMAIL => 'Email',
+        };
+    }
+}

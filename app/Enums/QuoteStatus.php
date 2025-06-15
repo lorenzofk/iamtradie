@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Enums;
 
 enum QuoteStatus: string
@@ -13,6 +15,14 @@ enum QuoteStatus: string
         return array_map(fn (QuoteStatus $type) => $type->value, self::cases());
     }
 
+    public static function toDropdown(): array
+    {
+        return array_map(fn (QuoteStatus $type) => [
+            'id' => $type->value,
+            'label' => $type->label(),
+        ], self::cases());
+    }
+
     public function label(): string
     {
         return match ($this) {
@@ -21,12 +31,4 @@ enum QuoteStatus: string
             self::REJECTED => 'Rejected',
         };
     }
-
-    public static function toDropdown(): array
-    {
-        return array_map(fn (QuoteStatus $type) => [
-            'id' => $type->value,
-            'label' => $type->label(),
-        ], self::cases());
-    }
-} 
+}

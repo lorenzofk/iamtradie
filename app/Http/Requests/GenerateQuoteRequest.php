@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Requests;
 
 use App\Enums\ResponseTone;
@@ -24,34 +26,34 @@ class GenerateQuoteRequest extends FormRequest
             'location' => [
                 'nullable',
                 'string',
-                'max:200'
+                'max:200',
             ],
             'job_type' => [
                 'nullable',
                 'string',
-                'max:100'
+                'max:100',
             ],
             'callout_fee' => [
                 'nullable',
                 'numeric',
                 'min:0',
-                'max:1000'
+                'max:1000',
             ],
             'hourly_rate' => [
                 'nullable',
                 'numeric',
                 'min:0',
-                'max:500'
+                'max:500',
             ],
             'response_tone' => [
                 'nullable',
-                Rule::in(ResponseTone::values())
+                Rule::in(ResponseTone::values()),
             ],
             'preferred_cta' => [
                 'nullable',
                 'string',
-                'max:500'
-            ]
+                'max:500',
+            ],
         ];
     }
 }

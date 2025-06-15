@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Requests\Billing;
 
 use App\Enums\ResponseTone;
@@ -48,17 +50,17 @@ class CreateSessionCheckoutRequest extends FormRequest
                 'required',
                 'numeric',
                 'min:0',
-                'max:1000'
+                'max:1000',
             ],
             'settings.hourly_rate' => [
                 'required',
                 'numeric',
                 'min:0',
-                'max:500'
+                'max:500',
             ],
             'settings.response_tone' => [
                 'required',
-                Rule::in(ResponseTone::values())
+                Rule::in(ResponseTone::values()),
             ],
         ];
     }
