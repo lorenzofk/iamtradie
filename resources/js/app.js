@@ -23,7 +23,7 @@ const setupVueApp = ({ el, App, props, plugin }) => {
   if (window.route) {
     app.mixin({ methods: { route: window.route } });
   }
-  
+
   app.mount(el);
 };
 

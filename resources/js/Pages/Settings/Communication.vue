@@ -19,7 +19,7 @@ defineOptions({
 const props = defineProps({
   settings: Object,
   sms_data: Object,
-  response_tones: Object
+  response_tones: Object,
 });
 
 const form = useForm('post', route('settings.communication.update'), {
@@ -28,10 +28,12 @@ const form = useForm('post', route('settings.communication.update'), {
   call_forward_enabled: props.settings?.call_forward_enabled || false,
   call_ring_duration: props.settings?.call_ring_duration || 20,
   auto_send_sms_after_voicemail: props.settings?.auto_send_sms_after_voicemail || false,
-  voicemail_message: props.settings?.voicemail_message || "Hi, I'm not available right now. Please leave a message and I'll get back to you with a quote.",
+  voicemail_message:
+    props.settings?.voicemail_message ||
+    "Hi, I'm not available right now. Please leave a message and I'll get back to you with a quote.",
 });
 
-const onFormSubmit = () => {  
+const onFormSubmit = () => {
   form.submit({
     preserveScroll: true,
     onSuccess: () => {
@@ -51,7 +53,9 @@ const copyPhoneNumber = () => {
 <template>
   <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
     <!-- Header -->
-    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-4 lg:mb-6 bg-white rounded-xl shadow-sm border-0 p-4 lg:p-6 gap-4">
+    <div
+      class="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-4 lg:mb-6 bg-white rounded-xl shadow-sm border-0 p-4 lg:p-6 gap-4"
+    >
       <div>
         <h1 class="text-xl lg:text-2xl font-bold text-gray-900">Communication Hub</h1>
         <p class="text-sm text-gray-600 mt-1">Manage your SMS and voice communication settings</p>
@@ -63,16 +67,19 @@ const copyPhoneNumber = () => {
           </div>
           <div class="text-sm min-w-0">
             <span class="font-medium text-gray-900">{{ props.sms_data?.quotes_used || 0 }}</span>
-            <span class="text-gray-500"> / {{ props.sms_data?.quotes_limit }} quotes used</span>
+            <span class="text-gray-500">/ {{ props.sms_data?.quotes_limit }} quotes used</span>
           </div>
         </div>
         <!-- Progress Bar -->
         <div class="w-full h-1 bg-gray-200 rounded-full overflow-hidden">
-          <div class="h-full bg-blue-500 rounded-full transition-all duration-300" :style="{ width: `${((props.sms_data?.quotes_used || 0) / props.sms_data?.quotes_limit) * 100}%` }"></div>
+          <div
+            class="h-full bg-blue-500 rounded-full transition-all duration-300"
+            :style="{ width: `${((props.sms_data?.quotes_used || 0) / props.sms_data?.quotes_limit) * 100}%` }"
+          ></div>
         </div>
       </div>
     </div>
-    
+
     <div class="space-y-4 lg:space-y-8">
       <!-- Phone Number Section -->
       <div class="bg-white rounded-xl shadow-sm border-0 p-4 lg:p-6">
@@ -83,9 +90,11 @@ const copyPhoneNumber = () => {
           </h2>
           <p class="text-sm text-gray-600 mt-1">Unified phone number for SMS and voice communications</p>
         </div>
-        
+
         <!-- Active Number Display -->
-        <div class="bg-green-50 border border-green-200 rounded-lg p-4 flex flex-col sm:flex-row sm:items-center justify-between mb-4 lg:mb-6 gap-4">
+        <div
+          class="bg-green-50 border border-green-200 rounded-lg p-4 flex flex-col sm:flex-row sm:items-center justify-between mb-4 lg:mb-6 gap-4"
+        >
           <div class="flex items-center gap-3">
             <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
               <font-awesome-icon :icon="['fas', 'fa-check-circle']" class="text-green-600" />
@@ -117,23 +126,27 @@ const copyPhoneNumber = () => {
               </div>
               <span class="text-xs font-medium text-green-700">On</span>
             </div>
-            
+
             <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
               <div class="flex items-center gap-2">
                 <font-awesome-icon :icon="['fas', 'fa-phone-volume']" class="text-gray-600 text-sm flex-shrink-0" />
                 <span class="text-sm text-gray-700">Call Handling</span>
               </div>
-              <span class="text-xs font-medium text-gray-900">{{ form.call_forward_enabled ? 'Forward' : 'Voicemail' }}</span>
+              <span class="text-xs font-medium text-gray-900">
+                {{ form.call_forward_enabled ? 'Forward' : 'Voicemail' }}
+              </span>
             </div>
-            
+
             <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
               <div class="flex items-center gap-2">
                 <font-awesome-icon :icon="['fas', 'fa-dollar-sign']" class="text-gray-600 text-sm flex-shrink-0" />
                 <span class="text-sm text-gray-700">Rates</span>
               </div>
-              <span class="text-xs font-medium text-gray-900">${{ props.settings.callout_fee }} + ${{ props.settings.hourly_rate }}/hr</span>
+              <span class="text-xs font-medium text-gray-900">
+                ${{ props.settings.callout_fee }} + ${{ props.settings.hourly_rate }}/hr
+              </span>
             </div>
-            
+
             <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
               <div class="flex items-center gap-2">
                 <font-awesome-icon :icon="['fas', 'fa-comment-dots']" class="text-gray-600 text-sm flex-shrink-0" />
@@ -154,33 +167,51 @@ const copyPhoneNumber = () => {
           </h2>
           <p class="text-sm text-gray-600 mt-1">Automatic SMS quote generation and response system</p>
         </div>
-        
+
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 mb-6">
           <!-- Step 1 -->
           <div class="text-center">
-            <div class="w-14 h-14 lg:w-16 lg:h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-3 lg:mb-4 relative">
+            <div
+              class="w-14 h-14 lg:w-16 lg:h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-3 lg:mb-4 relative"
+            >
               <font-awesome-icon :icon="['fas', 'fa-comments']" class="text-blue-600 text-lg lg:text-xl" />
-              <div class="absolute -top-1 -right-1 lg:-top-2 lg:-right-2 w-5 h-5 lg:w-6 lg:h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs font-bold">1</div>
+              <div
+                class="absolute -top-1 -right-1 lg:-top-2 lg:-right-2 w-5 h-5 lg:w-6 lg:h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs font-bold"
+              >
+                1
+              </div>
             </div>
             <h3 class="text-sm lg:text-base font-semibold text-gray-900 mb-2">Customer Texts</h3>
             <p class="text-sm text-gray-600">Customer sends quote request to your number</p>
           </div>
-          
+
           <!-- Step 2 -->
           <div class="text-center">
-            <div class="w-14 h-14 lg:w-16 lg:h-16 bg-purple-50 rounded-full flex items-center justify-center mx-auto mb-3 lg:mb-4 relative">
+            <div
+              class="w-14 h-14 lg:w-16 lg:h-16 bg-purple-50 rounded-full flex items-center justify-center mx-auto mb-3 lg:mb-4 relative"
+            >
               <font-awesome-icon :icon="['fas', 'fa-robot']" class="text-purple-600 text-lg lg:text-xl" />
-              <div class="absolute -top-1 -right-1 lg:-top-2 lg:-right-2 w-5 h-5 lg:w-6 lg:h-6 bg-purple-600 text-white rounded-full flex items-center justify-center text-xs font-bold">2</div>
+              <div
+                class="absolute -top-1 -right-1 lg:-top-2 lg:-right-2 w-5 h-5 lg:w-6 lg:h-6 bg-purple-600 text-white rounded-full flex items-center justify-center text-xs font-bold"
+              >
+                2
+              </div>
             </div>
             <h3 class="text-sm lg:text-base font-semibold text-gray-900 mb-2">AI Generates Quote</h3>
             <p class="text-sm text-gray-600">System creates professional quote using your rates</p>
           </div>
-          
+
           <!-- Step 3 -->
           <div class="text-center">
-            <div class="w-14 h-14 lg:w-16 lg:h-16 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-3 lg:mb-4 relative">
+            <div
+              class="w-14 h-14 lg:w-16 lg:h-16 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-3 lg:mb-4 relative"
+            >
               <font-awesome-icon :icon="['fas', 'fa-paper-plane']" class="text-green-600 text-lg lg:text-xl" />
-              <div class="absolute -top-1 -right-1 lg:-top-2 lg:-right-2 w-5 h-5 lg:w-6 lg:h-6 bg-green-600 text-white rounded-full flex items-center justify-center text-xs font-bold">3</div>
+              <div
+                class="absolute -top-1 -right-1 lg:-top-2 lg:-right-2 w-5 h-5 lg:w-6 lg:h-6 bg-green-600 text-white rounded-full flex items-center justify-center text-xs font-bold"
+              >
+                3
+              </div>
             </div>
             <h3 class="text-sm lg:text-base font-semibold text-gray-900 mb-2">Auto Response</h3>
             <p class="text-sm text-gray-600">Quote sent automatically or saved for review</p>
@@ -200,7 +231,6 @@ const copyPhoneNumber = () => {
 
       <!-- AI Response Settings Section -->
       <form @submit.prevent="onFormSubmit" class="space-y-4 lg:space-y-6">
-        
         <div class="bg-white rounded-xl shadow-sm border-0 p-4 lg:p-6">
           <div class="mb-4 lg:mb-6">
             <h2 class="text-lg lg:text-xl font-semibold text-gray-900 flex items-center gap-2">
@@ -209,12 +239,14 @@ const copyPhoneNumber = () => {
             </h2>
             <p class="text-sm text-gray-600 mt-1">Handle incoming calls with forwarding or voicemail options.</p>
           </div>
-          
+
           <div class="mb-6 lg:mb-8">
             <!-- Mobile Workflow (Stacked) -->
             <div class="block lg:hidden space-y-4">
               <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                <div class="w-10 h-10 bg-white border-2 border-gray-200 rounded-full flex items-center justify-center flex-shrink-0">
+                <div
+                  class="w-10 h-10 bg-white border-2 border-gray-200 rounded-full flex items-center justify-center flex-shrink-0"
+                >
                   <font-awesome-icon :icon="['fas', 'fa-phone-alt']" class="text-gray-600" />
                 </div>
                 <div>
@@ -222,31 +254,39 @@ const copyPhoneNumber = () => {
                   <p class="text-xs text-gray-500">Incoming call to business number</p>
                 </div>
               </div>
-              
+
               <div class="flex items-center justify-center">
                 <font-awesome-icon :icon="['fas', 'fa-arrow-down']" class="text-gray-400" />
               </div>
-              
+
               <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                <div class="w-10 h-10 bg-white border-2 border-gray-200 rounded-full flex items-center justify-center flex-shrink-0">
+                <div
+                  class="w-10 h-10 bg-white border-2 border-gray-200 rounded-full flex items-center justify-center flex-shrink-0"
+                >
                   <div v-if="form.call_forward_enabled" class="flex items-center justify-center">
-                    <font-awesome-icon :icon="['fas',  'fa-phone']" class="text-gray-600 text-xs" />  
-                    <font-awesome-icon :icon="['fas',  'fa-arrow-right']" class="text-gray-600 text-xs" />
+                    <font-awesome-icon :icon="['fas', 'fa-phone']" class="text-gray-600 text-xs" />
+                    <font-awesome-icon :icon="['fas', 'fa-arrow-right']" class="text-gray-600 text-xs" />
                   </div>
-                  <font-awesome-icon v-else :icon="['fas',  'fa-phone-slash']" class="text-gray-600" />
+                  <font-awesome-icon v-else :icon="['fas', 'fa-phone-slash']" class="text-gray-600" />
                 </div>
                 <div>
-                  <p class="text-sm font-medium text-gray-900">{{ form.call_forward_enabled ? 'Forward Call' : 'Direct to VM' }}</p>
-                  <p class="text-xs text-gray-500">{{ form.call_forward_enabled ? 'Rings your phone first' : 'Goes straight to voicemail' }}</p>
+                  <p class="text-sm font-medium text-gray-900">
+                    {{ form.call_forward_enabled ? 'Forward Call' : 'Direct to VM' }}
+                  </p>
+                  <p class="text-xs text-gray-500">
+                    {{ form.call_forward_enabled ? 'Rings your phone first' : 'Goes straight to voicemail' }}
+                  </p>
                 </div>
               </div>
-              
+
               <div class="flex items-center justify-center">
                 <font-awesome-icon :icon="['fas', 'fa-arrow-down']" class="text-gray-400" />
               </div>
-              
+
               <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                <div class="w-10 h-10 bg-white border-2 border-gray-200 rounded-full flex items-center justify-center flex-shrink-0">
+                <div
+                  class="w-10 h-10 bg-white border-2 border-gray-200 rounded-full flex items-center justify-center flex-shrink-0"
+                >
                   <font-awesome-icon :icon="['fas', 'fa-voicemail']" class="text-gray-600" />
                 </div>
                 <div>
@@ -254,13 +294,15 @@ const copyPhoneNumber = () => {
                   <p class="text-xs text-gray-500">Customer leaves message</p>
                 </div>
               </div>
-              
+
               <div class="flex items-center justify-center">
                 <font-awesome-icon :icon="['fas', 'fa-arrow-down']" class="text-gray-400" />
               </div>
-              
+
               <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                <div class="w-10 h-10 bg-white border-2 border-gray-200 rounded-full flex items-center justify-center flex-shrink-0">
+                <div
+                  class="w-10 h-10 bg-white border-2 border-gray-200 rounded-full flex items-center justify-center flex-shrink-0"
+                >
                   <font-awesome-icon :icon="['fas', 'fa-file-text']" class="text-gray-600" />
                 </div>
                 <div>
@@ -268,13 +310,15 @@ const copyPhoneNumber = () => {
                   <p class="text-xs text-gray-500">AI converts to text</p>
                 </div>
               </div>
-              
+
               <div class="flex items-center justify-center">
                 <font-awesome-icon :icon="['fas', 'fa-arrow-down']" class="text-gray-400" />
               </div>
-              
+
               <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                <div class="w-10 h-10 bg-white border-2 border-gray-200 rounded-full flex items-center justify-center flex-shrink-0">
+                <div
+                  class="w-10 h-10 bg-white border-2 border-gray-200 rounded-full flex items-center justify-center flex-shrink-0"
+                >
                   <font-awesome-icon :icon="['fas', 'fa-clipboard-list']" class="text-gray-600" />
                 </div>
                 <div>
@@ -283,63 +327,77 @@ const copyPhoneNumber = () => {
                 </div>
               </div>
             </div>
-            
+
             <!-- Desktop Workflow (Horizontal) -->
-            <div class="hidden lg:flex flex-col lg:flex-row items-center justify-between gap-4 p-6 bg-gray-50 rounded-lg">
+            <div
+              class="hidden lg:flex flex-col lg:flex-row items-center justify-between gap-4 p-6 bg-gray-50 rounded-lg"
+            >
               <!-- Step 1: Call Received -->
               <div class="text-center">
-                <div class="w-14 h-14 bg-white border-2 border-gray-200 rounded-full flex items-center justify-center mx-auto mb-2">
+                <div
+                  class="w-14 h-14 bg-white border-2 border-gray-200 rounded-full flex items-center justify-center mx-auto mb-2"
+                >
                   <font-awesome-icon :icon="['fas', 'fa-phone-alt']" class="text-gray-600 text-lg" />
                 </div>
                 <p class="text-sm font-medium text-gray-900">Call Received</p>
               </div>
-              
+
               <font-awesome-icon :icon="['fas', 'fa-arrow-right']" class="text-gray-400 hidden lg:block" />
-              
+
               <!-- Step 2: Decision Point -->
               <div class="text-center">
-                <div class="w-14 h-14 bg-white border-2 border-gray-200 rounded-full flex items-center justify-center mx-auto mb-2">
+                <div
+                  class="w-14 h-14 bg-white border-2 border-gray-200 rounded-full flex items-center justify-center mx-auto mb-2"
+                >
                   <div v-if="form.call_forward_enabled" class="flex items-center justify-center">
-                    <font-awesome-icon :icon="['fas',  'fa-phone']" class="text-gray-600 text-lg" />  
-                    <font-awesome-icon :icon="['fas',  'fa-arrow-right']" class="text-gray-600 text-lg" />
+                    <font-awesome-icon :icon="['fas', 'fa-phone']" class="text-gray-600 text-lg" />
+                    <font-awesome-icon :icon="['fas', 'fa-arrow-right']" class="text-gray-600 text-lg" />
                   </div>
-                  <font-awesome-icon v-else :icon="['fas',  'fa-phone-slash']" class="text-gray-600 text-lg" />
+                  <font-awesome-icon v-else :icon="['fas', 'fa-phone-slash']" class="text-gray-600 text-lg" />
                 </div>
-                <p class="text-sm font-medium text-gray-900">{{ form.call_forward_enabled ? 'Forward Call' : 'Direct to VM' }}</p>
+                <p class="text-sm font-medium text-gray-900">
+                  {{ form.call_forward_enabled ? 'Forward Call' : 'Direct to VM' }}
+                </p>
               </div>
-              
+
               <font-awesome-icon :icon="['fas', 'fa-arrow-right']" class="text-gray-400 hidden lg:block" />
-              
+
               <!-- Step 3: Voicemail -->
               <div class="text-center">
-                <div class="w-14 h-14 bg-white border-2 border-gray-200 rounded-full flex items-center justify-center mx-auto mb-2">
+                <div
+                  class="w-14 h-14 bg-white border-2 border-gray-200 rounded-full flex items-center justify-center mx-auto mb-2"
+                >
                   <font-awesome-icon :icon="['fas', 'fa-voicemail']" class="text-gray-600 text-lg" />
                 </div>
                 <p class="text-sm font-medium text-gray-900">Voicemail</p>
               </div>
-              
+
               <font-awesome-icon :icon="['fas', 'fa-arrow-right']" class="text-gray-400 hidden lg:block" />
-              
+
               <!-- Step 4: Transcript -->
               <div class="text-center">
-                <div class="w-14 h-14 bg-white border-2 border-gray-200 rounded-full flex items-center justify-center mx-auto mb-2">
+                <div
+                  class="w-14 h-14 bg-white border-2 border-gray-200 rounded-full flex items-center justify-center mx-auto mb-2"
+                >
                   <font-awesome-icon :icon="['fas', 'fa-file-text']" class="text-gray-600 text-lg" />
                 </div>
                 <p class="text-sm font-medium text-gray-900">Transcript</p>
               </div>
-              
+
               <font-awesome-icon :icon="['fas', 'fa-arrow-right']" class="text-gray-400 hidden lg:block" />
-              
+
               <!-- Step 5: Summary + Optional Quote -->
               <div class="text-center">
-                <div class="w-14 h-14 bg-white border-2 border-gray-200 rounded-full flex items-center justify-center mx-auto mb-2">
+                <div
+                  class="w-14 h-14 bg-white border-2 border-gray-200 rounded-full flex items-center justify-center mx-auto mb-2"
+                >
                   <font-awesome-icon :icon="['fas', 'fa-clipboard-list']" class="text-gray-600 text-lg" />
                 </div>
                 <p class="text-sm font-medium text-gray-900">Summary + Quote</p>
               </div>
             </div>
           </div>
-          
+
           <div class="space-y-4 lg:space-y-6">
             <!-- Call Forwarding Section -->
             <div class="space-y-4 pt-4">
@@ -353,22 +411,36 @@ const copyPhoneNumber = () => {
                     </div>
                     <p class="text-sm text-gray-500">Forward calls to your business phone number before voicemail</p>
                   </div>
-                  <ToggleSwitch id="call_forward_enabled" v-model="form.call_forward_enabled" :error="form.errors.call_forward_enabled" class="flex-shrink-0" />
+                  <ToggleSwitch
+                    id="call_forward_enabled"
+                    v-model="form.call_forward_enabled"
+                    :error="form.errors.call_forward_enabled"
+                    class="flex-shrink-0"
+                  />
                 </div>
               </div>
             </div>
-            
+
             <div v-if="form.call_forward_enabled" class="space-y-4 pt-4">
               <FormElement>
                 <FormLabel for="call_ring_duration">Ring duration before voicemail</FormLabel>
-                <InputNumber id="call_ring_duration" v-model="form.call_ring_duration" :error="form.errors.call_ring_duration" />
+                <InputNumber
+                  id="call_ring_duration"
+                  v-model="form.call_ring_duration"
+                  :error="form.errors.call_ring_duration"
+                />
               </FormElement>
             </div>
-            
+
             <div class="space-y-4 pt-4">
               <FormElement>
                 <FormLabel for="voicemail_message">Voicemail message</FormLabel>
-                <TextArea id="voicemail_message" :rows="2" v-model="form.voicemail_message" :error="form.errors.voicemail_message" />
+                <TextArea
+                  id="voicemail_message"
+                  :rows="2"
+                  v-model="form.voicemail_message"
+                  :error="form.errors.voicemail_message"
+                />
               </FormElement>
             </div>
           </div>
@@ -382,7 +454,7 @@ const copyPhoneNumber = () => {
             </h2>
             <p class="text-sm text-gray-600 mt-1">Configure how AI generates and sends quotes for both SMS and voice</p>
           </div>
-          
+
           <div class="space-y-4 lg:space-y-6">
             <FormElement>
               <FormLabel for="response_tone">Response Tone</FormLabel>
@@ -396,7 +468,7 @@ const copyPhoneNumber = () => {
                 required
               />
             </FormElement>
-            
+
             <!-- Auto SMS Settings Section -->
             <div class="space-y-4 pt-4">
               <h3 class="text-sm font-semibold text-gray-900 uppercase tracking-wide">Automatic Responses</h3>
@@ -407,27 +479,41 @@ const copyPhoneNumber = () => {
                       <font-awesome-icon :icon="['fas', 'fa-comment-dots']" class="text-blue-500 text-sm" />
                       <h4 class="text-sm font-medium text-gray-900">Auto-send SMS Quotes</h4>
                     </div>
-                    <p class="text-sm text-gray-500">Automatically send AI responses via SMS when customers submit quotes</p>
+                    <p class="text-sm text-gray-500">
+                      Automatically send AI responses via SMS when customers submit quotes
+                    </p>
                   </div>
-                  <ToggleSwitch id="auto_send_sms" v-model="form.auto_send_sms" :error="form.errors.auto_send_sms" class="flex-shrink-0" />
+                  <ToggleSwitch
+                    id="auto_send_sms"
+                    v-model="form.auto_send_sms"
+                    :error="form.errors.auto_send_sms"
+                    class="flex-shrink-0"
+                  />
                 </div>
-                
+
                 <div class="flex items-center justify-between p-4">
                   <div class="flex-1 min-w-0 pr-4">
                     <div class="flex items-center gap-2 mb-1">
                       <font-awesome-icon :icon="['fas', 'fa-voicemail']" class="text-purple-500 text-sm" />
                       <h4 class="text-sm font-medium text-gray-900">Auto-send SMS after Voicemail</h4>
                     </div>
-                    <p class="text-sm text-gray-500">Automatically send AI responses via SMS when customers leave a voicemail</p>
+                    <p class="text-sm text-gray-500">
+                      Automatically send AI responses via SMS when customers leave a voicemail
+                    </p>
                   </div>
-                  <ToggleSwitch id="auto_send_sms_after_voicemail" v-model="form.auto_send_sms_after_voicemail" :error="form.errors.auto_send_sms_after_voicemail" class="flex-shrink-0" />
+                  <ToggleSwitch
+                    id="auto_send_sms_after_voicemail"
+                    v-model="form.auto_send_sms_after_voicemail"
+                    :error="form.errors.auto_send_sms_after_voicemail"
+                    class="flex-shrink-0"
+                  />
                 </div>
               </div>
             </div>
-            
+
             <div class="flex justify-end">
-              <Button 
-                type="submit" 
+              <Button
+                type="submit"
                 size="small"
                 :loading="form.processing"
                 label="Update Settings"
@@ -442,4 +528,3 @@ const copyPhoneNumber = () => {
     </div>
   </div>
 </template>
-

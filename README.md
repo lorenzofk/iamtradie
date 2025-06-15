@@ -63,6 +63,7 @@ The log viewer configuration is located in `config/log-viewer.php`. Key security
 ### Customization
 
 To customize access permissions, modify:
+
 - `app/Http/Middleware/EnsureUserCanViewLogs.php` - Middleware authorization
 - `app/Providers/AppServiceProvider.php` - Gate definition
 - `config/log-viewer.php` - General configuration

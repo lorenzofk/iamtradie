@@ -16,7 +16,7 @@ defineOptions({
 const { showToast } = useToast();
 
 const props = defineProps({
-  selectedPlan: String
+  selectedPlan: String,
 });
 
 const currentStep = ref(0);
@@ -28,7 +28,7 @@ const form = useForm({
     email: 'dave@miller.com',
   },
   settings: {
-    business_name: 'Dave\'s Electric',
+    business_name: "Dave's Electric",
     industry_type: 'electrical',
     callout_fee: 120,
     hourly_rate: 85,
@@ -60,7 +60,7 @@ const prevStep = () => {
 const onSubmit = () => {
   var lastStep = currentStep.value === steps.length - 2;
 
-  if (! lastStep) {
+  if (!lastStep) {
     nextStep();
     return;
   }
@@ -68,7 +68,7 @@ const onSubmit = () => {
   form.post(route('checkout'), {
     onError: () => {
       showToast('error', 'Setup failed. Please try again.');
-    }
+    },
   });
 };
 
@@ -90,11 +90,11 @@ setTimeout(() => {
         </div>
         <h2 class="text-4xl font-black text-white mb-4">Get Ready to Never Miss Another Lead</h2>
         <p class="text-xl text-blue-100 mb-6">Set up your AI assistant in under 3 minutes</p>
-        
+
         <!-- Progress Bar -->
         <div class="max-w-md mx-auto mb-8">
           <div class="w-full bg-blue-200 rounded-full h-2 mb-3">
-            <div 
+            <div
               class="bg-gradient-to-r from-blue-600 to-green-600 h-2 rounded-full transition-all duration-500"
               :style="{ width: `${progress}%` }"
             ></div>
@@ -106,29 +106,21 @@ setTimeout(() => {
 
         <!-- Step Indicators -->
         <div class="flex justify-center space-x-4 mb-8">
-          <div 
-            v-for="(step, index) in steps" 
-            :key="index" 
-            class="flex flex-col items-center"
-          >
-            <div 
+          <div v-for="(step, index) in steps" :key="index" class="flex flex-col items-center">
+            <div
               class="w-12 h-12 rounded-full flex items-center justify-center border-2 transition-all duration-300"
               :class="{
                 'bg-green-500 border-green-500': index < currentStep,
                 'bg-blue-600 border-blue-600': index === currentStep,
-                'bg-gray-600 border-gray-600': index > currentStep
+                'bg-gray-600 border-gray-600': index > currentStep,
               }"
             >
-              <font-awesome-icon 
+              <font-awesome-icon
                 v-if="index < currentStep"
-                :icon="['fas', 'fa-check-circle']" 
-                class="w-6 h-6 text-white" 
+                :icon="['fas', 'fa-check-circle']"
+                class="w-6 h-6 text-white"
               />
-              <font-awesome-icon 
-                v-else
-                :icon="['fas', step.icon]" 
-                class="w-6 h-6 text-white" 
-              />
+              <font-awesome-icon v-else :icon="['fas', step.icon]" class="w-6 h-6 text-white" />
             </div>
             <span class="text-xs text-blue-200 mt-2 hidden sm:block">
               {{ step.title }}
@@ -138,7 +130,7 @@ setTimeout(() => {
       </div>
 
       <!-- Main Content -->
-      <Card 
+      <Card
         class="shadow-2xl border-0 bg-white/95 backdrop-blur transform transition-all duration-500"
         :class="{ 'translate-y-0 opacity-100': isLoaded, 'translate-y-10 opacity-0': !isLoaded }"
       >
@@ -146,12 +138,12 @@ setTimeout(() => {
           <div class="p-8">
             <form @submit.prevent="onSubmit">
               <DetailsStep v-if="currentStep === 0" v-model="form" />
-              
+
               <PricingStep v-if="currentStep === 1" v-model="form" />
-              
+
               <CommunicationStep v-if="currentStep === 2" v-model="form" />
 
-              <hr class="my-8 border-gray-200">
+              <hr class="my-8 border-gray-200" />
 
               <!-- Navigation -->
               <div class="flex justify-between">
@@ -169,7 +161,13 @@ setTimeout(() => {
                   type="submit"
                   :disabled="form.processing"
                   class="!bg-gradient-to-r !from-blue-600 !to-green-600 hover:!from-blue-700 hover:!to-green-700"
-                  :icon="form.processing ? ['fas', 'fa-spinner'] : currentStep === steps.length - 1 ? ['fas', 'fa-check-circle'] : ['fas', 'fa-arrow-right']"
+                  :icon="
+                    form.processing
+                      ? ['fas', 'fa-spinner']
+                      : currentStep === steps.length - 1
+                        ? ['fas', 'fa-check-circle']
+                        : ['fas', 'fa-arrow-right']
+                  "
                   :iconPos="currentStep === steps.length - 1 ? 'right' : 'right'"
                   :label="currentStep === steps.length - 2 ? 'Subscribe' : 'Continue'"
                 />

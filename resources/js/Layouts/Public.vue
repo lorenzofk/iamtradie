@@ -11,7 +11,7 @@ const props = defineProps({
 });
 
 useHead({
-  title: () => (props.layout?.title ? `PingMate :: ${props.layout.title}` : "PingMate - Never Miss a Lead"),
+  title: () => (props.layout?.title ? `PingMate :: ${props.layout.title}` : 'PingMate - Never Miss a Lead'),
 });
 
 setToast(PrimeVueUseToast());

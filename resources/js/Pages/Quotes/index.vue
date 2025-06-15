@@ -14,13 +14,13 @@ defineOptions({
 });
 
 const props = defineProps({
-  quotes: Array
+  quotes: Array,
 });
 
 const showDrawer = ref(false);
 const selectedQuote = ref(null);
 
-const openQuoteDrawer = (quote) => {
+const openQuoteDrawer = quote => {
   selectedQuote.value = quote;
   showDrawer.value = true;
 };
@@ -46,12 +46,15 @@ const onDeleteClick = quote => {
   }
 };
 
-const onSendClick = async (quote) => {
-  await axios.post(route('quotes.send', quote.id)).then(() => {
-    showToast('success', 'Quote sent successfully.');
-  }).catch(() => {
-    showToast('error', 'Failed to send quote.');
-  });
+const onSendClick = async quote => {
+  await axios
+    .post(route('quotes.send', quote.id))
+    .then(() => {
+      showToast('success', 'Quote sent successfully.');
+    })
+    .catch(() => {
+      showToast('error', 'Failed to send quote.');
+    });
 
   router.reload({ only: ['quotes'] });
 };
@@ -60,7 +63,9 @@ const onSendClick = async (quote) => {
 <template>
   <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
     <!-- Header -->
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 lg:mb-6 bg-white rounded-xl shadow-sm border-0 p-4 lg:p-6 gap-4">
+    <div
+      class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 lg:mb-6 bg-white rounded-xl shadow-sm border-0 p-4 lg:p-6 gap-4"
+    >
       <div>
         <h1 class="text-xl lg:text-2xl font-bold text-gray-900">Messages</h1>
         <p class="text-gray-600 text-sm mt-1">Manage and review your customer conversations</p>
@@ -69,7 +74,7 @@ const onSendClick = async (quote) => {
         {{ quotes.length }} Messages
       </div>
     </div>
-    
+
     <!-- Main Content Wrapper -->
     <div class="bg-white rounded-xl shadow-sm border-0 overflow-hidden">
       <!-- Content Area -->
@@ -84,7 +89,7 @@ const onSendClick = async (quote) => {
             <p class="text-gray-500 text-sm">Start receiving messages from your customers</p>
           </div>
         </div>
-        
+
         <!-- Quote Cards -->
         <div v-else class="space-y-4 lg:space-y-8">
           <div
@@ -106,35 +111,46 @@ const onSendClick = async (quote) => {
                       'bg-gray-50 text-gray-700': quote.status === 'draft',
                     }"
                   >
-                    <font-awesome-icon 
-                      :icon="['fas', quote.status === 'sent' ? 'fa-check-circle' : quote.status === 'pending' ? 'fa-clock' : 'fa-times-circle']" 
+                    <font-awesome-icon
+                      :icon="[
+                        'fas',
+                        quote.status === 'sent'
+                          ? 'fa-check-circle'
+                          : quote.status === 'pending'
+                            ? 'fa-clock'
+                            : 'fa-times-circle',
+                      ]"
                       class="mr-1.5"
                     />
                     {{ quote.status }}
                   </span>
-                  
+
                   <!-- Phone number on mobile -->
                   <span class="text-xs font-medium text-gray-600 sm:hidden">
                     {{ quote.from_number }}
                   </span>
                 </div>
-                
+
                 <!-- Date -->
                 <span class="text-xs text-gray-500 bg-gray-50 px-2 py-1 rounded-md flex-shrink-0">
-                  {{ new Date(quote.created_at).toLocaleDateString('en-AU', { 
-                    day: 'numeric', 
-                    month: 'short', 
-                    year: 'numeric' 
-                  }) }}
+                  {{
+                    new Date(quote.created_at).toLocaleDateString('en-AU', {
+                      day: 'numeric',
+                      month: 'short',
+                      year: 'numeric',
+                    })
+                  }}
                 </span>
               </div>
             </div>
-            
+
             <!-- Conversation -->
             <div class="px-4 lg:px-5 py-4 lg:py-5 bg-white space-y-3 lg:space-y-4">
               <!-- Client Message -->
               <div class="flex gap-2 lg:gap-3">
-                <div class="w-7 h-7 lg:w-8 lg:h-8 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0">
+                <div
+                  class="w-7 h-7 lg:w-8 lg:h-8 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0"
+                >
                   <font-awesome-icon :icon="['fas', 'fa-user']" class="text-gray-500 text-xs lg:text-sm" />
                 </div>
                 <div class="flex-1 min-w-0">
@@ -149,26 +165,32 @@ const onSendClick = async (quote) => {
                   </div>
                 </div>
               </div>
-              
+
               <!-- Your Response -->
               <div class="flex gap-2 lg:gap-3 justify-end">
                 <div class="flex-1 min-w-0 flex justify-end">
                   <div class="max-w-[85%] lg:max-w-[80%] bg-blue-500 rounded-2xl rounded-tr-sm p-3 lg:p-4 text-white">
                     <div class="flex items-center gap-2 mb-2 justify-end">
                       <span class="text-xs text-blue-100">
-                        {{ quote.sent_at ? new Date(quote.sent_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Not sent' }}
+                        {{
+                          quote.sent_at
+                            ? new Date(quote.sent_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                            : 'Not sent'
+                        }}
                       </span>
                       <span class="text-xs font-medium">You</span>
                     </div>
                     <p class="text-sm leading-relaxed text-right">{{ quote.edited_response || quote.ai_response }}</p>
                   </div>
                 </div>
-                <div class="w-7 h-7 lg:w-8 lg:h-8 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0">
+                <div
+                  class="w-7 h-7 lg:w-8 lg:h-8 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0"
+                >
                   <font-awesome-icon :icon="['fas', 'fa-robot']" class="text-white text-xs lg:text-sm" />
                 </div>
               </div>
             </div>
-            
+
             <!-- Footer -->
             <div class="px-4 lg:px-5 py-3 bg-white border-t border-gray-200">
               <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -178,7 +200,7 @@ const onSendClick = async (quote) => {
                   <!-- Show phone number on desktop -->
                   <span class="hidden sm:inline ml-2">• {{ quote.from_number }}</span>
                 </div>
-                
+
                 <div class="flex items-center gap-2 flex-wrap">
                   <Button
                     @click="onDeleteClick(quote)"
@@ -211,7 +233,7 @@ const onSendClick = async (quote) => {
       </div>
     </div>
   </div>
-  
+
   <!-- Drawer -->
   <Drawer
     v-model:visible="showDrawer"

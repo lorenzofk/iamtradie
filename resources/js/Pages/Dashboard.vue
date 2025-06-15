@@ -35,7 +35,7 @@ const statusOptions = [
   { label: 'Rejected', value: 'rejected' },
 ];
 
-const getStatusBadgeClass = (status) => {
+const getStatusBadgeClass = status => {
   switch (status) {
     case 'sent':
       return 'bg-green-100 text-green-800';
@@ -46,7 +46,7 @@ const getStatusBadgeClass = (status) => {
   }
 };
 
-const getStatusIcon = (status) => {
+const getStatusIcon = status => {
   switch (status) {
     case 'sent':
       return 'fa-check-circle';
@@ -58,14 +58,14 @@ const getStatusIcon = (status) => {
 };
 
 // Voicemail helpers
-const formatDuration = (seconds) => {
+const formatDuration = seconds => {
   if (!seconds) return 'N/A';
   const mins = Math.floor(seconds / 60);
   const secs = seconds % 60;
   return `${mins}:${secs.toString().padStart(2, '0')}`;
 };
 
-const getVoicemailStatusBadgeClass = (voicemail) => {
+const getVoicemailStatusBadgeClass = voicemail => {
   if (voicemail.sms_sent) {
     return 'bg-green-100 text-green-800';
   } else if (voicemail.transcription_processed) {
@@ -75,7 +75,7 @@ const getVoicemailStatusBadgeClass = (voicemail) => {
   }
 };
 
-const getVoicemailStatusText = (voicemail) => {
+const getVoicemailStatusText = voicemail => {
   if (voicemail.sms_sent) {
     return 'Responded';
   } else if (voicemail.transcription_processed) {
@@ -85,7 +85,7 @@ const getVoicemailStatusText = (voicemail) => {
   }
 };
 
-const getVoicemailStatusIcon = (voicemail) => {
+const getVoicemailStatusIcon = voicemail => {
   if (voicemail.sms_sent) {
     return 'fa-check-circle';
   } else if (voicemail.transcription_processed) {
@@ -95,7 +95,7 @@ const getVoicemailStatusIcon = (voicemail) => {
   }
 };
 
-const openQuoteDrawer = (quote) => {
+const openQuoteDrawer = quote => {
   selectedQuote.value = quote;
   showDrawer.value = true;
 };
@@ -107,7 +107,7 @@ const closeDrawer = () => {
   router.visit(route('quotes.index'));
 };
 
-const openVoicemailDrawer = (voicemail) => {
+const openVoicemailDrawer = voicemail => {
   selectedVoicemail.value = voicemail;
   showVoicemailDrawer.value = true;
 };
@@ -116,7 +116,6 @@ const closeVoicemailDrawer = () => {
   showVoicemailDrawer.value = false;
   selectedVoicemail.value = null;
 };
-
 </script>
 
 <template>
@@ -125,7 +124,7 @@ const closeVoicemailDrawer = () => {
     <div class="flex items-center justify-between mb-4 lg:mb-6 bg-white rounded-xl shadow-sm border-0 p-4 lg:p-6">
       <h1 class="text-xl lg:text-2xl font-bold text-gray-900">Dashboard</h1>
     </div>
-    
+
     <!-- SMS Stats Cards -->
     <div class="mb-4">
       <h2 class="text-lg font-semibold text-gray-900 mb-3 flex items-center gap-2">
@@ -136,7 +135,9 @@ const closeVoicemailDrawer = () => {
         <!-- New Inquiries -->
         <div class="bg-white rounded-xl shadow-sm border-0 p-4 lg:p-6">
           <div class="flex items-center">
-            <div class="w-10 h-10 lg:w-12 lg:h-12 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+            <div
+              class="w-10 h-10 lg:w-12 lg:h-12 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0"
+            >
               <font-awesome-icon :icon="['fas', 'fa-envelope']" class="text-blue-600 text-sm lg:text-lg" />
             </div>
             <div class="ml-3 lg:ml-4 min-w-0">
@@ -149,7 +150,9 @@ const closeVoicemailDrawer = () => {
         <!-- Sent Today -->
         <div class="bg-white rounded-xl shadow-sm border-0 p-4 lg:p-6">
           <div class="flex items-center">
-            <div class="w-10 h-10 lg:w-12 lg:h-12 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
+            <div
+              class="w-10 h-10 lg:w-12 lg:h-12 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0"
+            >
               <font-awesome-icon :icon="['fas', 'fa-check-circle']" class="text-green-600 text-sm lg:text-lg" />
             </div>
             <div class="ml-3 lg:ml-4 min-w-0">
@@ -162,7 +165,9 @@ const closeVoicemailDrawer = () => {
         <!-- Pending Review -->
         <div class="bg-white rounded-xl shadow-sm border-0 p-4 lg:p-6">
           <div class="flex items-center">
-            <div class="w-10 h-10 lg:w-12 lg:h-12 bg-yellow-100 rounded-lg flex items-center justify-center flex-shrink-0">
+            <div
+              class="w-10 h-10 lg:w-12 lg:h-12 bg-yellow-100 rounded-lg flex items-center justify-center flex-shrink-0"
+            >
               <font-awesome-icon :icon="['fas', 'fa-clock']" class="text-yellow-600 text-sm lg:text-lg" />
             </div>
             <div class="ml-3 lg:ml-4 min-w-0">
@@ -175,7 +180,9 @@ const closeVoicemailDrawer = () => {
         <!-- Est. Value -->
         <div class="bg-white rounded-xl shadow-sm border-0 p-4 lg:p-6">
           <div class="flex items-center">
-            <div class="w-10 h-10 lg:w-12 lg:h-12 bg-orange-100 rounded-lg flex items-center justify-center flex-shrink-0">
+            <div
+              class="w-10 h-10 lg:w-12 lg:h-12 bg-orange-100 rounded-lg flex items-center justify-center flex-shrink-0"
+            >
               <font-awesome-icon :icon="['fas', 'fa-dollar-sign']" class="text-orange-600 text-sm lg:text-lg" />
             </div>
             <div class="ml-3 lg:ml-4 min-w-0">
@@ -197,7 +204,9 @@ const closeVoicemailDrawer = () => {
         <!-- Today Voicemails -->
         <div class="bg-white rounded-xl shadow-sm border-0 p-4 lg:p-6">
           <div class="flex items-center">
-            <div class="w-10 h-10 lg:w-12 lg:h-12 bg-purple-100 rounded-lg flex items-center justify-center flex-shrink-0">
+            <div
+              class="w-10 h-10 lg:w-12 lg:h-12 bg-purple-100 rounded-lg flex items-center justify-center flex-shrink-0"
+            >
               <font-awesome-icon :icon="['fas', 'fa-voicemail']" class="text-purple-600 text-sm lg:text-lg" />
             </div>
             <div class="ml-3 lg:ml-4 min-w-0">
@@ -210,7 +219,9 @@ const closeVoicemailDrawer = () => {
         <!-- Total Voicemails -->
         <div class="bg-white rounded-xl shadow-sm border-0 p-4 lg:p-6">
           <div class="flex items-center">
-            <div class="w-10 h-10 lg:w-12 lg:h-12 bg-indigo-100 rounded-lg flex items-center justify-center flex-shrink-0">
+            <div
+              class="w-10 h-10 lg:w-12 lg:h-12 bg-indigo-100 rounded-lg flex items-center justify-center flex-shrink-0"
+            >
               <font-awesome-icon :icon="['fas', 'fa-phone-alt']" class="text-indigo-600 text-sm lg:text-lg" />
             </div>
             <div class="ml-3 lg:ml-4 min-w-0">
@@ -223,7 +234,9 @@ const closeVoicemailDrawer = () => {
         <!-- Transcribed Today -->
         <div class="bg-white rounded-xl shadow-sm border-0 p-4 lg:p-6">
           <div class="flex items-center">
-            <div class="w-10 h-10 lg:w-12 lg:h-12 bg-teal-100 rounded-lg flex items-center justify-center flex-shrink-0">
+            <div
+              class="w-10 h-10 lg:w-12 lg:h-12 bg-teal-100 rounded-lg flex items-center justify-center flex-shrink-0"
+            >
               <font-awesome-icon :icon="['fas', 'fa-file-text']" class="text-teal-600 text-sm lg:text-lg" />
             </div>
             <div class="ml-3 lg:ml-4 min-w-0">
@@ -236,7 +249,9 @@ const closeVoicemailDrawer = () => {
         <!-- Responses Sent -->
         <div class="bg-white rounded-xl shadow-sm border-0 p-4 lg:p-6">
           <div class="flex items-center">
-            <div class="w-10 h-10 lg:w-12 lg:h-12 bg-emerald-100 rounded-lg flex items-center justify-center flex-shrink-0">
+            <div
+              class="w-10 h-10 lg:w-12 lg:h-12 bg-emerald-100 rounded-lg flex items-center justify-center flex-shrink-0"
+            >
               <font-awesome-icon :icon="['fas', 'fa-paper-plane']" class="text-emerald-600 text-sm lg:text-lg" />
             </div>
             <div class="ml-3 lg:ml-4 min-w-0">
@@ -271,12 +286,24 @@ const closeVoicemailDrawer = () => {
           <table v-else class="min-w-full">
             <thead>
               <tr class="border-b border-gray-200">
-                <th class="text-left py-4 px-4 text-xs font-medium text-gray-500 uppercase tracking-wider w-28">Status</th>
-                <th class="text-left py-4 px-4 text-xs font-medium text-gray-500 uppercase tracking-wider w-40">From</th>
-                <th class="text-left py-4 px-4 text-xs font-medium text-gray-500 uppercase tracking-wider">Client Message</th>
-                <th class="text-left py-4 px-4 text-xs font-medium text-gray-500 uppercase tracking-wider">AI Reply Preview</th>
-                <th class="text-left py-4 px-4 text-xs font-medium text-gray-500 uppercase tracking-wider w-36">Time</th>
-                <th class="text-right py-4 px-4 text-xs font-medium text-gray-500 uppercase tracking-wider w-24">Actions</th>
+                <th class="text-left py-4 px-4 text-xs font-medium text-gray-500 uppercase tracking-wider w-28">
+                  Status
+                </th>
+                <th class="text-left py-4 px-4 text-xs font-medium text-gray-500 uppercase tracking-wider w-40">
+                  From
+                </th>
+                <th class="text-left py-4 px-4 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Client Message
+                </th>
+                <th class="text-left py-4 px-4 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  AI Reply Preview
+                </th>
+                <th class="text-left py-4 px-4 text-xs font-medium text-gray-500 uppercase tracking-wider w-36">
+                  Time
+                </th>
+                <th class="text-right py-4 px-4 text-xs font-medium text-gray-500 uppercase tracking-wider w-24">
+                  Actions
+                </th>
               </tr>
             </thead>
             <tbody class="divide-y divide-gray-200">
@@ -333,9 +360,9 @@ const closeVoicemailDrawer = () => {
           <p class="text-gray-300 text-xs">New messages will appear here as soon as you receive them.</p>
         </div>
         <div v-else class="divide-y divide-gray-200">
-          <div 
-            v-for="quote in quotes" 
-            :key="quote.id" 
+          <div
+            v-for="quote in quotes"
+            :key="quote.id"
             class="px-4 py-5 hover:bg-gray-50 cursor-pointer"
             @click="openQuoteDrawer(quote)"
           >
@@ -352,23 +379,23 @@ const closeVoicemailDrawer = () => {
               </div>
               <span class="text-xs text-gray-500 flex-shrink-0 ml-2">{{ quote.created_at }}</span>
             </div>
-            
+
             <div class="space-y-4">
               <div>
                 <p class="text-xs font-medium text-gray-500 mb-2">Client Message</p>
                 <p class="text-sm text-gray-900 leading-relaxed overflow-hidden line-clamp-3">{{ quote.message }}</p>
               </div>
-              
+
               <div v-if="quote.ai_response">
                 <p class="text-xs font-medium text-gray-500 mb-2">AI Reply Preview</p>
-                <p class="text-sm text-gray-600 leading-relaxed overflow-hidden line-clamp-3">{{ quote.ai_response }}</p>
+                <p class="text-sm text-gray-600 leading-relaxed overflow-hidden line-clamp-3">
+                  {{ quote.ai_response }}
+                </p>
               </div>
-              
-              <div v-else class="text-sm text-center text-gray-400 italic">
-                -
-              </div>
+
+              <div v-else class="text-sm text-center text-gray-400 italic">-</div>
             </div>
-            
+
             <div class="flex justify-end mt-4 pt-2">
               <button
                 @click.stop="openQuoteDrawer(quote)"
@@ -407,12 +434,24 @@ const closeVoicemailDrawer = () => {
           <table v-else class="min-w-full">
             <thead>
               <tr class="border-b border-gray-200">
-                <th class="text-left py-4 px-4 text-xs font-medium text-gray-500 uppercase tracking-wider w-36">Status</th>
-                <th class="text-left py-4 px-4 text-xs font-medium text-gray-500 uppercase tracking-wider w-44">From</th>
-                <th class="text-left py-4 px-4 text-xs font-medium text-gray-500 uppercase tracking-wider w-20">Duration</th>
-                <th class="text-left py-4 px-4 text-xs font-medium text-gray-500 uppercase tracking-wider">Transcript</th>
-                <th class="text-left py-4 px-4 text-xs font-medium text-gray-500 uppercase tracking-wider w-36">Time</th>
-                <th class="text-right py-4 px-4 text-xs font-medium text-gray-500 uppercase tracking-wider w-40">Actions</th>
+                <th class="text-left py-4 px-4 text-xs font-medium text-gray-500 uppercase tracking-wider w-36">
+                  Status
+                </th>
+                <th class="text-left py-4 px-4 text-xs font-medium text-gray-500 uppercase tracking-wider w-44">
+                  From
+                </th>
+                <th class="text-left py-4 px-4 text-xs font-medium text-gray-500 uppercase tracking-wider w-20">
+                  Duration
+                </th>
+                <th class="text-left py-4 px-4 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Transcript
+                </th>
+                <th class="text-left py-4 px-4 text-xs font-medium text-gray-500 uppercase tracking-wider w-36">
+                  Time
+                </th>
+                <th class="text-right py-4 px-4 text-xs font-medium text-gray-500 uppercase tracking-wider w-40">
+                  Actions
+                </th>
               </tr>
             </thead>
             <tbody class="divide-y divide-gray-200">
@@ -444,9 +483,7 @@ const closeVoicemailDrawer = () => {
                   <div v-if="voicemail.transcription_text" class="line-clamp-2 leading-relaxed">
                     {{ voicemail.transcription_text }}
                   </div>
-                  <div v-else class="italic text-gray-400">
-                    Processing transcript...
-                  </div>
+                  <div v-else class="italic text-gray-400">Processing transcript...</div>
                 </td>
 
                 <td class="py-5 px-4 text-sm text-gray-500">
@@ -456,19 +493,19 @@ const closeVoicemailDrawer = () => {
                 <!-- Actions -->
                 <td class="py-5 px-4 text-right">
                   <div class="flex justify-between">
-                      <button
-                        class="text-purple-600 hover:text-purple-700 text-sm font-medium cursor-pointer flex items-center gap-1 mr-auto"
-                        @click="openVoicemailDrawer(voicemail)"
-                      >
-                        <font-awesome-icon :icon="['fas', 'fa-play']" />
-                        Play
-                      </button>
-                      <button
-                        class="text-blue-600 hover:text-blue-700 text-sm font-medium cursor-pointer flex items-center gap-1 ml-auto"
-                        @click="openVoicemailDrawer(voicemail)"
-                      >
-                        <font-awesome-icon :icon="['fas', 'fa-eye']" />
-                        View
+                    <button
+                      class="text-purple-600 hover:text-purple-700 text-sm font-medium cursor-pointer flex items-center gap-1 mr-auto"
+                      @click="openVoicemailDrawer(voicemail)"
+                    >
+                      <font-awesome-icon :icon="['fas', 'fa-play']" />
+                      Play
+                    </button>
+                    <button
+                      class="text-blue-600 hover:text-blue-700 text-sm font-medium cursor-pointer flex items-center gap-1 ml-auto"
+                      @click="openVoicemailDrawer(voicemail)"
+                    >
+                      <font-awesome-icon :icon="['fas', 'fa-eye']" />
+                      View
                     </button>
                   </div>
                 </td>
@@ -484,15 +521,13 @@ const closeVoicemailDrawer = () => {
           <div class="flex flex-col items-center justify-center py-16">
             <font-awesome-icon :icon="['fas', 'fa-voicemail']" class="text-purple-100 text-6xl mb-4" />
             <h3 class="text-lg font-semibold text-gray-700 mb-1">No Voicemails Yet</h3>
-            <p class="text-gray-400 text-sm text-center leading-snug mt-4 mb-2 max-w-xs mx-auto">New voicemails will appear here as soon as they are received.</p>
+            <p class="text-gray-400 text-sm text-center leading-snug mt-4 mb-2 max-w-xs mx-auto">
+              New voicemails will appear here as soon as they are received.
+            </p>
           </div>
         </template>
         <template v-else>
-          <div 
-            v-for="voicemail in voicemails" 
-            :key="voicemail.id" 
-            class="px-4 py-5 hover:bg-gray-50"
-          >
+          <div v-for="voicemail in voicemails" :key="voicemail.id" class="px-4 py-5 hover:bg-gray-50">
             <div class="flex items-start justify-between mb-4">
               <div class="flex items-center gap-3 min-w-0 flex-1">
                 <span
@@ -506,25 +541,26 @@ const closeVoicemailDrawer = () => {
               </div>
               <span class="text-xs text-gray-500 flex-shrink-0 ml-2">{{ voicemail.created_at }}</span>
             </div>
-            
+
             <div class="space-y-4">
               <div class="flex items-center gap-2 text-sm text-gray-600">
                 <font-awesome-icon :icon="['fas', 'fa-clock']" class="text-gray-400 text-xs" />
                 <span class="font-mono">Duration: {{ formatDuration(voicemail.recording_duration) }}</span>
               </div>
-              
+
               <div v-if="voicemail.transcription_text">
                 <p class="text-xs font-medium text-gray-500 mb-2">Transcript Preview</p>
-                <p class="text-sm text-gray-900 leading-relaxed overflow-hidden" style="display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;">
+                <p
+                  class="text-sm text-gray-900 leading-relaxed overflow-hidden"
+                  style="display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical"
+                >
                   {{ voicemail.transcription_text }}
                 </p>
               </div>
-              
-              <div v-else class="text-sm text-gray-400 italic">
-                Transcript processing...
-              </div>
+
+              <div v-else class="text-sm text-gray-400 italic">Transcript processing...</div>
             </div>
-            
+
             <div class="flex justify-end mt-4 pt-2">
               <button
                 @click="openVoicemailDrawer(voicemail)"
@@ -539,7 +575,7 @@ const closeVoicemailDrawer = () => {
       </div>
     </div>
   </div>
-  
+
   <!-- Quote Drawer -->
   <Drawer
     v-model:visible="showDrawer"
@@ -573,7 +609,7 @@ const closeVoicemailDrawer = () => {
         <p class="text-sm text-gray-500 mt-1">Review voicemail and transcript</p>
       </div>
     </template>
-    
+
     <ShowVoicemail :voicemail="selectedVoicemail" @cancel="closeVoicemailDrawer" />
   </Drawer>
 </template>

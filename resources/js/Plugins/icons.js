@@ -19,7 +19,7 @@ import {
   faComments,
   faCheckCircle,
   faTimesCircle,
-  faUser, 
+  faUser,
   faMapMarkerAlt,
   faCogs,
   faPencil,
@@ -175,7 +175,7 @@ library.add(
   faUtensils,
   faUserTimes,
   faCalculator,
-  faPause,
+  faPause
 );
 
 export default function SetupFontAwesome(app) {

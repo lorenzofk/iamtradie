@@ -6,7 +6,7 @@ import { useToast } from '@/Shared/Ui/Hooks/useToast';
 const { showToast } = useToast();
 
 const props = defineProps({
-  voicemail: Object
+  voicemail: Object,
 });
 
 const emit = defineEmits(['success', 'cancel']);
@@ -16,14 +16,14 @@ const currentAudio = ref(null);
 const playingVoicemailId = ref(null);
 
 // Voicemail helpers
-const formatDuration = (seconds) => {
+const formatDuration = seconds => {
   if (!seconds) return 'N/A';
   const mins = Math.floor(seconds / 60);
   const secs = seconds % 60;
   return `${mins}:${secs.toString().padStart(2, '0')}`;
 };
 
-const getVoicemailStatusBadgeClass = (voicemail) => {
+const getVoicemailStatusBadgeClass = voicemail => {
   if (voicemail.sms_sent) {
     return 'bg-green-100 text-green-800';
   } else if (voicemail.transcription_processed) {
@@ -33,7 +33,7 @@ const getVoicemailStatusBadgeClass = (voicemail) => {
   }
 };
 
-const getVoicemailStatusText = (voicemail) => {
+const getVoicemailStatusText = voicemail => {
   if (voicemail.sms_sent) {
     return 'Responded';
   } else if (voicemail.transcription_processed) {
@@ -43,7 +43,7 @@ const getVoicemailStatusText = (voicemail) => {
   }
 };
 
-const getVoicemailStatusIcon = (voicemail) => {
+const getVoicemailStatusIcon = voicemail => {
   if (voicemail.sms_sent) {
     return 'fa-check-circle';
   } else if (voicemail.transcription_processed) {
@@ -53,7 +53,7 @@ const getVoicemailStatusIcon = (voicemail) => {
   }
 };
 
-const toggleAudio = (voicemail) => {
+const toggleAudio = voicemail => {
   if (!voicemail.recording_url) return;
 
   // If this voicemail is currently playing, pause it
@@ -81,7 +81,7 @@ const toggleAudio = (voicemail) => {
       playingVoicemailId.value = null;
     });
 
-    audio.addEventListener('error', (error) => {
+    audio.addEventListener('error', error => {
       console.error('Error playing audio:', error);
       currentAudio.value = null;
       playingVoicemailId.value = null;
@@ -95,7 +95,7 @@ const toggleAudio = (voicemail) => {
   }
 };
 
-const isPlaying = (voicemailId) => {
+const isPlaying = voicemailId => {
   return playingVoicemailId.value === voicemailId;
 };
 
@@ -120,7 +120,7 @@ const handleClose = () => {
           <font-awesome-icon :icon="['fas', 'fa-clock']" class="text-gray-400" />
           Timeline
         </h3>
-        
+
         <div class="space-y-2 lg:space-y-3">
           <div class="flex items-start gap-3 text-sm">
             <div class="w-2 h-2 bg-gray-400 rounded-full flex-shrink-0 mt-2"></div>
@@ -134,15 +134,19 @@ const handleClose = () => {
             <div class="w-2 h-2 bg-purple-500 rounded-full flex-shrink-0 mt-2"></div>
             <div class="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
               <span class="text-gray-600 text-xs sm:text-sm">Received:</span>
-              <span class="text-gray-900 font-medium text-sm">{{ new Date(voicemail.created_at).toLocaleString('en-AU') }}</span>
+              <span class="text-gray-900 font-medium text-sm">
+                {{ new Date(voicemail.created_at).toLocaleString('en-AU') }}
+              </span>
             </div>
           </div>
-          
+
           <div v-if="voicemail.sms_sent_at" class="flex items-start gap-3 text-sm">
             <div class="w-2 h-2 bg-green-500 rounded-full flex-shrink-0 mt-2"></div>
             <div class="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
               <span class="text-gray-600 text-xs sm:text-sm">Responded:</span>
-              <span class="text-gray-900 font-medium text-sm">{{ new Date(voicemail.sms_sent_at).toLocaleString('en-AU') }}</span>
+              <span class="text-gray-900 font-medium text-sm">
+                {{ new Date(voicemail.sms_sent_at).toLocaleString('en-AU') }}
+              </span>
             </div>
           </div>
         </div>
@@ -161,14 +165,14 @@ const handleClose = () => {
               {{ getVoicemailStatusText(voicemail) }}
             </span>
           </div>
-          
+
           <!-- Voicemail ID -->
           <span class="text-xs text-gray-500 bg-gray-50 px-2 py-1 rounded-md flex-shrink-0">
             <font-awesome-icon :icon="['fas', 'fa-hashtag']" class="mr-1" />
             Voicemail {{ voicemail.id }}
           </span>
         </div>
-        
+
         <!-- Voicemail Details -->
         <div class="space-y-4 lg:space-y-6">
           <!-- Audio Player -->
@@ -191,7 +195,7 @@ const handleClose = () => {
               </div>
             </div>
           </div>
-          
+
           <!-- Transcript -->
           <div v-if="voicemail.transcription_processed && voicemail.transcription_text">
             <h3 class="text-sm font-medium text-gray-900 mb-2 lg:mb-3 flex items-center gap-2">
@@ -199,10 +203,12 @@ const handleClose = () => {
               Transcript
             </h3>
             <div class="bg-gray-50 rounded-2xl p-3 lg:p-4">
-              <p class="text-gray-700 leading-relaxed whitespace-pre-line text-sm lg:text-base">{{ voicemail.transcription_text }}</p>
+              <p class="text-gray-700 leading-relaxed whitespace-pre-line text-sm lg:text-base">
+                {{ voicemail.transcription_text }}
+              </p>
             </div>
           </div>
-          
+
           <div v-else-if="!voicemail.transcription_processed">
             <h3 class="text-sm font-medium text-gray-900 mb-2 lg:mb-3 flex items-center gap-2">
               <font-awesome-icon :icon="['fas', 'fa-file-text']" class="text-gray-400" />
@@ -223,7 +229,9 @@ const handleClose = () => {
               AI Response
             </h3>
             <div class="bg-blue-50 rounded-2xl p-3 lg:p-4 border border-blue-100">
-              <p class="text-gray-700 leading-relaxed whitespace-pre-line text-sm lg:text-base">{{ voicemail.ai_response }}</p>
+              <p class="text-gray-700 leading-relaxed whitespace-pre-line text-sm lg:text-base">
+                {{ voicemail.ai_response }}
+              </p>
             </div>
           </div>
 
@@ -238,7 +246,9 @@ const handleClose = () => {
                 <font-awesome-icon :icon="['fas', 'fa-check-circle']" />
                 <span class="text-sm font-medium">SMS sent successfully</span>
               </div>
-              <p class="text-xs text-green-600">Sent on {{ new Date(voicemail.sms_sent_at).toLocaleString('en-AU') }}</p>
+              <p class="text-xs text-green-600">
+                Sent on {{ new Date(voicemail.sms_sent_at).toLocaleString('en-AU') }}
+              </p>
             </div>
           </div>
         </div>

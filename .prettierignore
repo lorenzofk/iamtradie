@@ -1,0 +1,24 @@
+# Ignore compiled assets
+/public/js/
+/public/css/
+/public/build/ # For Vite
+/public/vendor/ # Ignore all vendor assets
+
+# Ignore node modules
+/node_modules/
+
+# Ignore Laravel specific directories
+/bootstrap/cache/
+/storage/
+/vendor/
+
+# Ignore .env file
+.env
+
+# Other common ignores
+*.blade.php # Often better handled by Blade formatters if any, or left alone.
+*.log
+.env.example
+.idea/
+.vscode/
+.git/ 

@@ -16,16 +16,7 @@ import {
 // Regular Icons
 //import { } from '@fortawesome/free-regular-svg-icons';
 
-library.add(
-  faHouse,
-  faCalendarDays,
-  faBars,
-  faUsers,
-  faUserTie,
-  faPenToSquare,
-  faTrash,
-  faRectangleXmark,
-);
+library.add(faHouse, faCalendarDays, faBars, faUsers, faUserTie, faPenToSquare, faTrash, faRectangleXmark);
 
 export default function SetupFontAwesome(app) {
   /**
