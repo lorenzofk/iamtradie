@@ -260,7 +260,15 @@ const closeVoicemailDrawer = () => {
       <!-- Desktop Table -->
       <div class="hidden lg:block px-6 py-4">
         <div class="overflow-x-auto">
-          <table class="min-w-full">
+          <template v-if="quotes.length === 0">
+            <div class="flex flex-col items-center justify-center py-16">
+              <font-awesome-icon :icon="['fas', 'fa-inbox']" class="text-gray-200 text-6xl mb-4" />
+              <h3 class="text-lg font-semibold text-gray-700 mb-1">No Messages Yet</h3>
+              <p class="text-gray-400 text-sm mb-2">You haven't received any messages from clients yet.</p>
+              <p class="text-gray-300 text-xs">New messages will appear here as soon as you receive them.</p>
+            </div>
+          </template>
+          <table v-else class="min-w-full">
             <thead>
               <tr class="border-b border-gray-200">
                 <th class="text-left py-4 px-4 text-xs font-medium text-gray-500 uppercase tracking-wider w-28">Status</th>
@@ -318,12 +326,12 @@ const closeVoicemailDrawer = () => {
 
       <!-- Mobile Cards -->
       <div class="lg:hidden">
-        <div v-if="quotes.length === 0" class="px-4 py-8 text-center">
-          <font-awesome-icon :icon="['fas', 'fa-inbox']" class="text-gray-300 text-4xl mb-4" />
-          <h3 class="text-lg font-medium text-gray-900 mb-2">No quotes found</h3>
-          <p class="text-gray-500">You have no quotes yet.</p>
+        <div v-if="quotes.length === 0" class="flex flex-col items-center justify-center py-16">
+          <font-awesome-icon :icon="['fas', 'fa-inbox']" class="text-gray-200 text-6xl mb-4" />
+          <h3 class="text-lg font-semibold text-gray-700 mb-1">No Messages Yet</h3>
+          <p class="text-gray-400 text-sm mb-2">You haven't received any messages from clients yet.</p>
+          <p class="text-gray-300 text-xs">New messages will appear here as soon as you receive them.</p>
         </div>
-        
         <div v-else class="divide-y divide-gray-200">
           <div 
             v-for="quote in quotes" 
@@ -388,7 +396,15 @@ const closeVoicemailDrawer = () => {
       <!-- Desktop Table -->
       <div class="hidden lg:block px-6 py-4">
         <div class="overflow-x-auto">
-          <table class="min-w-full">
+          <template v-if="voicemails.length === 0">
+            <div class="flex flex-col items-center justify-center py-16">
+              <font-awesome-icon :icon="['fas', 'fa-voicemail']" class="text-purple-100 text-6xl mb-4" />
+              <h3 class="text-lg font-semibold text-gray-700 mb-1">No Voicemails Yet</h3>
+              <p class="text-gray-400 text-sm mb-2">You haven't received any voicemails yet.</p>
+              <p class="text-gray-300 text-xs">New voicemails will appear here as soon as they are received.</p>
+            </div>
+          </template>
+          <table v-else class="min-w-full">
             <thead>
               <tr class="border-b border-gray-200">
                 <th class="text-left py-4 px-4 text-xs font-medium text-gray-500 uppercase tracking-wider w-36">Status</th>
@@ -464,53 +480,62 @@ const closeVoicemailDrawer = () => {
 
       <!-- Mobile Cards -->
       <div class="lg:hidden divide-y divide-gray-200">
-        <div 
-          v-for="voicemail in voicemails" 
-          :key="voicemail.id" 
-          class="px-4 py-5 hover:bg-gray-50"
-        >
-          <div class="flex items-start justify-between mb-4">
-            <div class="flex items-center gap-3 min-w-0 flex-1">
-              <span
-                class="px-3 py-1 rounded-full text-xs font-medium flex-shrink-0"
-                :class="getVoicemailStatusBadgeClass(voicemail)"
+        <template v-if="voicemails.length === 0">
+          <div class="flex flex-col items-center justify-center py-16">
+            <font-awesome-icon :icon="['fas', 'fa-voicemail']" class="text-purple-100 text-6xl mb-4" />
+            <h3 class="text-lg font-semibold text-gray-700 mb-1">No Voicemails Yet</h3>
+            <p class="text-gray-400 text-sm text-center leading-snug mt-4 mb-2 max-w-xs mx-auto">New voicemails will appear here as soon as they are received.</p>
+          </div>
+        </template>
+        <template v-else>
+          <div 
+            v-for="voicemail in voicemails" 
+            :key="voicemail.id" 
+            class="px-4 py-5 hover:bg-gray-50"
+          >
+            <div class="flex items-start justify-between mb-4">
+              <div class="flex items-center gap-3 min-w-0 flex-1">
+                <span
+                  class="px-3 py-1 rounded-full text-xs font-medium flex-shrink-0"
+                  :class="getVoicemailStatusBadgeClass(voicemail)"
+                >
+                  <font-awesome-icon :icon="['fas', getVoicemailStatusIcon(voicemail)]" class="mr-1" />
+                  {{ getVoicemailStatusText(voicemail) }}
+                </span>
+                <span class="text-sm font-medium text-gray-900 truncate">{{ voicemail.from_number }}</span>
+              </div>
+              <span class="text-xs text-gray-500 flex-shrink-0 ml-2">{{ voicemail.created_at }}</span>
+            </div>
+            
+            <div class="space-y-4">
+              <div class="flex items-center gap-2 text-sm text-gray-600">
+                <font-awesome-icon :icon="['fas', 'fa-clock']" class="text-gray-400 text-xs" />
+                <span class="font-mono">Duration: {{ formatDuration(voicemail.recording_duration) }}</span>
+              </div>
+              
+              <div v-if="voicemail.transcription_text">
+                <p class="text-xs font-medium text-gray-500 mb-2">Transcript Preview</p>
+                <p class="text-sm text-gray-900 leading-relaxed overflow-hidden" style="display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;">
+                  {{ voicemail.transcription_text }}
+                </p>
+              </div>
+              
+              <div v-else class="text-sm text-gray-400 italic">
+                Transcript processing...
+              </div>
+            </div>
+            
+            <div class="flex justify-end mt-4 pt-2">
+              <button
+                @click="openVoicemailDrawer(voicemail)"
+                class="text-blue-600 hover:text-blue-700 text-sm font-medium flex items-center gap-1"
               >
-                <font-awesome-icon :icon="['fas', getVoicemailStatusIcon(voicemail)]" class="mr-1" />
-                {{ getVoicemailStatusText(voicemail) }}
-              </span>
-              <span class="text-sm font-medium text-gray-900 truncate">{{ voicemail.from_number }}</span>
-            </div>
-            <span class="text-xs text-gray-500 flex-shrink-0 ml-2">{{ voicemail.created_at }}</span>
-          </div>
-          
-          <div class="space-y-4">
-            <div class="flex items-center gap-2 text-sm text-gray-600">
-              <font-awesome-icon :icon="['fas', 'fa-clock']" class="text-gray-400 text-xs" />
-              <span class="font-mono">Duration: {{ formatDuration(voicemail.recording_duration) }}</span>
-            </div>
-            
-            <div v-if="voicemail.transcription_text">
-              <p class="text-xs font-medium text-gray-500 mb-2">Transcript Preview</p>
-              <p class="text-sm text-gray-900 leading-relaxed overflow-hidden" style="display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;">
-                {{ voicemail.transcription_text }}
-              </p>
-            </div>
-            
-            <div v-else class="text-sm text-gray-400 italic">
-              Transcript processing...
+                <font-awesome-icon :icon="['fas', 'fa-eye']" />
+                View Details →
+              </button>
             </div>
           </div>
-          
-          <div class="flex justify-end mt-4 pt-2">
-            <button
-              @click="openVoicemailDrawer(voicemail)"
-              class="text-blue-600 hover:text-blue-700 text-sm font-medium flex items-center gap-1"
-            >
-              <font-awesome-icon :icon="['fas', 'fa-eye']" />
-              View Details →
-            </button>
-          </div>
-        </div>
+        </template>
       </div>
     </div>
   </div>
