@@ -115,7 +115,6 @@ return [
     | would like to show in this Log Viewer instance.
     |
     */
-
     'hosts' => [
         'local' => [
             'name' => ucfirst(env('APP_ENV', 'local')),

@@ -30,31 +30,20 @@ class AppServiceProvider extends ServiceProvider
     {
         Vite::useBuildDirectory('build/vite');
         
-        // Log Viewer Authorization Gate
         $this->registerLogViewerGate();
     }
 
     /**
      * Register the Log Viewer authorization gate
-     * 
-     * This provides an additional layer of security for the log viewer.
-     * You can customize this based on your application's user roles/permissions.
      */
     protected function registerLogViewerGate(): void
     {
         Gate::define('viewLogViewer', function ($user = null) {
-            // In local environment, allow access
             if (app()->environment('local')) {
                 return true;
             }
             
-            // In production, only allow authenticated users
-            // You can add additional checks here, such as:
-            // - User role checks: $user && $user->hasRole('admin')
-            // - Specific user emails: in_array($user->email, ['admin@example.com'])
-            // - Permission checks: $user && $user->can('view-logs')
-            
-            return $user !== null;
+            return ! empty($user);
         });
     }
 }
