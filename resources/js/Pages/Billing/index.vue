@@ -9,7 +9,7 @@ import { useToast } from '@Shared/Ui/Hooks/useToast';
 const { showToast } = useToast();
 
 defineOptions({
-  layout: App
+  layout: App,
 });
 
 const props = defineProps({
@@ -26,7 +26,7 @@ const cancelForm = useForm('post', route('billing.cancel'), {});
 const resumeForm = useForm('post', route('billing.resume'), {});
 const manageForm = useForm('post', route('billing.manage'), {});
 const subscribeForm = useForm('post', route('billing.subscribe'), {
-  plan: 'pro'
+  plan: 'pro',
 });
 
 const formatCurrency = (amount, currency = 'aud') => {
@@ -36,7 +36,7 @@ const formatCurrency = (amount, currency = 'aud') => {
   }).format(amount / 100);
 };
 
-const formatDate = (dateString) => {
+const formatDate = dateString => {
   return new Date(dateString).toLocaleDateString('en-AU', {
     year: 'numeric',
     month: 'long',
@@ -44,12 +44,12 @@ const formatDate = (dateString) => {
   });
 };
 
-const getStatusBadgeClass = (status) => {
+const getStatusBadgeClass = status => {
   const classes = {
     active: 'bg-green-100 text-green-800',
     canceled: 'bg-red-100 text-red-800',
     past_due: 'bg-yellow-100 text-yellow-800',
-    unpaid: 'bg-red-100 text-red-800'
+    unpaid: 'bg-red-100 text-red-800',
   };
   return classes[status] || 'bg-gray-100 text-gray-800';
 };
@@ -67,7 +67,7 @@ const cancelSubscription = () => {
       showCancelConfirm.value = false;
       isLoading.value = false;
     },
-    onError: (error) => {
+    onError: error => {
       showToast('error', error.message || 'Failed to cancel subscription.');
       isLoading.value = false;
     },
@@ -82,7 +82,7 @@ const resumeSubscription = () => {
       showToast('success', 'Subscription resumed successfully.');
       isLoading.value = false;
     },
-    onError: (error) => {
+    onError: error => {
       showToast('error', error.message || 'Failed to resume subscription.');
       isLoading.value = false;
     },
@@ -93,20 +93,20 @@ const subscribeToProPlan = () => {
   isLoading.value = true;
   subscribeForm.submit({
     preserveScroll: true,
-    onSuccess: (page) => {
+    onSuccess: page => {
       if (page.props.checkoutUrl) {
         window.location.href = page.props.checkoutUrl;
       }
       isLoading.value = false;
     },
-    onError: (error) => {
+    onError: error => {
       showToast('error', error.message || 'Failed to start subscription.');
       isLoading.value = false;
     },
   });
 };
 
-const openInvoiceUrl = (url) => {
+const openInvoiceUrl = url => {
   if (typeof window !== 'undefined' && url) {
     window.open(url, '_blank');
   }
@@ -140,13 +140,13 @@ const openInvoiceUrl = (url) => {
             </p>
           </div>
           <div class="flex items-center gap-2 flex-wrap">
-            <span 
+            <span
               class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium"
               :class="getStatusBadgeClass(subscription.status)"
             >
               {{ subscription.status.charAt(0).toUpperCase() + subscription.status.slice(1) }}
             </span>
-            <span 
+            <span
               v-if="subscription.cancel_at_period_end"
               class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800"
             >
@@ -177,7 +177,7 @@ const openInvoiceUrl = (url) => {
         </div>
 
         <div class="flex flex-col sm:flex-row gap-2 pt-4">
-          <Button 
+          <Button
             outlined
             size="small"
             :icon="['fas', 'fa-credit-card']"
@@ -186,8 +186,8 @@ const openInvoiceUrl = (url) => {
             :loading="manageForm.processing"
             class="w-full sm:w-auto"
           />
-          
-          <Button 
+
+          <Button
             v-if="subscription.status === 'active' && !subscription.cancel_at_period_end"
             outlined
             size="small"
@@ -196,8 +196,8 @@ const openInvoiceUrl = (url) => {
             @click="showCancelConfirm = true"
             class="text-red-600 border-red-300 hover:bg-red-50 w-full sm:w-auto"
           />
-          
-          <Button 
+
+          <Button
             v-if="subscription.cancel_at_period_end"
             size="small"
             :icon="['fas', 'fa-undo']"
@@ -210,14 +210,16 @@ const openInvoiceUrl = (url) => {
 
         <div v-if="subscription.cancel_at_period_end" class="mt-4 p-4 bg-orange-50 border border-orange-200 rounded-lg">
           <div class="flex items-start gap-3">
-            <font-awesome-icon :icon="['fas', 'fa-exclamation-triangle']" class="text-orange-600 mt-0.5 flex-shrink-0" />
+            <font-awesome-icon
+              :icon="['fas', 'fa-exclamation-triangle']"
+              class="text-orange-600 mt-0.5 flex-shrink-0"
+            />
             <div>
-              <p class="text-sm font-medium text-orange-800 mb-1">
-                Subscription Cancelled
-              </p>
+              <p class="text-sm font-medium text-orange-800 mb-1">Subscription Cancelled</p>
               <p class="text-sm text-orange-700">
-                Your subscription is cancelled but remains active until {{ formatDate(subscription.current_period_end) }}. 
-                You can resume anytime before this date to continue service without interruption.
+                Your subscription is cancelled but remains active until
+                {{ formatDate(subscription.current_period_end) }}. You can resume anytime before this date to continue
+                service without interruption.
               </p>
             </div>
           </div>
@@ -228,20 +230,19 @@ const openInvoiceUrl = (url) => {
       <div v-else class="text-center py-6 lg:py-8">
         <font-awesome-icon :icon="['fas', 'fa-zap']" class="text-gray-300 text-4xl lg:text-5xl mb-4" />
         <h3 class="text-lg font-medium text-gray-900 mb-2">No Active Subscription</h3>
-        <p class="text-gray-500 mb-6">
-          Subscribe to unlock unlimited quotes and premium features.
-        </p>
-        
+        <p class="text-gray-500 mb-6">Subscribe to unlock unlimited quotes and premium features.</p>
+
         <div class="max-w-md mx-auto">
           <div class="bg-white border-2 border-blue-500 rounded-lg p-4 lg:p-6">
             <div class="text-center mb-4">
               <h4 class="text-lg font-semibold text-gray-900">{{ subscription.plan?.nickname || 'Pro Plan' }}</h4>
               <p class="text-sm text-gray-600">Perfect for growing businesses</p>
               <div class="text-2xl lg:text-3xl font-bold text-gray-900 mt-2">
-                $29<span class="text-base lg:text-lg font-normal text-gray-600">/month</span>
+                $29
+                <span class="text-base lg:text-lg font-normal text-gray-600">/month</span>
               </div>
             </div>
-            
+
             <ul class="space-y-2 text-sm mb-6">
               <li class="flex items-center gap-2">
                 <font-awesome-icon :icon="['fas', 'fa-check']" class="text-green-500 flex-shrink-0" />
@@ -260,8 +261,8 @@ const openInvoiceUrl = (url) => {
                 Email notifications
               </li>
             </ul>
-            
-            <Button 
+
+            <Button
               size="small"
               label="Subscribe Now"
               @click="subscribeToProPlan"
@@ -284,15 +285,17 @@ const openInvoiceUrl = (url) => {
       </div>
 
       <div v-if="invoices && invoices.length > 0" class="space-y-3 lg:space-y-4">
-        <div 
-          v-for="invoice in invoices" 
+        <div
+          v-for="invoice in invoices"
           :key="invoice.id"
           class="flex flex-col lg:flex-row lg:items-center justify-between p-4 border border-gray-200 rounded-lg gap-4"
         >
           <div class="flex items-center gap-3 lg:gap-4">
-            <div class="flex items-center justify-center w-10 h-10 rounded-full flex-shrink-0"
-                 :class="invoice.status === 'paid' ? 'bg-green-100' : 'bg-red-100'">
-              <font-awesome-icon 
+            <div
+              class="flex items-center justify-center w-10 h-10 rounded-full flex-shrink-0"
+              :class="invoice.status === 'paid' ? 'bg-green-100' : 'bg-red-100'"
+            >
+              <font-awesome-icon
                 :icon="invoice.status === 'paid' ? ['fas', 'fa-check'] : ['fas', 'fa-times']"
                 :class="invoice.status === 'paid' ? 'text-green-600' : 'text-red-600'"
               />
@@ -301,14 +304,12 @@ const openInvoiceUrl = (url) => {
               <p class="font-medium text-gray-900 text-sm lg:text-base">
                 {{ formatCurrency(invoice.amount_paid) }}
               </p>
-              <p class="text-sm text-gray-500">
-                {{ formatDate(invoice.created) }} • {{ invoice.status }}
-              </p>
+              <p class="text-sm text-gray-500">{{ formatDate(invoice.created) }} • {{ invoice.status }}</p>
             </div>
           </div>
-          
+
           <div class="flex gap-2 flex-col sm:flex-row lg:flex-shrink-0">
-            <Button 
+            <Button
               size="small"
               outlined
               :icon="['fas', 'fa-download']"
@@ -316,7 +317,7 @@ const openInvoiceUrl = (url) => {
               @click="openInvoiceUrl(invoice.invoice_pdf)"
               class="w-full sm:w-auto"
             />
-            <Button 
+            <Button
               size="small"
               outlined
               :icon="['fas', 'fa-external-link-alt']"
@@ -331,15 +332,16 @@ const openInvoiceUrl = (url) => {
         <div class="flex flex-col items-center">
           <font-awesome-icon :icon="['fas', 'fa-file-invoice']" class="text-gray-300 text-4xl lg:text-5xl mb-4" />
           <h3 class="text-lg font-medium text-gray-900 mb-2">No invoices found</h3>
-          <p class="text-gray-500">
-            You have no invoices yet.
-          </p>
+          <p class="text-gray-500">You have no invoices yet.</p>
         </div>
       </div>
     </div>
 
     <!-- Cancel Confirmation Modal -->
-    <div v-if="showCancelConfirm" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50">
+    <div
+      v-if="showCancelConfirm"
+      class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50"
+    >
       <div class="bg-white rounded-xl shadow-xl p-6 max-w-md w-full mx-4">
         <div class="text-center mb-6">
           <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
@@ -347,12 +349,13 @@ const openInvoiceUrl = (url) => {
           </div>
           <h3 class="text-lg font-medium text-gray-900">Cancel Subscription</h3>
           <p class="text-sm text-gray-500 mt-2">
-            Are you sure you want to cancel your subscription? You'll continue to have access until your current billing period ends.
+            Are you sure you want to cancel your subscription? You'll continue to have access until your current billing
+            period ends.
           </p>
         </div>
-        
+
         <div class="flex flex-col sm:flex-row gap-3">
-          <Button 
+          <Button
             outlined
             size="small"
             label="Keep Subscription"
@@ -360,7 +363,7 @@ const openInvoiceUrl = (url) => {
             class="flex-1"
             :disabled="isLoading"
           />
-          <Button 
+          <Button
             size="small"
             label="Cancel Subscription"
             @click="cancelSubscription"

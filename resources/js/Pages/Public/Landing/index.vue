@@ -8,7 +8,7 @@ import HowItWorks from './Blocks/HowItWorks.vue';
 import Problem from './Blocks/Problem.vue';
 import CallToAction from './Blocks/CallToAction.vue';
 
-const scrollToSection = (sectionId) => {
+const scrollToSection = sectionId => {
   const element = document.getElementById(sectionId);
   if (element) {
     element.scrollIntoView({ behavior: 'smooth' });
@@ -18,7 +18,10 @@ const scrollToSection = (sectionId) => {
 
 <template>
   <Head title="PingMate – Smart Replies. More Jobs. Less Stress.">
-    <meta name="description" content="PingMate instantly answers missed calls and texts with smart, on-brand replies. Get a local Aussie number, AI summaries, and auto follow-ups — so you never miss another job." />
+    <meta
+      name="description"
+      content="PingMate instantly answers missed calls and texts with smart, on-brand replies. Get a local Aussie number, AI summaries, and auto follow-ups — so you never miss another job."
+    />
   </Head>
 
   <div class="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-800">
@@ -36,7 +39,6 @@ const scrollToSection = (sectionId) => {
     <section id="problem" class="py-16 bg-gradient-to-br from-red-500 via-pink-600 to-purple-700">
       <Problem />
     </section>
-
 
     <!-- Pricing Section -->
     <section id="pricing" class="py-16 bg-gradient-to-br from-slate-50 to-blue-200">

@@ -42,14 +42,31 @@ onMounted(() => {
       <!-- Animated Background -->
       <div class="absolute inset-0">
         <div class="absolute inset-0 bg-gradient-to-br from-blue-600/20 via-purple-600/20 to-green-600/20"></div>
-        <div class="absolute top-0 left-0 w-96 h-96 bg-gradient-to-r from-blue-500/30 to-purple-500/20 rounded-full blur-3xl animate-pulse"></div>
-        <div class="absolute bottom-0 right-0 w-120 h-120 bg-gradient-to-r from-green-500/30 to-blue-500/20 rounded-full blur-3xl animate-pulse" style="animation-delay: 1000ms"></div>
-        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-gradient-to-r from-purple-500/20 to-pink-500/10 rounded-full blur-3xl animate-pulse" style="animation-delay: 500ms"></div>
-        
+        <div
+          class="absolute top-0 left-0 w-96 h-96 bg-gradient-to-r from-blue-500/30 to-purple-500/20 rounded-full blur-3xl animate-pulse"
+        ></div>
+        <div
+          class="absolute bottom-0 right-0 w-120 h-120 bg-gradient-to-r from-green-500/30 to-blue-500/20 rounded-full blur-3xl animate-pulse"
+          style="animation-delay: 1000ms"
+        ></div>
+        <div
+          class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-gradient-to-r from-purple-500/20 to-pink-500/10 rounded-full blur-3xl animate-pulse"
+          style="animation-delay: 500ms"
+        ></div>
+
         <!-- Floating Elements -->
-        <div class="absolute top-20 left-20 w-2 h-2 bg-white/30 rounded-full animate-ping" style="animation-delay: 0s"></div>
-        <div class="absolute top-40 right-32 w-1 h-1 bg-blue-300/40 rounded-full animate-ping" style="animation-delay: 1s"></div>
-        <div class="absolute bottom-32 left-40 w-1.5 h-1.5 bg-green-300/40 rounded-full animate-ping" style="animation-delay: 2s"></div>
+        <div
+          class="absolute top-20 left-20 w-2 h-2 bg-white/30 rounded-full animate-ping"
+          style="animation-delay: 0s"
+        ></div>
+        <div
+          class="absolute top-40 right-32 w-1 h-1 bg-blue-300/40 rounded-full animate-ping"
+          style="animation-delay: 1s"
+        ></div>
+        <div
+          class="absolute bottom-32 left-40 w-1.5 h-1.5 bg-green-300/40 rounded-full animate-ping"
+          style="animation-delay: 2s"
+        ></div>
       </div>
 
       <!-- Content -->
@@ -57,15 +74,17 @@ onMounted(() => {
         <div class="max-w-lg">
           <!-- Logo -->
           <div class="flex items-center mb-8">
-            <img src="/images/logo.png" alt="PingMate Logo" class="bg-white rounded-lg p-2 h-24 w-24 transform scale-120" />
+            <img
+              src="/images/logo.png"
+              alt="PingMate Logo"
+              class="bg-white rounded-lg p-2 h-24 w-24 transform scale-120"
+            />
           </div>
 
           <!-- Headline -->
           <h1 class="text-4xl font-black mb-6 leading-tight">
             Secure Account
-            <span class="bg-gradient-to-r from-sky-400 to-blue-400 bg-clip-text text-transparent">
-              Recovery
-            </span>
+            <span class="bg-gradient-to-r from-sky-400 to-blue-400 bg-clip-text text-transparent">Recovery</span>
           </h1>
 
           <!-- Value Props -->
@@ -93,7 +112,9 @@ onMounted(() => {
           <!-- Improved Testimonial -->
           <div class="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20">
             <div class="flex items-center mb-4">
-              <div class="w-12 h-12 bg-gradient-to-r from-green-400 to-blue-500 rounded-full flex items-center justify-center mr-4">
+              <div
+                class="w-12 h-12 bg-gradient-to-r from-green-400 to-blue-500 rounded-full flex items-center justify-center mr-4"
+              >
                 <span class="text-white font-bold text-lg">SM</span>
               </div>
               <div>
@@ -111,7 +132,8 @@ onMounted(() => {
               </div>
             </div>
             <p class="text-blue-100 italic leading-relaxed">
-              "Quick password reset got me back to managing quotes instantly. The security features give me peace of mind for my business."
+              "Quick password reset got me back to managing quotes instantly. The security features give me peace of
+              mind for my business."
             </p>
           </div>
         </div>
@@ -124,17 +146,24 @@ onMounted(() => {
         <!-- Mobile Logo (visible only on small screens) -->
         <div class="lg:hidden flex justify-center mb-6">
           <div class="flex items-center">
-            <img src="/images/logo.png" alt="PingMate Logo" class="bg-white rounded-lg p-2 h-24 w-24 transform scale-120" />
+            <img
+              src="/images/logo.png"
+              alt="PingMate Logo"
+              class="bg-white rounded-lg p-2 h-24 w-24 transform scale-120"
+            />
           </div>
         </div>
 
         <!-- Password Reset Card -->
-        <div class="bg-white/95 backdrop-blur-lg p-8 shadow-2xl rounded-3xl border border-white/20 transform transition-all duration-500" 
-             :class="{ 'translate-y-0 opacity-100': isLoaded, 'translate-y-10 opacity-0': !isLoaded }">
-          
+        <div
+          class="bg-white/95 backdrop-blur-lg p-8 shadow-2xl rounded-3xl border border-white/20 transform transition-all duration-500"
+          :class="{ 'translate-y-0 opacity-100': isLoaded, 'translate-y-10 opacity-0': !isLoaded }"
+        >
           <!-- Header -->
           <div class="text-center mb-6">
-            <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-600 to-green-600 rounded-2xl mb-4 shadow-lg">
+            <div
+              class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-600 to-green-600 rounded-2xl mb-4 shadow-lg"
+            >
               <font-awesome-icon :icon="['fas', 'fa-key']" class="text-white text-2xl" />
             </div>
             <h2 class="text-3xl font-black text-gray-900 mb-2">Forgot your password?</h2>
@@ -177,7 +206,10 @@ onMounted(() => {
             <!-- Back to Login -->
             <div class="text-center pt-4">
               <p class="text-gray-600 mb-4">Remember your password?</p>
-              <Link :href="route('login')" class="inline-flex items-center px-6 py-3 border-2 border-blue-600 text-blue-600 font-bold rounded-xl hover:bg-blue-600 hover:text-white transition-all duration-300 hover:scale-105">
+              <Link
+                :href="route('login')"
+                class="inline-flex items-center px-6 py-3 border-2 border-blue-600 text-blue-600 font-bold rounded-xl hover:bg-blue-600 hover:text-white transition-all duration-300 hover:scale-105"
+              >
                 <font-awesome-icon :icon="['fas', 'fa-arrow-left']" class="mr-2" />
                 Back to Sign In
               </Link>
@@ -205,52 +237,52 @@ onMounted(() => {
 </template>
 
 <style scoped>
-  .w-120 {
-    width: 30rem;
-  }
-  
-  .h-120 {
-    height: 30rem;
-  }
+.w-120 {
+  width: 30rem;
+}
 
-  /* Custom animation for form appearance */
-  @keyframes slideInUp {
-    from {
-      opacity: 0;
-      transform: translateY(40px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
+.h-120 {
+  height: 30rem;
+}
 
-  /* Enhanced focus states */
-  .group:focus-within .group-focus\:scale-105 {
-    transform: scale(1.05);
+/* Custom animation for form appearance */
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
   }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 
-  /* Smooth transitions for all interactive elements */
-  * {
-    transition: all 0.3s ease;
-  }
+/* Enhanced focus states */
+.group:focus-within .group-focus\:scale-105 {
+  transform: scale(1.05);
+}
 
-  /* Custom scrollbar for webkit browsers */
-  ::-webkit-scrollbar {
-    width: 8px;
-  }
+/* Smooth transitions for all interactive elements */
+* {
+  transition: all 0.3s ease;
+}
 
-  ::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 10px;
-  }
+/* Custom scrollbar for webkit browsers */
+::-webkit-scrollbar {
+  width: 8px;
+}
 
-  ::-webkit-scrollbar-thumb {
-    background: linear-gradient(180deg, #3b82f6, #10b981);
-    border-radius: 10px;
-  }
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
 
-  ::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(180deg, #2563eb, #059669);
-  }
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #3b82f6, #10b981);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #2563eb, #059669);
+}
 </style>

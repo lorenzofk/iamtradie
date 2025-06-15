@@ -18,16 +18,14 @@ const isActive = computed(() => route().current(props.href));
     :class="[
       isActive
         ? 'bg-blue-300 border-r-4 border-blue-300 text-blue-300 font-semibold'
-        : 'text-gray-500 hover:bg-blue-50 hover:text-blue-900'
+        : 'text-gray-500 hover:bg-blue-50 hover:text-blue-900',
     ]"
   >
     <font-awesome-icon
       :icon="props.icon"
       class="mr-3 h-5 w-5"
-      :class="[
-        isActive ? 'text-primary-500' : 'text-gray-400 group-hover:text-gray-500'
-      ]"
+      :class="[isActive ? 'text-primary-500' : 'text-gray-400 group-hover:text-gray-500']"
     />
     <span>{{ props.label }}</span>
   </Link>
-</template> 
+</template>

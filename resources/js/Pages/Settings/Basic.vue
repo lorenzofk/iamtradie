@@ -3,7 +3,7 @@ import { usePage } from '@inertiajs/vue3';
 import { useForm } from 'laravel-precognition-vue-inertia';
 import App from '@/Layouts/App.vue';
 import Button from '@/Shared/Ui/Button/Button.vue';
-import FormElement from '@/Shared/Ui/Form/FormElement.vue'
+import FormElement from '@/Shared/Ui/Form/FormElement.vue';
 import FormLabel from '@/Shared/Ui/Form/FormLabel.vue';
 import Input from '@/Shared/Ui/Form/Input.vue';
 import InputNumber from '@/Shared/Ui/Form/InputNumber.vue';
@@ -13,13 +13,13 @@ import { useToast } from '@Shared/Ui/Hooks/useToast';
 const { showToast } = useToast();
 
 defineOptions({
-  layout: App
+  layout: App,
 });
 
 const props = defineProps({
   settings: Object,
   industry_types: Array,
-  response_tones: Array
+  response_tones: Array,
 });
 
 const user = usePage().props.auth?.user;
@@ -49,7 +49,6 @@ const onFormSubmit = () => {
 };
 </script>
 
-
 <template>
   <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
     <!-- Header -->
@@ -67,49 +66,28 @@ const onFormSubmit = () => {
           </h2>
           <p class="text-sm text-gray-600 mt-1">Update your personal information and contact details.</p>
         </div>
-        
+
         <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
           <FormElement>
             <FormLabel for="first_name">First Name</FormLabel>
-            <Input
-              id="first_name"
-              v-model="form.first_name"
-              :error="form.errors.first_name"
-              required
-            />
+            <Input id="first_name" v-model="form.first_name" :error="form.errors.first_name" required />
           </FormElement>
-          
+
           <FormElement>
             <FormLabel for="last_name">Last Name</FormLabel>
-            <Input
-              id="last_name"
-              v-model="form.last_name"
-              :error="form.errors.last_name"
-              required
-            />
+            <Input id="last_name" v-model="form.last_name" :error="form.errors.last_name" required />
           </FormElement>
-          
+
           <FormElement class="lg:col-span-2">
             <FormLabel for="email">Email</FormLabel>
-            <Input
-              id="email"
-              type="email"
-              v-model="form.email"
-              :error="form.errors.email"
-              required
-            />
+            <Input id="email" type="email" v-model="form.email" :error="form.errors.email" required />
           </FormElement>
 
           <FormElement>
             <FormLabel for="business_name">Business Name</FormLabel>
-            <Input
-              id="business_name"
-              v-model="form.business_name"
-              :error="form.errors.business_name"
-              required
-            />
+            <Input id="business_name" v-model="form.business_name" :error="form.errors.business_name" required />
           </FormElement>
-          
+
           <FormElement>
             <FormLabel for="business_location">Location</FormLabel>
             <Input
@@ -120,16 +98,12 @@ const onFormSubmit = () => {
               required
             />
           </FormElement>
-          
+
           <FormElement>
             <FormLabel for="phone">Phone Number</FormLabel>
-            <Input
-              id="phone"
-              v-model="form.phone_number"
-              :error="form.errors.phone_number"
-            />
+            <Input id="phone" v-model="form.phone_number" :error="form.errors.phone_number" />
           </FormElement>
-          
+
           <FormElement>
             <FormLabel for="industry_type">Industry Type</FormLabel>
             <Select
@@ -143,7 +117,7 @@ const onFormSubmit = () => {
           </FormElement>
         </div>
       </div>
-      
+
       <!-- Base Pricing Card -->
       <div class="bg-white shadow-sm rounded-xl border-0 p-4 lg:p-6">
         <div class="mb-4 lg:mb-6">
@@ -153,7 +127,7 @@ const onFormSubmit = () => {
           </h2>
           <p class="text-sm text-gray-600 mt-1">Set your standard rates for AI to include in quote responses.</p>
         </div>
-        
+
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <FormElement>
             <FormLabel for="callout_fee">Callout Fee ($)</FormLabel>
@@ -166,7 +140,7 @@ const onFormSubmit = () => {
               required
             />
           </FormElement>
-          
+
           <FormElement>
             <FormLabel for="hourly_rate">Hourly Rate ($)</FormLabel>
             <InputNumber
@@ -180,11 +154,11 @@ const onFormSubmit = () => {
           </FormElement>
         </div>
       </div>
-      
+
       <!-- Submit Button -->
       <div class="flex justify-end">
-        <Button 
-          type="submit" 
+        <Button
+          type="submit"
           size="small"
           :loading="form.processing"
           label="Update Settings"
