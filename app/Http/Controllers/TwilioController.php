@@ -1,19 +1,21 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
+use App\Enums\QuoteSource;
+use App\Enums\QuoteStatus;
+use App\Models\Quote;
 use App\Models\User;
+use App\Models\Voicemail;
 use App\Services\OpenAIService;
 use App\Services\TwilioService;
 use Exception;
 use Illuminate\Http\Request;
-use App\Models\Quote;
-use App\Models\Voicemail;
-use App\Enums\QuoteSource;
-use App\Enums\QuoteStatus;
-use Twilio\TwiML\VoiceResponse;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Log;
+use Twilio\TwiML\VoiceResponse;
 
 class TwilioController extends Controller
 {
@@ -30,9 +32,10 @@ class TwilioController extends Controller
         Log::withContext(['action' => 'after-record', 'data' => $request->all()]);
 
         $data = $request->all();
-        
-        $user = User::whereHas('settings', fn ($query) => 
-            $query->where('agent_sms_number', $data['Called'])
+
+        $user = User::whereHas(
+            'settings',
+            fn ($query) => $query->where('agent_sms_number', $data['Called'])
         )->first();
 
         throw_if(empty($user), new Exception('User not found for number'));
@@ -66,7 +69,7 @@ class TwilioController extends Controller
     public function missedCall(Request $request): Response
     {
         Log::withContext(['action' => 'missed-call', 'data' => $request->all()]);
-        
+
         $called = $request->input('To');
         $user = User::whereHas('settings', fn ($query) => $query->where('agent_sms_number', $called))->firstOrFail();
 
@@ -89,7 +92,7 @@ class TwilioController extends Controller
         } catch (Exception $e) {
             Log::error('[MISSED CALL] - Error', ['message' => $e->getMessage()]);
 
-            $response->say("Sorry, we have a technical issue. Please try again later.");
+            $response->say('Sorry, we have a technical issue. Please try again later.');
 
             return response($response->asXML())->header('Content-Type', 'text/xml');
         }
@@ -107,7 +110,8 @@ class TwilioController extends Controller
         $callSid = $request->input('CallSid');
         $transcription = $request->input('TranscriptionText');
 
-        $user = User::whereHas('settings', 
+        $user = User::whereHas(
+            'settings',
             fn ($query) => $query->where('agent_sms_number', $called)
         )->firstOrFail();
 
@@ -129,7 +133,7 @@ class TwilioController extends Controller
 
         if ($settings->auto_send_sms_after_voicemail) {
             Log::info('[TRANSCRIPTION] - Auto send SMS after voice mail is enabled. Generating quote response...');
-            
+
             $quote = $this->openAIService->generateQuoteResponse(
                 message: $transcription,
                 industryType: $settings->industry_type->value,
@@ -212,6 +216,7 @@ class TwilioController extends Controller
                 $this->twilioService->send(to: $leadNumber, from: $twilioNumber, message: $aiResponse);
             } catch (Exception $e) {
                 Log::error('[INCOMING TEXT] - Error sending SMS', ['message' => $e->getMessage()]);
+
                 return response('error', 500);
             }
 
@@ -236,7 +241,7 @@ class TwilioController extends Controller
         $response = new VoiceResponse();
 
         if (empty($settings)) {
-            $response->say("Sorry, we have a technical issue. Please try again later.");
+            $response->say('Sorry, we have a technical issue. Please try again later.');
             $response->hangup();
 
             return response($response->asXML())->header('Content-Type', 'text/xml');
@@ -252,7 +257,7 @@ class TwilioController extends Controller
             ]);
 
             $dial->setCallerId($twilioNumber);
-            
+
             return response($response->asXML())->header('Content-Type', 'text/xml');
         }
 

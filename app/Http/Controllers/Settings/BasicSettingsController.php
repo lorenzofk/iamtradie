@@ -1,16 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Settings;
 
 use App\Enums\IndustryType;
 use App\Enums\ResponseTone;
+use App\Http\Controllers\Controller;
 use App\Http\Requests\UpdateSettingsRequest;
+use Exception;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
-use Exception;
-use App\Http\Controllers\Controller;
 
 class BasicSettingsController extends Controller
 {
@@ -52,6 +54,7 @@ class BasicSettingsController extends Controller
             DB::commit();
         } catch (Exception) {
             DB::rollBack();
+
             return redirect()->back()->with('error', 'Failed to update settings. Please try again.');
         }
 

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services\Auth;
 
 use Exception;
@@ -17,7 +19,7 @@ class ResetPasswordService
     {
         $status = Password::reset(
             $data,
-            function ($user, $password) {
+            function ($user, $password): void {
                 $user
                     ->forceFill(['password' => Hash::make($password)])
                     ->setRememberToken(Str::random(60));

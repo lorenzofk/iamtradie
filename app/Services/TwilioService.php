@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services;
 
-use Twilio\Rest\Client;
 use Exception;
 use Illuminate\Support\Facades\Log;
+use Twilio\Rest\Client;
 
 class TwilioService
 {
@@ -31,7 +33,7 @@ class TwilioService
             Log::error('Failed to send SMS', ['error' => $e->getMessage()]);
             throw $e;
         }
-        
+
         Log::info('SMS sent successfully');
     }
 }

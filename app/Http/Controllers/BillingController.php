@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
-use Illuminate\Http\RedirectResponse;
 
 class BillingController extends Controller
 {
@@ -32,7 +34,7 @@ class BillingController extends Controller
                     ? date('Y-m-d', $stripeSub->current_period_end)
                     : null,
                 'plan' => [
-                    'nickname' => $plan->nickname,  
+                    'nickname' => $plan->nickname,
                     'amount' => $plan->unit_amount,
                     'interval' => $plan->recurring->interval,
                 ],
@@ -40,16 +42,14 @@ class BillingController extends Controller
         }
 
         // Get invoices
-        $invoices = collect($user->invoices())->map(function ($invoice) {
-            return [
-                'id' => $invoice->id,
-                'amount_paid' => $invoice->amount_paid,
-                'status' => $invoice->status,
-                'created' => date('Y-m-d', $invoice->created),
-                'hosted_invoice_url' => $invoice->hosted_invoice_url,
-                'invoice_pdf' => $invoice->invoice_pdf,
-            ];
-        })->toArray();
+        $invoices = collect($user->invoices())->map(fn ($invoice) => [
+            'id' => $invoice->id,
+            'amount_paid' => $invoice->amount_paid,
+            'status' => $invoice->status,
+            'created' => date('Y-m-d', $invoice->created),
+            'hosted_invoice_url' => $invoice->hosted_invoice_url,
+            'invoice_pdf' => $invoice->invoice_pdf,
+        ])->toArray();
 
         return Inertia::render('Billing/index', [
             'subscription' => $subscriptionData,
@@ -65,7 +65,7 @@ class BillingController extends Controller
         $user = $request->user();
         $subscription = $user->subscription();
 
-        if ($subscription && $subscription->active() && !$subscription->canceled()) {
+        if ($subscription && $subscription->active() && ! $subscription->canceled()) {
             $subscription->cancel();
         }
 
@@ -93,7 +93,7 @@ class BillingController extends Controller
     public function manage(Request $request): RedirectResponse
     {
         $user = $request->user();
-        
+
         return $user->redirectToBillingPortal(route('billing.index'));
     }
 

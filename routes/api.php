@@ -1,9 +1,11 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\TwilioController;
+declare(strict_types=1);
 
-Route::group(['prefix' => 'twilio', 'as' => 'twilio.'], function () {
+use App\Http\Controllers\TwilioController;
+use Illuminate\Support\Facades\Route;
+
+Route::group(['prefix' => 'twilio', 'as' => 'twilio.'], function (): void {
     Route::post('/text', [TwilioController::class, 'incomingText'])->name('incoming-text');
     Route::post('/voice', [TwilioController::class, 'incomingCall'])->name('incoming-call');
 

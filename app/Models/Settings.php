@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Enums\IndustryType;
 use App\Enums\ResponseTone;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Settings extends Model
 {
@@ -15,7 +17,7 @@ class Settings extends Model
      * @var list<string>
      */
     protected $fillable = [
-        'user_id', 
+        'user_id',
         'industry_type',
         'business_name',
         'business_location',
@@ -32,6 +34,14 @@ class Settings extends Model
         'call_ring_duration',
         'voicemail_message',
     ];
+
+    /**
+     * Get the user that owns the settings.
+     */
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
 
     /**
      * Get the attributes that should be cast.
@@ -52,13 +62,5 @@ class Settings extends Model
             'quotes_limit' => 'integer',
             'call_ring_duration' => 'integer',
         ];
-    }
-
-    /**
-     * Get the user that owns the settings.
-     */
-    public function user(): BelongsTo
-    {
-        return $this->belongsTo(User::class);
     }
 }

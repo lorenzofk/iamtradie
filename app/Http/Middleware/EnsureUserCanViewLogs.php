@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Middleware;
 
 use Closure;
@@ -24,12 +26,12 @@ class EnsureUserCanViewLogs
         }
 
         // In production/staging, require authentication
-        if (!Auth::check()) {
+        if (! Auth::check()) {
             return redirect()->route('login')->with('error', 'Please log in to access the log viewer.');
         }
 
         // Additional Gate authorization check
-        if (!Gate::allows('viewLogViewer', Auth::user())) {
+        if (! Gate::allows('viewLogViewer', Auth::user())) {
             abort(403, 'Unauthorized access to log viewer.');
         }
 

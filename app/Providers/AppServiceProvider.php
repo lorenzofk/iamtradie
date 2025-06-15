@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Providers;
 
 use Illuminate\Support\Facades\Gate;
@@ -29,7 +31,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Vite::useBuildDirectory('build/vite');
-        
+
         $this->registerLogViewerGate();
     }
 
@@ -42,7 +44,7 @@ class AppServiceProvider extends ServiceProvider
             if (app()->environment('local')) {
                 return true;
             }
-            
+
             return ! empty($user);
         });
     }

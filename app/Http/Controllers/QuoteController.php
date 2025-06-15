@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
 use App\Enums\QuoteStatus;
@@ -7,10 +9,10 @@ use App\Models\Quote;
 use App\Services\TwilioService;
 use Exception;
 use Illuminate\Http\JsonResponse;
-use Inertia\Inertia;
-use Illuminate\Support\Facades\Auth;
-use Inertia\Response;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Inertia\Inertia;
+use Inertia\Response;
 
 class QuoteController extends Controller
 {
@@ -92,4 +94,4 @@ class QuoteController extends Controller
 
         return response()->json();
     }
-} 
+}

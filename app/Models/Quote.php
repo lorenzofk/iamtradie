@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
+use App\Enums\IndustryType;
+use App\Enums\QuoteSource;
+use App\Enums\QuoteStatus;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use App\Enums\IndustryType;
-use App\Enums\QuoteStatus;
-use App\Enums\QuoteSource;
 
 class Quote extends Model
 {
@@ -25,6 +27,14 @@ class Quote extends Model
     ];
 
     /**
+     * Get the user that owns the quote.
+     */
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    /**
      * Get the attributes that should be cast.
      *
      * @return array<string, string>
@@ -38,12 +48,4 @@ class Quote extends Model
             'source' => QuoteSource::class,
         ];
     }
-
-    /**
-     * Get the user that owns the quote.
-     */
-    public function user(): BelongsTo
-    {
-        return $this->belongsTo(User::class);
-    }
-} 
+}

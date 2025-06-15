@@ -1,17 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Settings;
 
-use App\Enums\QuoteStatus;
 use App\Enums\QuoteSource;
+use App\Enums\QuoteStatus;
 use App\Enums\ResponseTone;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UpdateCommunicationSettingsRequest;
+use Exception;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Inertia\Response;
-use Illuminate\Http\RedirectResponse;
-use Exception;
 
 class CommunicationSettingsController extends Controller
 {
@@ -25,7 +27,7 @@ class CommunicationSettingsController extends Controller
         $totalMessages = $user->quotes()->where('source', QuoteSource::SMS)->count();
         $pendingReview = $user->quotes()->where('source', QuoteSource::SMS)->where('status', QuoteStatus::PENDING)->count();
         $autoSent = $user->quotes()->where('source', QuoteSource::SMS)->where('status', QuoteStatus::SENT)->count();
-        $responseRate = $totalMessages > 0 ? round(($autoSent / $totalMessages) * 100) . '%' : '0%';
+        $responseRate = $totalMessages > 0 ? round(($autoSent / $totalMessages) * 100).'%' : '0%';
 
         return Inertia::render('Settings/Communication', [
             'response_tones' => ResponseTone::toDropdown(),

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Enums;
 
 enum IndustryType: string
@@ -24,6 +26,17 @@ enum IndustryType: string
     }
 
     /**
+     * Get the industry types as a dropdown array.
+     */
+    public static function toDropdown(): array
+    {
+        return array_map(fn (IndustryType $type) => [
+            'id' => $type->value,
+            'label' => $type->label(),
+        ], self::cases());
+    }
+
+    /**
      * Get the label for the industry type.
      */
     public function label(): string
@@ -40,16 +53,5 @@ enum IndustryType: string
             self::PAINTING => 'Painting',
             self::GENERAL => 'General',
         };
-    }
-
-    /**
-     * Get the industry types as a dropdown array.
-     */
-    public static function toDropdown(): array
-    {
-        return array_map(fn (IndustryType $type) => [
-            'id' => $type->value,
-            'label' => $type->label(),
-        ], self::cases());
     }
 }

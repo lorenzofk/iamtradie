@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
 use App\Enums\QuoteStatus;
@@ -22,7 +24,7 @@ class DashboardController extends Controller
         $pendingReview = $user->quotes()->whereStatus(QuoteStatus::PENDING)->count();
         $sentToday = $user->quotes()->whereStatus(QuoteStatus::SENT)->whereDate('sent_at', $today)->count();
         $newInquiries = $user->quotes()->whereStatus(QuoteStatus::PENDING)->whereDate('created_at', $today)->count();
-        
+
         // Voicemail stats
         $todayVoicemails = $user->voicemails()->whereDate('created_at', $today)->count();
         $totalVoicemails = $user->voicemails()->count();
@@ -30,35 +32,31 @@ class DashboardController extends Controller
             ->where('transcription_processed', true)->count();
         $responsesSentToday = $user->voicemails()->whereDate('sms_sent_at', $today)
             ->where('sms_sent', true)->count();
-        
-        $recentQuotes = $user->quotes()->latest()->take(5)->get()->map(function ($quote) {
-            return [
-                'id' => $quote->id,
-                'status' => $quote->status->value,
-                'from_number' => $quote->from_number,
-                'message' => $quote->message,
-                'ai_response' => $quote->ai_response,
-                'sent_at' => $quote->sent_at,
-                'created_at' => $quote->created_at->diffForHumans(),
-            ];
-        });
 
-        $recentVoicemails = $user->voicemails()->latest()->take(5)->get()->map(function ($voicemail) {
-            return [
-                'id' => $voicemail->id,
-                'from_number' => $voicemail->from_number,
-                'caller_country' => $voicemail->caller_country,
-                'recording_url' => $voicemail->recording_url,
-                'recording_duration' => $voicemail->recording_duration,
-                'transcription_text' => $voicemail->transcription_text,
-                'transcription_processed' => $voicemail->transcription_processed,
-                'ai_response' => $voicemail->ai_response,
-                'sms_sent' => $voicemail->sms_sent,
-                'sms_sent_at' => $voicemail->sms_sent_at,
-                'created_at' => $voicemail->created_at->diffForHumans(),
-                'created_at_formatted' => $voicemail->created_at->format('M j, Y g:i A'),
-            ];
-        });
+        $recentQuotes = $user->quotes()->latest()->take(5)->get()->map(fn ($quote) => [
+            'id' => $quote->id,
+            'status' => $quote->status->value,
+            'from_number' => $quote->from_number,
+            'message' => $quote->message,
+            'ai_response' => $quote->ai_response,
+            'sent_at' => $quote->sent_at,
+            'created_at' => $quote->created_at->diffForHumans(),
+        ]);
+
+        $recentVoicemails = $user->voicemails()->latest()->take(5)->get()->map(fn ($voicemail) => [
+            'id' => $voicemail->id,
+            'from_number' => $voicemail->from_number,
+            'caller_country' => $voicemail->caller_country,
+            'recording_url' => $voicemail->recording_url,
+            'recording_duration' => $voicemail->recording_duration,
+            'transcription_text' => $voicemail->transcription_text,
+            'transcription_processed' => $voicemail->transcription_processed,
+            'ai_response' => $voicemail->ai_response,
+            'sms_sent' => $voicemail->sms_sent,
+            'sms_sent_at' => $voicemail->sms_sent_at,
+            'created_at' => $voicemail->created_at->diffForHumans(),
+            'created_at_formatted' => $voicemail->created_at->format('M j, Y g:i A'),
+        ]);
 
         return Inertia::render('Dashboard', [
             'stats' => [
@@ -77,4 +75,4 @@ class DashboardController extends Controller
             'voicemails' => $recentVoicemails,
         ]);
     }
-} 
+}

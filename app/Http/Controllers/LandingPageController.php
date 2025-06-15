@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
 use Inertia\Inertia;
@@ -14,4 +16,4 @@ class LandingPageController extends Controller
     {
         return Inertia::render('Public/Landing/index');
     }
-} 
+}
