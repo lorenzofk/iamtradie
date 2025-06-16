@@ -28,6 +28,7 @@ class Voicemail extends Model
         'transcription_text',
         'transcription_processed',
         'ai_response',
+        'summary_for_user',
         'sms_sent',
         'sms_sent_at',
     ];

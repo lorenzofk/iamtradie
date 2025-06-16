@@ -131,6 +131,32 @@ class TwilioController extends Controller
             Log::warning('[TRANSCRIPTION] - Voicemail record not found', ['call_sid' => $callSid, 'user_id' => $user->id]);
         }
 
+        if ($settings->send_voicemail_summary_to_user) {
+            Log::info('[TRANSCRIPTION] - Voicemail summary to user is enabled. Generating summary...');
+
+            $aiSummary = $this->openAIService->generateVoicemailSummaryForUser(
+                transcription: $transcription,
+                industryType: $settings->industry_type->value,
+                calloutFee: $settings->callout_fee,
+                hourlyRate: $settings->hourly_rate,
+                userFirstName: $user->first_name
+            );
+
+            $fullSummaryMessage = "📞 Missed Call from " . $caller . "\n" . $aiSummary;
+
+            try {
+                $this->twilioService->send(to: $settings->phone_number, from: $called, message: $fullSummaryMessage);
+                Log::info('[TRANSCRIPTION] - Summary SMS sent to user', ['to' => $settings->phone_number, 'summary' => $fullSummaryMessage]);
+            } catch (Exception $e) {
+                Log::error('[TRANSCRIPTION] - Failed to send summary SMS to user', ['error' => $e->getMessage(), 'to' => $settings->phone_number]);
+            }
+
+            if ($voicemail) {
+                $voicemail->update(['summary_for_user' => $fullSummaryMessage]);
+                Log::info('[TRANSCRIPTION] - Voicemail record updated with summary', ['voicemail_id' => $voicemail->id]);
+            }
+        }
+
         if ($settings->auto_send_sms_after_voicemail) {
             Log::info('[TRANSCRIPTION] - Auto send SMS after voice mail is enabled. Generating quote response...');
 
