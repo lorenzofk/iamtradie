@@ -5,13 +5,12 @@ declare(strict_types=1);
 namespace App\Events;
 
 use App\Models\Quote;
-use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
 class QuoteCreated
 {
-    use Dispatchable, InteractsWithSockets, SerializesModels;
+    use Dispatchable, SerializesModels;
 
     /**
      * Create a new event instance.
@@ -20,4 +19,4 @@ class QuoteCreated
         public readonly Quote $quote,
         public readonly bool $shouldAutoSend
     ) {}
-} 
+}

@@ -13,7 +13,6 @@ class IncomingTextRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        // TODO: Add Twilio webhook signature validation here for security
         return true;
     }
 
@@ -23,23 +22,23 @@ class IncomingTextRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'Body' => 'required|string|max:1600', // SMS body text
-            'To' => 'required|string', // Twilio number (agent SMS number)
-            'From' => 'required|string', // Lead's phone number
-            'SmsMessageSid' => 'required|string', // Twilio SMS ID
-        ];
-    }
-
-    /**
-     * Get custom attributes for validator errors.
-     */
-    public function attributes(): array
-    {
-        return [
-            'Body' => 'message body',
-            'To' => 'Twilio number',
-            'From' => 'sender number',
-            'SmsMessageSid' => 'SMS ID',
+            'Body' => [
+                'required',
+                'string',
+                'max:1600',
+            ],
+            'To' => [
+                'required',
+                'string',
+            ],
+            'From' => [
+                'required',
+                'string',
+            ],
+            'SmsMessageSid' => [
+                'required',
+                'string',
+            ],
         ];
     }
 
@@ -74,4 +73,4 @@ class IncomingTextRequest extends FormRequest
     {
         return $this->input('SmsMessageSid');
     }
-} 
+}

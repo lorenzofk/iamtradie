@@ -12,19 +12,22 @@ use App\Models\User;
 use App\Services\OpenAIService;
 use Exception;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 
-class ProcessIncomingTextMessageJob implements ShouldQueue
+class ProcessIncomingTextMessageJob implements ShouldBeUnique, ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public int $tries = 3;
+
     public int $maxExceptions = 3;
-    public int $backoff = 30; // seconds
+
+    public int $backoff = 30;
 
     /**
      * Create a new job instance.
@@ -36,6 +39,14 @@ class ProcessIncomingTextMessageJob implements ShouldQueue
         private readonly string $smsId,
         private readonly int $userId
     ) {}
+
+    /**
+     * Get the unique ID for the job.
+     */
+    public function uniqueId(): string
+    {
+        return 'process-text-'.$this->smsId;
+    }
 
     /**
      * Execute the job.
@@ -58,7 +69,6 @@ class ProcessIncomingTextMessageJob implements ShouldQueue
                 'industry_type' => $settings->industry_type->value,
             ]);
 
-            // Generate AI response
             $aiResponse = $openAIService->generateQuoteResponse(
                 message: $this->messageBody,
                 industryType: $settings->industry_type->value,
@@ -70,7 +80,6 @@ class ProcessIncomingTextMessageJob implements ShouldQueue
 
             Log::info('[PROCESS TEXT JOB] - AI response generated', ['ai_response' => $aiResponse]);
 
-            // Create quote record
             $quote = Quote::create([
                 'user_id' => $this->userId,
                 'message' => $this->messageBody,
@@ -86,16 +95,14 @@ class ProcessIncomingTextMessageJob implements ShouldQueue
 
             Log::info('[PROCESS TEXT JOB] - Quote created', ['quote_id' => $quote->id]);
 
-            // Dispatch event for quote creation (this will trigger SMS sending if auto-send is enabled)
             QuoteCreated::dispatch($quote, $settings->auto_send_sms);
-
         } catch (Exception $e) {
             Log::error('[PROCESS TEXT JOB] - Failed to process incoming text message', [
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
             ]);
 
-            throw $e; // Re-throw to trigger job retry
+            throw $e;
         }
     }
 
@@ -111,4 +118,4 @@ class ProcessIncomingTextMessageJob implements ShouldQueue
             'error' => $exception->getMessage(),
         ]);
     }
-} 
+}

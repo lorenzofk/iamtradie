@@ -25,7 +25,11 @@ class TwilioService
      */
     public function send(string $to, string $from, string $message): void
     {
-        Log::withContext(['to' => $to, 'from' => $from, 'message' => $message]);
+        Log::withContext([
+            'to' => $to,
+            'from' => $from,
+            'message' => mb_substr($message, 0, 100).'...',
+        ]);
 
         try {
             $this->client->messages->create($to, ['from' => $from, 'body' => $message]);
@@ -33,7 +37,5 @@ class TwilioService
             Log::error('Failed to send SMS', ['error' => $e->getMessage()]);
             throw $e;
         }
-
-        Log::info('SMS sent successfully');
     }
 }

@@ -23,7 +23,7 @@ class FindUserByTwilioNumberAction
             ->whereHas('settings', fn ($query) => $query->where('agent_sms_number', $twilioNumber))
             ->first();
 
-        if (!$user) {
+        if (empty($user)) {
             Log::error('[FIND USER ACTION] - User not found for Twilio number', [
                 'twilio_number' => $twilioNumber,
             ]);
@@ -31,13 +31,13 @@ class FindUserByTwilioNumberAction
             throw new Exception("User not found for Twilio number: {$twilioNumber}");
         }
 
-        if (!$user->settings) {
+        if (empty($user->settings)) {
             Log::error('[FIND USER ACTION] - User found but settings missing', [
                 'user_id' => $user->id,
                 'twilio_number' => $twilioNumber,
             ]);
 
-            throw new Exception("Settings not configured for user");
+            throw new Exception('Settings not configured for user');
         }
 
         Log::info('[FIND USER ACTION] - User found successfully', [
@@ -47,4 +47,4 @@ class FindUserByTwilioNumberAction
 
         return $user;
     }
-} 
+}

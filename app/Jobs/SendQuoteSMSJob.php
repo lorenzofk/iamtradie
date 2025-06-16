@@ -4,30 +4,40 @@ declare(strict_types=1);
 
 namespace App\Jobs;
 
+use App\Enums\QuoteStatus;
 use App\Models\Quote;
 use App\Services\TwilioService;
 use Exception;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 
-class SendQuoteSMSJob implements ShouldQueue
+class SendQuoteSMSJob implements ShouldBeUnique, ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public int $tries = 3;
+
     public int $maxExceptions = 3;
-    public int $backoff = 30; // seconds
+
+    public int $backoff = 30;
 
     /**
      * Create a new job instance.
      */
-    public function __construct(
-        private readonly int $quoteId
-    ) {}
+    public function __construct(private readonly int $quoteId) {}
+
+    /**
+     * Get the unique ID for the job.
+     */
+    public function uniqueId(): string
+    {
+        return 'send-sms-quote-'.$this->quoteId;
+    }
 
     /**
      * Execute the job.
@@ -45,7 +55,7 @@ class SendQuoteSMSJob implements ShouldQueue
             Log::info('[SEND QUOTE SMS JOB] - Sending SMS', [
                 'to' => $quote->from_number,
                 'from' => $quote->to_number,
-                'message_preview' => substr($quote->ai_response, 0, 100) . '...',
+                'message_preview' => mb_substr($quote->ai_response, 0, 100).'...',
             ]);
 
             $twilioService->send(
@@ -54,14 +64,12 @@ class SendQuoteSMSJob implements ShouldQueue
                 message: $quote->ai_response
             );
 
-            // Update quote status
             $quote->update([
-                'status' => \App\Enums\QuoteStatus::SENT,
+                'status' => QuoteStatus::SENT,
                 'sent_at' => now(),
             ]);
 
             Log::info('[SEND QUOTE SMS JOB] - SMS sent successfully', ['quote_id' => $quote->id]);
-
         } catch (Exception $e) {
             Log::error('[SEND QUOTE SMS JOB] - Failed to send SMS', [
                 'quote_id' => $this->quoteId,
@@ -69,7 +77,7 @@ class SendQuoteSMSJob implements ShouldQueue
                 'trace' => $e->getTraceAsString(),
             ]);
 
-            throw $e; // Re-throw to trigger job retry
+            throw $e;
         }
     }
 
@@ -83,12 +91,9 @@ class SendQuoteSMSJob implements ShouldQueue
             'error' => $exception->getMessage(),
         ]);
 
-        // Update quote status to failed
         try {
-            $quote = Quote::find($this->quoteId);
-            if ($quote) {
-                $quote->update(['status' => \App\Enums\QuoteStatus::FAILED]);
-            }
+            $quote = Quote::findOrFail($this->quoteId);
+            $quote->update(['status' => QuoteStatus::FAILED]);
         } catch (Exception $e) {
             Log::error('[SEND QUOTE SMS JOB] - Failed to update quote status to failed', [
                 'quote_id' => $this->quoteId,
@@ -96,4 +101,4 @@ class SendQuoteSMSJob implements ShouldQueue
             ]);
         }
     }
-} 
+}

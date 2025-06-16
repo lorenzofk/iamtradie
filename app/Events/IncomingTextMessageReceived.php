@@ -5,13 +5,12 @@ declare(strict_types=1);
 namespace App\Events;
 
 use App\Models\User;
-use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
 class IncomingTextMessageReceived
 {
-    use Dispatchable, InteractsWithSockets, SerializesModels;
+    use Dispatchable, SerializesModels;
 
     /**
      * Create a new event instance.
@@ -23,4 +22,4 @@ class IncomingTextMessageReceived
         public readonly string $smsId,
         public readonly User $user
     ) {}
-} 
+}

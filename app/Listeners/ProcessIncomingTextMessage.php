@@ -23,8 +23,8 @@ class ProcessIncomingTextMessage
         ]);
 
         Log::info('[PROCESS TEXT LISTENER] - Dispatching processing job', [
-            'message_preview' => substr($event->messageBody, 0, 100) . '...',
             'sms_id' => $event->smsId,
+            'message_preview' => mb_substr($event->messageBody, 0, 100).'...',
         ]);
 
         ProcessIncomingTextMessageJob::dispatch(
@@ -35,4 +35,4 @@ class ProcessIncomingTextMessage
             userId: $event->user->id
         );
     }
-} 
+}

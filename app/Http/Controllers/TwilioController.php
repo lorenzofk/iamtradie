@@ -5,11 +5,8 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Actions\FindUserByTwilioNumberAction;
-use App\Enums\QuoteSource;
-use App\Enums\QuoteStatus;
 use App\Events\IncomingTextMessageReceived;
 use App\Http\Requests\IncomingTextRequest;
-use App\Models\Quote;
 use App\Models\User;
 use App\Models\Voicemail;
 use App\Services\OpenAIService;
@@ -197,16 +194,14 @@ class TwilioController extends Controller
         Log::withContext(['action' => 'incoming-text', 'data' => $request->validated()]);
 
         try {
-            // Find user using dedicated action
             $user = $findUserAction->execute($request->getTwilioNumber());
 
             Log::info('[INCOMING TEXT] - Processing incoming text message', [
                 'user_id' => $user->id,
                 'lead_number' => $request->getLeadNumber(),
-                'message_preview' => substr($request->getMessageBody(), 0, 100) . '...',
+                'message_preview' => mb_substr($request->getMessageBody(), 0, 100).'...',
             ]);
 
-            // Dispatch event to trigger async processing
             IncomingTextMessageReceived::dispatch(
                 $request->getMessageBody(),
                 $request->getLeadNumber(),
@@ -217,9 +212,7 @@ class TwilioController extends Controller
 
             Log::info('[INCOMING TEXT] - Event dispatched for async processing');
 
-            // Return immediate response to Twilio
             return response()->noContent();
-
         } catch (Exception $e) {
             Log::error('[INCOMING TEXT] - Error processing incoming text', [
                 'error' => $e->getMessage(),
