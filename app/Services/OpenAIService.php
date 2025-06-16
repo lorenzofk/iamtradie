@@ -14,8 +14,8 @@ class OpenAIService
     public function __construct(private ?string $model, private ?int $maxTokens, private ?float $temperature)
     {
         $this->model = config('services.openai.model');
-        $this->maxTokens = config('services.openai.max_tokens');
-        $this->temperature = config('services.openai.temperature');
+        $this->maxTokens = (int) config('services.openai.max_tokens');
+        $this->temperature = (float) config('services.openai.temperature');
     }
 
     /**
@@ -200,9 +200,9 @@ class OpenAIService
         if ($calloutFee && $hourlyRate) {
             $pricingText = "Your standard pricing is {$calloutText} and {$hourlyText}";
         } elseif ($calloutFee) {
-            $pricingText = "Your callout fee is ${$calloutFee}";
+            $pricingText = "Your callout fee is \${$calloutFee}";
         } elseif ($hourlyRate) {
-            $pricingText = "Your hourly rate is ${$hourlyRate}/hr";
+            $pricingText = "Your hourly rate is \${$hourlyRate}/hr";
         }
 
         $prompt = <<<EOT
