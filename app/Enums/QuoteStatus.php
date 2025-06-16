@@ -9,6 +9,7 @@ enum QuoteStatus: string
     case SENT = 'sent';
     case PENDING = 'pending';
     case REJECTED = 'rejected';
+    case FAILED = 'failed';
 
     public static function values(): array
     {
@@ -29,6 +30,7 @@ enum QuoteStatus: string
             self::SENT => 'Sent',
             self::PENDING => 'Pending',
             self::REJECTED => 'Rejected',
+            self::FAILED => 'Failed',
         };
     }
 }
