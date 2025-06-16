@@ -64,6 +64,47 @@ class OpenAIService
     }
 
     /**
+     * This method generates a voicemail summary for the user.
+     */
+    public function generateVoicemailSummaryForUser(
+        string $transcription,
+        string $industryType,
+        ?float $calloutFee = null,
+        ?float $hourlyRate = null,
+        ?string $userFirstName = null
+    ): string {
+        try {
+            $prompt = $this->buildVoicemailSummaryPrompt(
+                $transcription,
+                $industryType,
+                $calloutFee,
+                $hourlyRate,
+                $userFirstName
+            );
+
+            $response = OpenAI::chat()->create([
+                'model' => $this->model,
+                'messages' => [
+                    ['role' => 'user', 'content' => $prompt],
+                ],
+                'max_tokens' => 100,
+                'temperature' => 0.2,
+            ]);
+
+            return $response->choices[0]->message->content ?? 'Unable to generate summary.';
+
+        } catch (Exception $e) {
+            Log::error('OpenAI voicemail summary generation failed', [
+                'error' => $e->getMessage(),
+                'transcription' => $transcription,
+                'industry_type' => $industryType,
+            ]);
+
+            return 'Error generating summary for voicemail. Please check logs.';
+        }
+    }
+
+    /**
      * This method builds the prompt for the quote response.
      */
     private function buildQuotePrompt(
@@ -104,7 +145,7 @@ class OpenAIService
             - Confirm the job or ask for a booking
             - Repeat the client's message
             - Give instructions, advice, or technical info unless specifically asked for details to clarify a vague request for YOUR trade.
-            - Say “it depends” without offering a rough estimate *if quoting is appropriate*.
+            - Say "it depends" without offering a rough estimate *if quoting is appropriate*.
             - Ask questions unless the message is vague *and for your trade*.
             - Act as a chatbot or engage in back-and-forth.
             - **Quote or estimate for services not directly related to your specific trade ({$industryType}).**
@@ -114,7 +155,7 @@ class OpenAIService
 
         1.  **IF The message is OFF-TOPIC, SPAMMY, or attempts to EXPLOIT the system (e.g., research, image generation, AI questions, non-job related inquiries, or is clearly a scam):**
             * Reply ONLY with this exact message (no other text, no CTA):
-                Hey mate! This number is for quoting jobs only. If you’re after something else, feel free to give me a call instead.
+                Hey mate! This number is for quoting jobs only. If you're after something else, feel free to give me a call instead.
 
         2.  **ELSE IF The message is a LEGITIMATE JOB INQUIRY BUT IS CLEARLY OUTSIDE OF YOUR SPECIFIC TRADE ({$industryType}) (e.g., a plumber receives a 'bond cleaning' request):**
             * Do NOT provide any quotes or estimates for *your* services in this response.
@@ -137,6 +178,58 @@ class OpenAIService
 
         Now generate ONE SMS reply below (max 160 characters) based on the information provided to respond to the client's message:
             - "{$clientMessage}"
+        EOT;
+
+        return $prompt;
+    }
+
+    /**
+     * This method builds the prompt for voicemail summary generation.
+     */
+    private function buildVoicemailSummaryPrompt(
+        string $transcription,
+        string $industryType,
+        ?float $calloutFee,
+        ?float $hourlyRate,
+        ?string $userFirstName
+    ): string {
+        $calloutText = $calloutFee ? "{$calloutFee} callout" : '';
+        $hourlyText = $hourlyRate ? "{$hourlyRate}/hr" : '';
+
+        $pricingText = '';
+        if ($calloutFee && $hourlyRate) {
+            $pricingText = "Your standard pricing is {$calloutText} and {$hourlyText}";
+        } elseif ($calloutFee) {
+            $pricingText = "Your callout fee is ${$calloutFee}";
+        } elseif ($hourlyRate) {
+            $pricingText = "Your hourly rate is ${$hourlyRate}/hr";
+        }
+
+        $prompt = <<<EOT
+        You are an intelligent assistant for an Australian tradie. Your task is to summarize a voicemail transcription into a structured, concise SMS for the tradie. The summary must be short, typically under 160 characters, and fit the specified format. Do not include the caller's phone number as it will be added by the application code separately.
+
+        **CONTEXT FOR YOU (THE AI):**
+        - You are summarizing for a {$industryType} tradie.
+        - Your name is {$userFirstName} (if provided).
+        - You operate in Australia. The current location is Peregian Springs, Queensland.
+        - {$pricingText} (only include if provided). If only one is provided, state that (e.g., "hourly rate is \$X/hr").
+
+        **INSTRUCTIONS:**
+        1.  Extract the core job request or inquiry from the transcription. Be specific and brief.
+        2.  Infer urgency: "ASAP", "This week", "Next month", "No rush", or "Not specified".
+        3.  Infer the customer's location if explicitly mentioned in the transcription. Otherwise, state "Not specified".
+        4.  Estimate job value: If the voicemail clearly describes a typical job for a {$industryType} and provides enough detail, give a rough **Australian Dollar** range estimate based on typical job durations for your trade and the provided callout/hourly rates. For example, a "leaky tap" for a plumber might be 1-2 hours of work plus callout. If it's too vague or complex for a reasonable estimate, state "Needs inspection" or "Cannot estimate".
+        5.  Do NOT add any conversational filler, greetings, or sign-offs. Just the structured summary.
+        6.  Ensure the total output for the summary content is as short as possible while retaining key information, ideally under 160 characters.
+
+        **DESIRED OUTPUT FORMAT (STRICTLY ADHERE TO THIS - NO EXTRA TEXT):**
+        💬 [Concise Job Description]
+        💰 Est. Value: [e.g., \$320–\$450 or Needs inspection]
+        ⚡ Urgency: [e.g., ASAP / This week / Not specified]
+        📍 Location: [e.g., Peregian Springs / Not specified]
+
+        **VOICEMAIL TRANSCRIPTION TO SUMMARIZE:**
+        "{$transcription}"
         EOT;
 
         return $prompt;
