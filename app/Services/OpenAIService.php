@@ -193,16 +193,16 @@ class OpenAIService
         ?float $hourlyRate,
         ?string $userFirstName
     ): string {
-        $calloutText = $calloutFee ? "$calloutFee callout" : '';
-        $hourlyText = $hourlyRate ? "$hourlyRate/hr" : '';
-        
+        $calloutText = $calloutFee ? "{$calloutFee} callout" : '';
+        $hourlyText = $hourlyRate ? "{$hourlyRate}/hr" : '';
+
         $pricingText = '';
         if ($calloutFee && $hourlyRate) {
-            $pricingText = "Your standard pricing is $calloutText and $hourlyText";
+            $pricingText = "Your standard pricing is {$calloutText} and {$hourlyText}";
         } elseif ($calloutFee) {
-            $pricingText = "Your callout fee is $$calloutFee";
+            $pricingText = "Your callout fee is ${$calloutFee}";
         } elseif ($hourlyRate) {
-            $pricingText = "Your hourly rate is $$hourlyRate/hr";
+            $pricingText = "Your hourly rate is ${$hourlyRate}/hr";
         }
 
         $prompt = <<<EOT
