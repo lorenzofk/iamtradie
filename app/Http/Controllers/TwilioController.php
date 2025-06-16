@@ -6,6 +6,8 @@ namespace App\Http\Controllers;
 
 use App\Actions\FindUserByTwilioNumberAction;
 use App\Events\IncomingTextMessageReceived;
+use App\Events\VoicemailRecordingCompleted;
+use App\Http\Requests\AfterRecordRequest;
 use App\Http\Requests\IncomingTextRequest;
 use App\Models\User;
 use App\Models\Voicemail;
@@ -26,41 +28,50 @@ class TwilioController extends Controller
 
     /**
      * This method handles the after record scenario.
+     * Refactored to use event-driven architecture with jobs and actions.
      */
-    public function afterRecord(Request $request)
+    public function afterRecord(AfterRecordRequest $request, FindUserByTwilioNumberAction $findUserAction)
     {
-        Log::withContext(['action' => 'after-record', 'data' => $request->all()]);
-
-        $data = $request->all();
-
-        $user = User::whereHas(
-            'settings',
-            fn ($query) => $query->where('agent_sms_number', $data['Called'])
-        )->first();
-
-        throw_if(empty($user), new Exception('User not found for number'));
-
-        $data = [
-            'user_id' => $user->id,
-            'call_sid' => $data['CallSid'],
-            'from_number' => $data['From'] ?? $data['Caller'],
-            'caller_country' => $data['CallerCountry'] ?? $data['FromCountry'],
-            'direction' => $data['Direction'] ?? 'inbound',
-            'call_status' => $data['CallStatus'] ?? 'completed',
-            'recording_sid' => $data['RecordingSid'] ?? null,
-            'recording_url' => $data['RecordingUrl'] ?? null,
-            'recording_duration' => isset($data['RecordingDuration']) ? (int) $data['RecordingDuration'] : null,
-            'digits' => $data['Digits'] ?? null,
-        ];
+        Log::withContext(['action' => 'after-record', 'data' => $request->validated()]);
 
         try {
-            $voicemail = Voicemail::create($data);
-            Log::info('[AFTER RECORD] - Voicemail record created', ['voicemail_id' => $voicemail->id]);
-        } catch (Exception $e) {
-            Log::error('[AFTER RECORD] - Failed to create voicemail record', ['error' => $e->getMessage(), 'data' => $data]);
-        }
+            $user = $findUserAction->execute($request->getCalledNumber());
 
-        return response()->noContent();
+            Log::info('[AFTER RECORD] - Processing voicemail recording completion', [
+                'user_id' => $user->id,
+                'call_sid' => $request->getCallSid(),
+                'from_number' => $request->getFromNumber(),
+                'recording_sid' => $request->getRecordingSid(),
+                'recording_duration' => $request->getRecordingDuration(),
+            ]);
+
+            VoicemailRecordingCompleted::dispatch(
+                $request->getCallSid(),
+                $request->getFromNumber() ?? '',
+                $request->getCallerCountry() ?? '',
+                $request->getDirection(),
+                $request->getCallStatus(),
+                $request->getRecordingSid(),
+                $request->getRecordingUrl(),
+                $request->getRecordingDuration(),
+                $request->getDigits(),
+                $user
+            );
+
+            Log::info('[AFTER RECORD] - Event dispatched for async processing');
+
+            return response()->noContent();
+
+        } catch (Exception $e) {
+            Log::error('[AFTER RECORD] - Error processing voicemail recording', [
+                'call_sid' => $request->getCallSid() ?? 'unknown',
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            // Return 200 to prevent Twilio retries
+            return response()->noContent();
+        }
     }
 
     /**
