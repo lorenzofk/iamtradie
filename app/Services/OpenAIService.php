@@ -88,7 +88,7 @@ class OpenAIService
                     ['role' => 'user', 'content' => $prompt],
                 ],
                 'max_tokens' => 100,
-                'temperature' => 0.2,
+                'temperature' => $this->temperature,
             ]);
 
             return $response->choices[0]->message->content ?? 'Unable to generate summary.';
@@ -197,6 +197,7 @@ class OpenAIService
         $hourlyText = $hourlyRate ? "{$hourlyRate}/hr" : '';
 
         $pricingText = '';
+
         if ($calloutFee && $hourlyRate) {
             $pricingText = "Your standard pricing is {$calloutText} and {$hourlyText}";
         } elseif ($calloutFee) {
@@ -206,30 +207,55 @@ class OpenAIService
         }
 
         $prompt = <<<EOT
-        You are an intelligent assistant for an Australian tradie. Your task is to summarize a voicemail transcription into a structured, concise SMS for the tradie. The summary must be short, typically under 160 characters, and fit the specified format. Do not include the caller's phone number as it will be added by the application code separately.
+        You are the PingMate Assistant – a smart summariser for Australian tradies. Your job is to listen to a voicemail transcription and turn it into a short, clear, structured summary (under 160 characters).
 
-        **CONTEXT FOR YOU (THE AI):**
-        - You are summarizing for a {$industryType} tradie.
-        - Your name is {$userFirstName} (if provided).
-        - You operate in Australia. The current location is Peregian Springs, Queensland.
-        - {$pricingText} (only include if provided). If only one is provided, state that (e.g., "hourly rate is \$X/hr").
+        This summary will be sent to the tradie by SMS so they can quickly decide whether to follow up. It must be concise, practical, and immediately useful.
 
-        **INSTRUCTIONS:**
-        1.  Extract the core job request or inquiry from the transcription. Be specific and brief.
-        2.  Infer urgency: "ASAP", "This week", "Next month", "No rush", or "Not specified".
-        3.  Infer the customer's location if explicitly mentioned in the transcription. Otherwise, state "Not specified".
-        4.  Estimate job value: If the voicemail clearly describes a typical job for a {$industryType} and provides enough detail, give a rough **Australian Dollar** range estimate based on typical job durations for your trade and the provided callout/hourly rates. For example, a "leaky tap" for a plumber might be 1-2 hours of work plus callout. If it's too vague or complex for a reasonable estimate, state "Needs inspection" or "Cannot estimate".
-        5.  Do NOT add any conversational filler, greetings, or sign-offs. Just the structured summary.
-        6.  Ensure the total output for the summary content is as short as possible while retaining key information, ideally under 160 characters.
+        🔧 CONTEXT:
+        - You are assisting an Australian {$industryType} tradie named {$userFirstName}.
+        - Location: Not specified but always in Australia.
+        - {$pricingText} (include only if valid).
+        - This summary is NOT visible to the customer – it’s just for the tradie.
 
-        **DESIRED OUTPUT FORMAT (STRICTLY ADHERE TO THIS - NO EXTRA TEXT):**
+        🎯 GOAL:
+        Summarise the customer's job inquiry into a tight format:
+            💬 [Job Description]
+            💰 Est. Value: [e.g., \$320–\$450 or Needs inspection]
+            ⚡ Urgency: [ASAP / This week / Next month / No rush / Not specified]
+            📍 Location: [Explicit location or 'Not specified']
+
+        🏗 STRUCTURE & RULES – FOLLOW STRICTLY:
+
+        1. **Job Description (💬)**:
+            - Use plain terms a tradie would recognise (e.g., “blocked toilet”, “deck repair”).
+            - Do not repeat full sentences from the transcript – summarise.
+            - If the message is vague, note the trade-related context (e.g., “Possible plumbing issue”).
+            - If the message is clearly **off-topic** (AI, sales, scams, etc.), write:
+            “💬 Irrelevant or spam message – not a job request” and skip all other fields.
+
+        2. **Value Estimation (💰)**:
+            - If clear, estimate based on duration + pricing (e.g., 2hrs + callout = \$200–\$300).
+            - If vague but trade-relevant, write: “Needs inspection”
+            - Never say “Too vague” – prefer “Cannot estimate” or “Needs inspection”
+            - Use AUD pricing conventions (e.g., \$ signs, avoid decimals unless necessary).
+
+        3. **Urgency (⚡)**:
+            - Infer based on phrases like “urgent”, “ASAP”, “next week”, etc.
+            - If unspecified, default to “Not specified”.
+
+        4. **Location (📍)**:
+            - Use any specific suburb/area mentioned.
+            - If unclear, write “Not specified”
+
+        📏 FORMAT — ENFORCE THIS EXACT LAYOUT (NO VARIATIONS):
         💬 [Concise Job Description]
-        💰 Est. Value: [e.g., \$320–\$450 or Needs inspection]
-        ⚡ Urgency: [e.g., ASAP / This week / Not specified]
+        💰 Est. Value: [\$XXX–\$YYY or Needs inspection]
+        ⚡ Urgency: [ASAP / This week / Not specified]
         📍 Location: [e.g., Peregian Springs / Not specified]
 
-        **VOICEMAIL TRANSCRIPTION TO SUMMARIZE:**
+        📜 TRANSCRIPTION TO SUMMARISE:
         "{$transcription}"
+
         EOT;
 
         return $prompt;
