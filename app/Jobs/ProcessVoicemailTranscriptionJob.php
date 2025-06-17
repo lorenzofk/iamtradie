@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Jobs;
 
+use App\Events\VoicemailQuoteRequested;
 use App\Models\User;
 use App\Services\OpenAIService;
 use App\Services\TwilioService;
@@ -56,6 +57,7 @@ class ProcessVoicemailTranscriptionJob implements ShouldBeUnique, ShouldQueue
             'caller' => $this->caller,
             'called' => $this->called,
             'user_id' => $this->userId,
+            'transcription' => $this->transcription,
         ]);
 
         try {
@@ -63,7 +65,6 @@ class ProcessVoicemailTranscriptionJob implements ShouldBeUnique, ShouldQueue
             $settings = $user->settings;
 
             Log::info('[PROCESS VOICEMAIL TRANSCRIPTION JOB] - Processing voicemail transcription.', [
-                'transcription' => $this->transcription,
                 'industry_type' => $settings->industry_type->value,
             ]);
 
@@ -72,16 +73,15 @@ class ProcessVoicemailTranscriptionJob implements ShouldBeUnique, ShouldQueue
 
             if ($voicemail) {
                 $voicemail->update([
-                    'transcription_text' => $this->transcription,
                     'transcription_processed' => true,
+                    'transcription_text' => $this->transcription,
                 ]);
                 Log::info('[PROCESS VOICEMAIL TRANSCRIPTION JOB] - Voicemail record updated with transcription.', ['voicemail_id' => $voicemail->id]);
             } else {
                 Log::warning('[PROCESS VOICEMAIL TRANSCRIPTION JOB] - Voicemail record not found.', ['call_sid' => $this->callSid, 'user_id' => $this->userId]);
             }
 
-            // Generate AI summary for the user
-            Log::info('[PROCESS VOICEMAIL TRANSCRIPTION JOB] - Generating voicemail summary for the user...');
+            Log::info('[PROCESS VOICEMAIL TRANSCRIPTION JOB] - Generating voicemail summary for the user.');
 
             $aiSummary = $openAIService->generateVoicemailSummaryForUser(
                 transcription: $this->transcription,
@@ -109,34 +109,15 @@ class ProcessVoicemailTranscriptionJob implements ShouldBeUnique, ShouldQueue
 
             // Handle auto-send SMS after voicemail if enabled
             if ($settings->auto_send_sms_after_voicemail) {
-                Log::info('[PROCESS VOICEMAIL TRANSCRIPTION JOB] - Auto send SMS after voicemail is enabled. Generating quote response...');
+                Log::info('[PROCESS VOICEMAIL TRANSCRIPTION JOB] - Auto send SMS after voicemail is enabled. Firing event to generate and send quote response...');
 
-                $quote = $openAIService->generateQuoteResponse(
-                    message: $this->transcription,
-                    industryType: $settings->industry_type->value,
-                    calloutFee: $settings->callout_fee,
-                    hourlyRate: $settings->hourly_rate,
-                    responseTone: $settings->response_tone->value,
-                    firstName: $user->first_name
+                VoicemailQuoteRequested::dispatch(
+                    $this->caller,
+                    $settings->agent_sms_number,
+                    $this->transcription,
+                    $this->callSid,
+                    $user
                 );
-
-                try {
-                    $twilioService->send(to: $this->caller, from: $settings->agent_sms_number, message: $quote);
-                    Log::info('[PROCESS VOICEMAIL TRANSCRIPTION JOB] - Quote response generated and SMS sent.', ['quote' => $quote]);
-                } catch (Exception $e) {
-                    Log::error('[PROCESS VOICEMAIL TRANSCRIPTION JOB] - Failed to send quote SMS to caller.', ['error' => $e->getMessage(), 'to' => $this->caller]);
-                }
-
-                // Update voicemail with AI response
-                if ($voicemail) {
-                    $voicemail->update([
-                        'ai_response' => $quote,
-                        'sms_sent' => true,
-                        'sms_sent_at' => now(),
-                    ]);
-
-                    Log::info('[PROCESS VOICEMAIL TRANSCRIPTION JOB] - Voicemail record updated with AI response.', ['voicemail_id' => $voicemail->id]);
-                }
             }
 
             Log::info('[PROCESS VOICEMAIL TRANSCRIPTION JOB] - Voicemail transcription processing completed successfully.');
@@ -161,4 +142,4 @@ class ProcessVoicemailTranscriptionJob implements ShouldBeUnique, ShouldQueue
             'error' => $exception->getMessage(),
         ]);
     }
-} 
+}

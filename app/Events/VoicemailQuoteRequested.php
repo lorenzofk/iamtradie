@@ -9,7 +9,7 @@ use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class VoicemailTranscriptionReceived
+class VoicemailQuoteRequested
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
@@ -17,10 +17,10 @@ class VoicemailTranscriptionReceived
      * Create a new event instance.
      */
     public function __construct(
-        public readonly string $caller,
-        public readonly string $called,
-        public readonly string $callSid,
+        public readonly string $callerNumber,
+        public readonly string $agentNumber,
         public readonly string $transcription,
+        public readonly string $callSid,
         public readonly User $user
     ) {}
-}
+} 

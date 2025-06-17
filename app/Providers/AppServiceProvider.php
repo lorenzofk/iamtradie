@@ -6,10 +6,12 @@ namespace App\Providers;
 
 use App\Events\IncomingTextMessageReceived;
 use App\Events\QuoteCreated;
+use App\Events\VoicemailQuoteRequested;
 use App\Events\VoicemailTranscriptionReceived;
 use App\Listeners\ProcessIncomingTextMessage;
 use App\Listeners\ProcessVoicemailTranscription;
 use App\Listeners\SendQuoteViaTextMessage;
+use App\Listeners\SendVoicemailQuoteResponse;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Vite;
@@ -51,6 +53,7 @@ class AppServiceProvider extends ServiceProvider
         Event::listen(IncomingTextMessageReceived::class, ProcessIncomingTextMessage::class);
         Event::listen(QuoteCreated::class, SendQuoteViaTextMessage::class);
         Event::listen(VoicemailTranscriptionReceived::class, ProcessVoicemailTranscription::class);
+        Event::listen(VoicemailQuoteRequested::class, SendVoicemailQuoteResponse::class);
     }
 
     /**

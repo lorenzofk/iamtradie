@@ -36,7 +36,7 @@ class TwilioController extends Controller
         try {
             $user = $findUserAction->execute($request->getCalledNumber());
 
-            Log::info('[AFTER RECORD] - Creating voicemail record', ['user_id' => $user->id]);
+            Log::info('[AFTER RECORD] - Creating voicemail record.', ['user_id' => $user->id]);
 
             $this->voicemailService->createVoicemailRecord(
                 $request->getCallSid(),
@@ -51,18 +51,17 @@ class TwilioController extends Controller
                 $user->id
             );
 
-            Log::info('[AFTER RECORD] - Voicemail record created successfully');
-
-            return response()->noContent();
+            Log::info('[AFTER RECORD] - Voicemail record created successfully.');
         } catch (Exception $e) {
             Log::error('[AFTER RECORD] - Error processing voicemail recording', [
                 'call_sid' => $request->getCallSid() ?? 'unknown',
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
             ]);
-
-            return response()->noContent();
         }
+
+        // Always return success to prevent Twilio from retrying the request.
+        return response()->noContent();
     }
 
     /**
@@ -102,7 +101,6 @@ class TwilioController extends Controller
 
     /**
      * Handle the transcription of the voicemail.
-     * Refactored to use event-driven architecture with jobs and actions.
      */
     public function transcription(TranscriptionRequest $request, FindUserByTwilioNumberAction $findUserAction): Response
     {
@@ -120,16 +118,15 @@ class TwilioController extends Controller
                 $request->getTranscription(),
                 $user
             );
-
-            return response()->noContent();
         } catch (Exception $e) {
             Log::error('[TRANSCRIPTION] - Error processing voicemail transcription.', [
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
             ]);
-
-            return response()->noContent();
         }
+
+        // Always return success to prevent Twilio from retrying the request.
+        return response()->noContent();
     }
 
     /**

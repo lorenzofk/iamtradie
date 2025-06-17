@@ -73,4 +73,4 @@ class TranscriptionRequest extends FormRequest
     {
         return $this->input('TranscriptionText');
     }
-} 
+}

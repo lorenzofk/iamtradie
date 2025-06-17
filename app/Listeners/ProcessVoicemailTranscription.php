@@ -31,4 +31,4 @@ class ProcessVoicemailTranscription
             userId: $event->user->id
         );
     }
-} 
+}
