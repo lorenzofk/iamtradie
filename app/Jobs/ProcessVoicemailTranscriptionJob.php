@@ -5,9 +5,8 @@ declare(strict_types=1);
 namespace App\Jobs;
 
 use App\Events\VoicemailQuoteRequested;
+use App\Events\VoicemailSummaryRequested;
 use App\Models\User;
-use App\Services\OpenAIService;
-use App\Services\TwilioService;
 use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
@@ -49,7 +48,7 @@ class ProcessVoicemailTranscriptionJob implements ShouldBeUnique, ShouldQueue
     /**
      * Execute the job.
      */
-    public function handle(OpenAIService $openAIService, TwilioService $twilioService): void
+    public function handle(): void
     {
         Log::withContext([
             'job' => self::class,
@@ -57,59 +56,40 @@ class ProcessVoicemailTranscriptionJob implements ShouldBeUnique, ShouldQueue
             'caller' => $this->caller,
             'called' => $this->called,
             'user_id' => $this->userId,
-            'transcription' => $this->transcription,
         ]);
 
         try {
             $user = User::with('settings')->findOrFail($this->userId);
             $settings = $user->settings;
 
-            Log::info('[PROCESS VOICEMAIL TRANSCRIPTION JOB] - Processing voicemail transcription.', [
-                'industry_type' => $settings->industry_type->value,
-            ]);
+            Log::info('[PROCESS VOICEMAIL TRANSCRIPTION JOB] - Processing voicemail transcription. Updating record and dispatching events.');
 
-            // Find and update voicemail record with transcription
+            // Update voicemail record with transcription
             $voicemail = $user->voicemails()->where('call_sid', $this->callSid)->first();
-
             if ($voicemail) {
                 $voicemail->update([
-                    'transcription_processed' => true,
                     'transcription_text' => $this->transcription,
+                    'transcription_processed' => true,
                 ]);
                 Log::info('[PROCESS VOICEMAIL TRANSCRIPTION JOB] - Voicemail record updated with transcription.', ['voicemail_id' => $voicemail->id]);
             } else {
                 Log::warning('[PROCESS VOICEMAIL TRANSCRIPTION JOB] - Voicemail record not found.', ['call_sid' => $this->callSid, 'user_id' => $this->userId]);
             }
 
-            Log::info('[PROCESS VOICEMAIL TRANSCRIPTION JOB] - Generating voicemail summary for the user.');
+            Log::info('[PROCESS VOICEMAIL TRANSCRIPTION JOB] - Firing event to generate and send summary to user.');
 
-            $aiSummary = $openAIService->generateVoicemailSummaryForUser(
-                transcription: $this->transcription,
-                industryType: $settings->industry_type->value,
-                calloutFee: $settings->callout_fee,
-                hourlyRate: $settings->hourly_rate,
-                userFirstName: $user->first_name
+            // Always send summary to user
+            VoicemailSummaryRequested::dispatch(
+                $this->caller,
+                $this->called,
+                $this->transcription,
+                $this->callSid,
+                $user
             );
 
-            $fullSummaryMessage = '📞 Missed Call from '.$this->caller."\n".$aiSummary;
-
-            // Send summary SMS to user
-            try {
-                $twilioService->send(to: $settings->phone_number, from: $this->called, message: $fullSummaryMessage);
-                Log::info('[PROCESS VOICEMAIL TRANSCRIPTION JOB] - Summary SMS sent to user.', ['to' => $settings->phone_number, 'summary' => $fullSummaryMessage]);
-            } catch (Exception $e) {
-                Log::error('[PROCESS VOICEMAIL TRANSCRIPTION JOB] - Failed to send summary SMS to user.', ['error' => $e->getMessage(), 'to' => $settings->phone_number]);
-            }
-
-            // Update voicemail with summary
-            if ($voicemail) {
-                $voicemail->update(['summary_for_user' => $fullSummaryMessage]);
-                Log::info('[PROCESS VOICEMAIL TRANSCRIPTION JOB] - Voicemail record updated with summary.', ['voicemail_id' => $voicemail->id]);
-            }
-
-            // Handle auto-send SMS after voicemail if enabled
+            // Conditionally send quote to customer
             if ($settings->auto_send_sms_after_voicemail) {
-                Log::info('[PROCESS VOICEMAIL TRANSCRIPTION JOB] - Auto send SMS after voicemail is enabled. Firing event to generate and send quote response...');
+                Log::info('[PROCESS VOICEMAIL TRANSCRIPTION JOB] - Auto send SMS after voicemail is enabled. Firing event to generate and send quote response.');
 
                 VoicemailQuoteRequested::dispatch(
                     $this->caller,

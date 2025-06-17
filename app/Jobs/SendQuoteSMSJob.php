@@ -44,6 +44,8 @@ class SendQuoteSMSJob implements ShouldBeUnique, ShouldQueue
      */
     public function handle(TwilioService $twilioService): void
     {
+        $logPrefix = '[SEND QUOTE SMS JOB]';
+        
         Log::withContext([
             'job' => self::class,
             'quote_id' => $this->quoteId,
@@ -52,7 +54,7 @@ class SendQuoteSMSJob implements ShouldBeUnique, ShouldQueue
         try {
             $quote = Quote::findOrFail($this->quoteId);
 
-            Log::info('[SEND QUOTE SMS JOB] - Sending SMS.', [
+            Log::info("{$logPrefix} - Sending SMS.", [
                 'quote_id' => $quote->id,
                 'to' => $quote->from_number,
                 'from' => $quote->to_number,
@@ -67,18 +69,17 @@ class SendQuoteSMSJob implements ShouldBeUnique, ShouldQueue
                 message: $quote->ai_response
             );
 
-            $quote->update([
-                'status' => QuoteStatus::SENT,
-                'sent_at' => now(),
-            ]);
+            $quote->update(['status' => QuoteStatus::SENT, 'sent_at' => now()]);
 
-            Log::info('[SEND QUOTE SMS JOB] - SMS sent successfully.', ['final_status' => $quote->status->value]);
+            Log::info("{$logPrefix} - SMS sent successfully.", ['final_status' => $quote->status->value]);
         } catch (Exception $e) {
-            Log::error('[SEND QUOTE SMS JOB] - Failed to send SMS.', [
+            Log::error("{$logPrefix} - Failed to send SMS.", [
                 'quote_id' => $this->quoteId,
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
             ]);
+
+            $quote->update(['status' => QuoteStatus::FAILED]);
 
             throw $e;
         }
@@ -89,7 +90,9 @@ class SendQuoteSMSJob implements ShouldBeUnique, ShouldQueue
      */
     public function failed(Exception $exception): void
     {
-        Log::error('[SEND QUOTE SMS JOB] - Job failed permanently.', [
+        $logPrefix = '[SEND QUOTE SMS JOB]';
+
+        Log::error("{$logPrefix} - Job failed permanently.", [
             'quote_id' => $this->quoteId,
             'error' => $exception->getMessage(),
         ]);
@@ -98,9 +101,9 @@ class SendQuoteSMSJob implements ShouldBeUnique, ShouldQueue
             $quote = Quote::findOrFail($this->quoteId);
             $quote->update(['status' => QuoteStatus::FAILED]);
 
-            Log::info('[SEND QUOTE SMS JOB] - Quote status updated to failed.', ['final_status' => $quote->status->value]);
+            Log::info("{$logPrefix} - Quote status updated to failed.", ['final_status' => $quote->status->value]);
         } catch (Exception $e) {
-            Log::error('[SEND QUOTE SMS JOB] - Failed to update quote status to failed.', [
+            Log::error("{$logPrefix} - Failed to update quote status to failed.", [
                 'quote_id' => $this->quoteId,
                 'error' => $e->getMessage(),
             ]);
