@@ -6,10 +6,10 @@ namespace App\Http\Controllers;
 
 use App\Actions\FindUserByTwilioNumberAction;
 use App\Events\IncomingTextMessageReceived;
+use App\Events\VoicemailTranscriptionReceived;
 use App\Http\Requests\AfterRecordRequest;
 use App\Http\Requests\IncomingTextRequest;
 use App\Models\User;
-use App\Services\OpenAIService;
 use App\Services\TwilioService;
 use App\Services\VoicemailService;
 use Exception;
@@ -22,7 +22,6 @@ class TwilioController extends Controller
 {
     public function __construct(
         private readonly TwilioService $twilioService,
-        private readonly OpenAIService $openAIService,
         private readonly VoicemailService $voicemailService
     ) {}
 
@@ -102,89 +101,39 @@ class TwilioController extends Controller
 
     /**
      * Handle the transcription of the voicemail.
+     * Refactored to use event-driven architecture with jobs and actions.
      */
-    public function transcription(Request $request): Response
+    public function transcription(Request $request, FindUserByTwilioNumberAction $findUserAction): Response
     {
         Log::withContext(['action' => 'transcription', 'data' => $request->all()]);
 
-        $caller = $request->input('From');
-        $called = $request->input('Called');
-        $callSid = $request->input('CallSid');
-        $transcription = $request->input('TranscriptionText');
-
-        $user = User::whereHas(
-            'settings',
-            fn ($query) => $query->where('agent_sms_number', $called)
-        )->firstOrFail();
-
-        $settings = $user->settings;
-
-        throw_if(empty($settings), new Exception('Twilio number not configured for user'));
-
-        $voicemail = $user->voicemails()->where('call_sid', $callSid)->first();
-
-        if ($voicemail) {
-            $voicemail->update([
-                'transcription_text' => $transcription,
-                'transcription_processed' => true,
-            ]);
-            Log::info('[TRANSCRIPTION] - Voicemail record updated with transcription.', ['voicemail_id' => $voicemail->id]);
-        } else {
-            Log::warning('[TRANSCRIPTION] - Voicemail record not found.', ['call_sid' => $callSid, 'user_id' => $user->id]);
-        }
-
-        Log::info('[TRANSCRIPTION] - Generating voicemail summary for the user...');
-
-        $aiSummary = $this->openAIService->generateVoicemailSummaryForUser(
-            transcription: $transcription,
-            industryType: $settings->industry_type->value,
-            calloutFee: $settings->callout_fee,
-            hourlyRate: $settings->hourly_rate,
-            userFirstName: $user->first_name
-        );
-
-        $fullSummaryMessage = '📞 Missed Call from '.$caller."\n".$aiSummary;
-
         try {
-            $this->twilioService->send(to: $settings->phone_number, from: $called, message: $fullSummaryMessage);
-            Log::info('[TRANSCRIPTION] - Summary SMS sent to user.', ['to' => $settings->phone_number, 'summary' => $fullSummaryMessage]);
-        } catch (Exception $e) {
-            Log::error('[TRANSCRIPTION] - Failed to send summary SMS to user.', ['error' => $e->getMessage(), 'to' => $settings->phone_number]);
-        }
+            $caller = $request->input('From');
+            $called = $request->input('Called');
+            $callSid = $request->input('CallSid');
+            $transcription = $request->input('TranscriptionText');
 
-        if ($voicemail) {
-            $voicemail->update(['summary_for_user' => $fullSummaryMessage]);
-            Log::info('[TRANSCRIPTION] - Voicemail record updated with summary.', ['voicemail_id' => $voicemail->id]);
-        }
+            $user = $findUserAction->execute($called);
 
-        if ($settings->auto_send_sms_after_voicemail) {
-            Log::info('[TRANSCRIPTION] - Auto send SMS after voice mail is enabled. Generating quote response...');
+            Log::info('[TRANSCRIPTION] - New voicemail transcription received. Firing the event to process it.', ['user_id' => $user->id]);
 
-            $quote = $this->openAIService->generateQuoteResponse(
-                message: $transcription,
-                industryType: $settings->industry_type->value,
-                calloutFee: $settings->callout_fee,
-                hourlyRate: $settings->hourly_rate,
-                responseTone: $settings->response_tone->value,
-                firstName: $user->first_name
+            VoicemailTranscriptionReceived::dispatch(
+                $caller,
+                $called,
+                $callSid,
+                $transcription,
+                $user
             );
 
-            $this->twilioService->send(to: $caller, from: $settings->agent_sms_number, message: $quote);
+            return response()->noContent();
+        } catch (Exception $e) {
+            Log::error('[TRANSCRIPTION] - Error processing voicemail transcription.', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
 
-            Log::info('[TRANSCRIPTION] - Quote response generated and SMS sent.', ['quote' => $quote]);
-
-            if ($voicemail) {
-                $voicemail->update([
-                    'ai_response' => $quote,
-                    'sms_sent' => true,
-                    'sms_sent_at' => now(),
-                ]);
-
-                Log::info('[TRANSCRIPTION] - Voicemail record updated with AI response.', ['voicemail_id' => $voicemail->id]);
-            }
+            return response()->noContent();
         }
-
-        return response()->noContent();
     }
 
     /**
