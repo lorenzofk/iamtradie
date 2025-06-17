@@ -6,11 +6,12 @@ namespace App\Http\Controllers;
 
 use App\Actions\FindUserByTwilioNumberAction;
 use App\Events\IncomingTextMessageReceived;
+use App\Http\Requests\AfterRecordRequest;
 use App\Http\Requests\IncomingTextRequest;
 use App\Models\User;
-use App\Models\Voicemail;
 use App\Services\OpenAIService;
 use App\Services\TwilioService;
+use App\Services\VoicemailService;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -21,50 +22,51 @@ class TwilioController extends Controller
 {
     public function __construct(
         private readonly TwilioService $twilioService,
-        private readonly OpenAIService $openAIService
+        private readonly OpenAIService $openAIService,
+        private readonly VoicemailService $voicemailService
     ) {}
 
     /**
-     * This method handles the after record scenario.
+     * Receive the voicemail recording after a missed call.
      */
-    public function afterRecord(Request $request)
+    public function afterRecord(AfterRecordRequest $request, FindUserByTwilioNumberAction $findUserAction)
     {
-        Log::withContext(['action' => 'after-record', 'data' => $request->all()]);
-
-        $data = $request->all();
-
-        $user = User::whereHas(
-            'settings',
-            fn ($query) => $query->where('agent_sms_number', $data['Called'])
-        )->first();
-
-        throw_if(empty($user), new Exception('User not found for number'));
-
-        $data = [
-            'user_id' => $user->id,
-            'call_sid' => $data['CallSid'],
-            'from_number' => $data['From'] ?? $data['Caller'],
-            'caller_country' => $data['CallerCountry'] ?? $data['FromCountry'],
-            'direction' => $data['Direction'] ?? 'inbound',
-            'call_status' => $data['CallStatus'] ?? 'completed',
-            'recording_sid' => $data['RecordingSid'] ?? null,
-            'recording_url' => $data['RecordingUrl'] ?? null,
-            'recording_duration' => isset($data['RecordingDuration']) ? (int) $data['RecordingDuration'] : null,
-            'digits' => $data['Digits'] ?? null,
-        ];
+        Log::withContext(['action' => 'after-record', 'data' => $request->validated()]);
 
         try {
-            $voicemail = Voicemail::create($data);
-            Log::info('[AFTER RECORD] - Voicemail record created', ['voicemail_id' => $voicemail->id]);
-        } catch (Exception $e) {
-            Log::error('[AFTER RECORD] - Failed to create voicemail record', ['error' => $e->getMessage(), 'data' => $data]);
-        }
+            $user = $findUserAction->execute($request->getCalledNumber());
 
-        return response()->noContent();
+            Log::info('[AFTER RECORD] - Creating voicemail record', ['user_id' => $user->id]);
+
+            $this->voicemailService->createVoicemailRecord(
+                $request->getCallSid(),
+                $request->getFromNumber() ?? '',
+                $request->getCallerCountry() ?? '',
+                $request->getDirection(),
+                $request->getCallStatus(),
+                $request->getRecordingSid(),
+                $request->getRecordingUrl(),
+                $request->getRecordingDuration(),
+                $request->getDigits(),
+                $user->id
+            );
+
+            Log::info('[AFTER RECORD] - Voicemail record created successfully');
+
+            return response()->noContent();
+        } catch (Exception $e) {
+            Log::error('[AFTER RECORD] - Error processing voicemail recording', [
+                'call_sid' => $request->getCallSid() ?? 'unknown',
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            return response()->noContent();
+        }
     }
 
     /**
-     * This method handles the missed call scenario.
+     * Handle the missed call scenario.
      */
     public function missedCall(Request $request): Response
     {
@@ -99,7 +101,7 @@ class TwilioController extends Controller
     }
 
     /**
-     * This method handles the transcription of the voicemail.
+     * Handle the transcription of the voicemail.
      */
     public function transcription(Request $request): Response
     {
@@ -126,9 +128,9 @@ class TwilioController extends Controller
                 'transcription_text' => $transcription,
                 'transcription_processed' => true,
             ]);
-            Log::info('[TRANSCRIPTION] - Voicemail record updated with transcription', ['voicemail_id' => $voicemail->id]);
+            Log::info('[TRANSCRIPTION] - Voicemail record updated with transcription.', ['voicemail_id' => $voicemail->id]);
         } else {
-            Log::warning('[TRANSCRIPTION] - Voicemail record not found', ['call_sid' => $callSid, 'user_id' => $user->id]);
+            Log::warning('[TRANSCRIPTION] - Voicemail record not found.', ['call_sid' => $callSid, 'user_id' => $user->id]);
         }
 
         Log::info('[TRANSCRIPTION] - Generating voicemail summary for the user...');
@@ -145,14 +147,14 @@ class TwilioController extends Controller
 
         try {
             $this->twilioService->send(to: $settings->phone_number, from: $called, message: $fullSummaryMessage);
-            Log::info('[TRANSCRIPTION] - Summary SMS sent to user', ['to' => $settings->phone_number, 'summary' => $fullSummaryMessage]);
+            Log::info('[TRANSCRIPTION] - Summary SMS sent to user.', ['to' => $settings->phone_number, 'summary' => $fullSummaryMessage]);
         } catch (Exception $e) {
-            Log::error('[TRANSCRIPTION] - Failed to send summary SMS to user', ['error' => $e->getMessage(), 'to' => $settings->phone_number]);
+            Log::error('[TRANSCRIPTION] - Failed to send summary SMS to user.', ['error' => $e->getMessage(), 'to' => $settings->phone_number]);
         }
 
         if ($voicemail) {
             $voicemail->update(['summary_for_user' => $fullSummaryMessage]);
-            Log::info('[TRANSCRIPTION] - Voicemail record updated with summary', ['voicemail_id' => $voicemail->id]);
+            Log::info('[TRANSCRIPTION] - Voicemail record updated with summary.', ['voicemail_id' => $voicemail->id]);
         }
 
         if ($settings->auto_send_sms_after_voicemail) {
@@ -169,7 +171,7 @@ class TwilioController extends Controller
 
             $this->twilioService->send(to: $caller, from: $settings->agent_sms_number, message: $quote);
 
-            Log::info('[TRANSCRIPTION] - Quote response generated and SMS sent', ['quote' => $quote]);
+            Log::info('[TRANSCRIPTION] - Quote response generated and SMS sent.', ['quote' => $quote]);
 
             if ($voicemail) {
                 $voicemail->update([
@@ -178,7 +180,7 @@ class TwilioController extends Controller
                     'sms_sent_at' => now(),
                 ]);
 
-                Log::info('[TRANSCRIPTION] - Voicemail record updated with AI response', ['voicemail_id' => $voicemail->id]);
+                Log::info('[TRANSCRIPTION] - Voicemail record updated with AI response.', ['voicemail_id' => $voicemail->id]);
             }
         }
 
@@ -196,11 +198,7 @@ class TwilioController extends Controller
         try {
             $user = $findUserAction->execute($request->getTwilioNumber());
 
-            Log::info('[INCOMING TEXT] - Processing incoming text message', [
-                'user_id' => $user->id,
-                'lead_number' => $request->getLeadNumber(),
-                'message_preview' => mb_substr($request->getMessageBody(), 0, 100).'...',
-            ]);
+            Log::info('[INCOMING TEXT] - New incoming text message received. Firing the event to process it.', ['user_id' => $user->id]);
 
             IncomingTextMessageReceived::dispatch(
                 $request->getMessageBody(),
@@ -210,11 +208,9 @@ class TwilioController extends Controller
                 $user
             );
 
-            Log::info('[INCOMING TEXT] - Event dispatched for async processing');
-
             return response()->noContent();
         } catch (Exception $e) {
-            Log::error('[INCOMING TEXT] - Error processing incoming text', [
+            Log::error('[INCOMING TEXT] - Error processing incoming text message.', [
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
             ]);
