@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use App\Enums\QuoteSource;
-use App\Enums\QuoteStatus;
-use App\Models\Quote;
+use App\Actions\FindUserByTwilioNumberAction;
+use App\Events\IncomingTextMessageReceived;
+use App\Http\Requests\IncomingTextRequest;
 use App\Models\User;
 use App\Models\Voicemail;
 use App\Services\OpenAIService;
@@ -187,67 +187,40 @@ class TwilioController extends Controller
 
     /**
      * This method handles the text message scenario.
+     * Refactored to use event-driven architecture with jobs and actions.
      */
-    public function incomingText(Request $request): Response
+    public function incomingText(IncomingTextRequest $request, FindUserByTwilioNumberAction $findUserAction): Response
     {
-        Log::withContext(['action' => 'incoming-text', 'data' => $request->all()]);
+        Log::withContext(['action' => 'incoming-text', 'data' => $request->validated()]);
 
-        $body = $request->input('Body');
-        $twilioNumber = $request->input('To');
-        $leadNumber = $request->input('From');
-        $smsId = $request->input('SmsMessageSid');
+        try {
+            $user = $findUserAction->execute($request->getTwilioNumber());
 
-        $user = User::whereHas('settings', fn ($query) => $query->where('agent_sms_number', $twilioNumber))->firstOrFail();
+            Log::info('[INCOMING TEXT] - Processing incoming text message', [
+                'user_id' => $user->id,
+                'lead_number' => $request->getLeadNumber(),
+                'message_preview' => mb_substr($request->getMessageBody(), 0, 100).'...',
+            ]);
 
-        $settings = $user->settings;
+            IncomingTextMessageReceived::dispatch(
+                $request->getMessageBody(),
+                $request->getLeadNumber(),
+                $request->getTwilioNumber(),
+                $request->getSmsId(),
+                $user
+            );
 
-        throw_if(empty($settings), new Exception('Twilio number not configured for user'));
+            Log::info('[INCOMING TEXT] - Event dispatched for async processing');
 
-        Log::info('[INCOMING TEXT] - Generating quote response...');
+            return response()->noContent();
+        } catch (Exception $e) {
+            Log::error('[INCOMING TEXT] - Error processing incoming text', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
 
-        $aiResponse = $this->openAIService->generateQuoteResponse(
-            message: $body,
-            industryType: $settings->industry_type->value,
-            calloutFee: $settings->callout_fee,
-            hourlyRate: $settings->hourly_rate,
-            responseTone: $settings->response_tone->value,
-            firstName: $user->first_name
-        );
-
-        Log::info('[INCOMING TEXT] - Quote response generated', ['quote' => $aiResponse]);
-
-        $data = [
-            'user_id' => $user->id,
-            'message' => $body,
-            'industry_type' => $settings->industry_type,
-            'ai_response' => $aiResponse,
-            'from_number' => $leadNumber,
-            'to_number' => $twilioNumber,
-            'sms_id' => $smsId,
-            'source' => QuoteSource::SMS,
-            'status' => $settings->auto_send_sms ? QuoteStatus::SENT : QuoteStatus::PENDING,
-            'sent_at' => $settings->auto_send_sms ? now() : null,
-        ];
-
-        Quote::create($data);
-
-        Log::info('[INCOMING TEXT] - Quote created', ['quote' => $data]);
-
-        if ($settings->auto_send_sms) {
-            Log::info('[INCOMING TEXT] - Auto send SMS is enabled. Sending SMS...');
-
-            try {
-                $this->twilioService->send(to: $leadNumber, from: $twilioNumber, message: $aiResponse);
-            } catch (Exception $e) {
-                Log::error('[INCOMING TEXT] - Error sending SMS', ['message' => $e->getMessage()]);
-
-                return response('error', 500);
-            }
-
-            Log::info('[INCOMING TEXT] - SMS sent', ['to' => $leadNumber, 'from' => $twilioNumber, 'message' => $aiResponse]);
+            return response('error', 500);
         }
-
-        return response()->noContent();
     }
 
     /**
