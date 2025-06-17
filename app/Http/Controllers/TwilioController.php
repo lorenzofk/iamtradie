@@ -9,6 +9,7 @@ use App\Events\IncomingTextMessageReceived;
 use App\Events\VoicemailTranscriptionReceived;
 use App\Http\Requests\AfterRecordRequest;
 use App\Http\Requests\IncomingTextRequest;
+use App\Http\Requests\TranscriptionRequest;
 use App\Models\User;
 use App\Services\TwilioService;
 use App\Services\VoicemailService;
@@ -103,25 +104,20 @@ class TwilioController extends Controller
      * Handle the transcription of the voicemail.
      * Refactored to use event-driven architecture with jobs and actions.
      */
-    public function transcription(Request $request, FindUserByTwilioNumberAction $findUserAction): Response
+    public function transcription(TranscriptionRequest $request, FindUserByTwilioNumberAction $findUserAction): Response
     {
-        Log::withContext(['action' => 'transcription', 'data' => $request->all()]);
+        Log::withContext(['action' => 'transcription', 'data' => $request->validated()]);
 
         try {
-            $caller = $request->input('From');
-            $called = $request->input('Called');
-            $callSid = $request->input('CallSid');
-            $transcription = $request->input('TranscriptionText');
-
-            $user = $findUserAction->execute($called);
+            $user = $findUserAction->execute($request->getCalled());
 
             Log::info('[TRANSCRIPTION] - New voicemail transcription received. Firing the event to process it.', ['user_id' => $user->id]);
 
             VoicemailTranscriptionReceived::dispatch(
-                $caller,
-                $called,
-                $callSid,
-                $transcription,
+                $request->getCaller(),
+                $request->getCalled(),
+                $request->getCallSid(),
+                $request->getTranscription(),
                 $user
             );
 
@@ -137,8 +133,7 @@ class TwilioController extends Controller
     }
 
     /**
-     * This method handles the text message scenario.
-     * Refactored to use event-driven architecture with jobs and actions.
+     * Handle the incoming text message.
      */
     public function incomingText(IncomingTextRequest $request, FindUserByTwilioNumberAction $findUserAction): Response
     {
@@ -169,7 +164,7 @@ class TwilioController extends Controller
     }
 
     /**
-     * This method handles the incoming call scenario.
+     * Handle the incoming call.
      */
     public function incomingCall(Request $request): Response
     {
