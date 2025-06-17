@@ -55,21 +55,20 @@ class ProcessIncomingTextMessageJob implements ShouldBeUnique, ShouldQueue
     {
         Log::withContext([
             'job' => self::class,
-            'user_id' => $this->userId,
-            'lead_number' => $this->leadNumber,
             'sms_id' => $this->smsId,
+            'message' => $this->messageBody,
+            'lead_number' => $this->leadNumber,
+            'twilio_number' => $this->twilioNumber,
+            'user_id' => $this->userId,
         ]);
 
         try {
             $user = User::with('settings')->findOrFail($this->userId);
             $settings = $user->settings;
 
-            Log::info('[PROCESS TEXT JOB] - Generating AI quote response', [
-                'message_body' => $this->messageBody,
-                'industry_type' => $settings->industry_type->value,
-            ]);
+            Log::info('[PROCESS TEXT JOB] - Generating AI quote response.', ['industry_type' => $settings->industry_type->value]);
 
-            $aiResponse = $openAIService->generateQuoteResponse(
+            $response = $openAIService->generateQuoteResponse(
                 message: $this->messageBody,
                 industryType: $settings->industry_type->value,
                 calloutFee: $settings->callout_fee,
@@ -78,13 +77,13 @@ class ProcessIncomingTextMessageJob implements ShouldBeUnique, ShouldQueue
                 firstName: $user->first_name
             );
 
-            Log::info('[PROCESS TEXT JOB] - AI response generated', ['ai_response' => $aiResponse]);
+            Log::info('[PROCESS TEXT JOB] - AI response generated. Creating the quote.', ['response' => $response]);
 
             $quote = Quote::create([
                 'user_id' => $this->userId,
                 'message' => $this->messageBody,
                 'industry_type' => $settings->industry_type,
-                'ai_response' => $aiResponse,
+                'ai_response' => $response,
                 'from_number' => $this->leadNumber,
                 'to_number' => $this->twilioNumber,
                 'sms_id' => $this->smsId,
@@ -93,11 +92,11 @@ class ProcessIncomingTextMessageJob implements ShouldBeUnique, ShouldQueue
                 'sent_at' => $settings->auto_send_sms ? now() : null,
             ]);
 
-            Log::info('[PROCESS TEXT JOB] - Quote created', ['quote_id' => $quote->id]);
+            Log::info('[PROCESS TEXT JOB] - Quote created. Firing the event to send the quote.', ['quote_id' => $quote->id]);
 
             QuoteCreated::dispatch($quote, $settings->auto_send_sms);
         } catch (Exception $e) {
-            Log::error('[PROCESS TEXT JOB] - Failed to process incoming text message', [
+            Log::error('[PROCESS TEXT JOB] - Failed to process incoming text message.', [
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
             ]);

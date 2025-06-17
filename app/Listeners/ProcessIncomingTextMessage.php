@@ -15,16 +15,8 @@ class ProcessIncomingTextMessage
      */
     public function handle(IncomingTextMessageReceived $event): void
     {
-        Log::withContext([
+        Log::info('[INCOMING TEXT LISTENER] - Event received. Dispatching the job to process it.', [
             'listener' => self::class,
-            'user_id' => $event->user->id,
-            'lead_number' => $event->leadNumber,
-            'twilio_number' => $event->twilioNumber,
-        ]);
-
-        Log::info('[PROCESS TEXT LISTENER] - Dispatching processing job', [
-            'sms_id' => $event->smsId,
-            'message_preview' => mb_substr($event->messageBody, 0, 100).'...',
         ]);
 
         ProcessIncomingTextMessageJob::dispatch(

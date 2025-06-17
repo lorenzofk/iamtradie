@@ -52,10 +52,13 @@ class SendQuoteSMSJob implements ShouldBeUnique, ShouldQueue
         try {
             $quote = Quote::findOrFail($this->quoteId);
 
-            Log::info('[SEND QUOTE SMS JOB] - Sending SMS', [
+            Log::info('[SEND QUOTE SMS JOB] - Sending SMS.', [
+                'quote_id' => $quote->id,
                 'to' => $quote->from_number,
                 'from' => $quote->to_number,
-                'message_preview' => mb_substr($quote->ai_response, 0, 100).'...',
+                'message' => $quote->ai_response,
+                'sms_id' => $quote->sms_id,
+                'initial_status' => $quote->status->value,
             ]);
 
             $twilioService->send(
@@ -69,9 +72,9 @@ class SendQuoteSMSJob implements ShouldBeUnique, ShouldQueue
                 'sent_at' => now(),
             ]);
 
-            Log::info('[SEND QUOTE SMS JOB] - SMS sent successfully', ['quote_id' => $quote->id]);
+            Log::info('[SEND QUOTE SMS JOB] - SMS sent successfully.', ['final_status' => $quote->status->value]);
         } catch (Exception $e) {
-            Log::error('[SEND QUOTE SMS JOB] - Failed to send SMS', [
+            Log::error('[SEND QUOTE SMS JOB] - Failed to send SMS.', [
                 'quote_id' => $this->quoteId,
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
@@ -86,7 +89,7 @@ class SendQuoteSMSJob implements ShouldBeUnique, ShouldQueue
      */
     public function failed(Exception $exception): void
     {
-        Log::error('[SEND QUOTE SMS JOB] - Job failed permanently', [
+        Log::error('[SEND QUOTE SMS JOB] - Job failed permanently.', [
             'quote_id' => $this->quoteId,
             'error' => $exception->getMessage(),
         ]);
@@ -94,8 +97,10 @@ class SendQuoteSMSJob implements ShouldBeUnique, ShouldQueue
         try {
             $quote = Quote::findOrFail($this->quoteId);
             $quote->update(['status' => QuoteStatus::FAILED]);
+
+            Log::info('[SEND QUOTE SMS JOB] - Quote status updated to failed.', ['final_status' => $quote->status->value]);
         } catch (Exception $e) {
-            Log::error('[SEND QUOTE SMS JOB] - Failed to update quote status to failed', [
+            Log::error('[SEND QUOTE SMS JOB] - Failed to update quote status to failed.', [
                 'quote_id' => $this->quoteId,
                 'error' => $e->getMessage(),
             ]);

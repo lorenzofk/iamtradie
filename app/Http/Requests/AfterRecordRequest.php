@@ -23,11 +23,11 @@ class AfterRecordRequest extends FormRequest
     {
         return [
             'Called' => [
-                'required', 
+                'required',
                 'string',
             ],
             'CallSid' => [
-                'required', 
+                'required',
                 'string',
             ],
             'From' => [
@@ -143,6 +143,7 @@ class AfterRecordRequest extends FormRequest
     public function getRecordingDuration(): ?int
     {
         $duration = $this->input('RecordingDuration');
+
         return $duration ? (int) $duration : null;
     }
 
@@ -153,4 +154,4 @@ class AfterRecordRequest extends FormRequest
     {
         return $this->input('Digits');
     }
-} 
+}
