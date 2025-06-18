@@ -84,14 +84,22 @@ const setupPricing = () => {
           </h4>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
             <div class="flex items-start gap-3">
-              <div class="w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">1</div>
+              <div
+                class="w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5"
+              >
+                1
+              </div>
               <div>
                 <p class="font-medium text-gray-900">Set Your Pricing</p>
                 <p class="text-gray-600">Configure your callout fee and hourly rates</p>
               </div>
             </div>
             <div class="flex items-start gap-3">
-              <div class="w-6 h-6 bg-green-600 text-white rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">2</div>
+              <div
+                class="w-6 h-6 bg-green-600 text-white rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5"
+              >
+                2
+              </div>
               <div>
                 <p class="font-medium text-gray-900">Choose AI Voice</p>
                 <p class="text-gray-600">Pick casual or professional tone for responses</p>

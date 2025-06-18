@@ -93,7 +93,7 @@ const guarantees = [
           <h3 class="text-xl sm:text-2xl font-bold text-gray-900 mb-2 sm:mb-3">PingMate Complete</h3>
 
           <div class="flex items-center justify-center mb-3 sm:mb-4">
-            <span class="text-3xl sm:text-4xl lg:text-5xl font-black text-gray-900">$29</span>
+            <span class="text-3xl sm:text-4xl lg:text-5xl font-black text-gray-900">$39</span>
             <span class="text-base sm:text-lg lg:text-xl text-gray-600 ml-2">/month</span>
           </div>
 
@@ -104,7 +104,7 @@ const guarantees = [
             class="bg-green-50 border border-green-200 rounded-lg sm:rounded-xl p-3 sm:p-4 max-w-sm sm:max-w-md mx-auto"
           >
             <div class="text-xs sm:text-sm font-semibold text-green-800 mb-1">Win just one extra job per month</div>
-            <div class="text-xs sm:text-sm text-green-700">Turn $29 into $500+ → 1,600% ROI</div>
+            <div class="text-xs sm:text-sm text-green-700">Turn $39 into $500+ → 1,200% ROI</div>
           </div>
         </div>
 

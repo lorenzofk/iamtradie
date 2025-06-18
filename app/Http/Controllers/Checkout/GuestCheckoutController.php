@@ -26,12 +26,12 @@ class GuestCheckoutController extends Controller
     {
         $data = $request->validated();
         $userData = $data['user'];
-        
+
         // Set default settings that will be configured later
         $settingsData = array_merge($data['settings'], [
             'agent_sms_number' => '+61489279785',
             'callout_fee' => 120, // Default callout fee
-            'hourly_rate' => 85,  // Default hourly rate  
+            'hourly_rate' => 85,  // Default hourly rate
             'response_tone' => 'casual', // Default response tone
             'mobile_number' => $userData['mobile'],
         ]);
@@ -39,7 +39,7 @@ class GuestCheckoutController extends Controller
         try {
             $user = User::create([
                 ...$userData,
-                'password' => Hash::make('temporary_password_' . uniqid()),
+                'password' => Hash::make('temporary_password_'.uniqid()),
                 'quotes_used' => 0,
                 'quotes_limit' => 100,
             ]);

@@ -185,7 +185,7 @@ library.add(
   faUndo,
   faInfoCircle,
   faMoneyBillWave,
-  faMagic,
+  faMagic
 );
 
 export default function SetupFontAwesome(app) {
