@@ -15,6 +15,8 @@ class SendQuoteViaTextMessage
      */
     public function handle(QuoteCreated $event): void
     {
+        $logPrefix = '[SEND QUOTE LISTENER]';
+
         Log::withContext([
             'listener' => self::class,
             'quote_id' => $event->quote->id,
@@ -23,15 +25,15 @@ class SendQuoteViaTextMessage
             'to_number' => $event->quote->to_number,
         ]);
 
-        Log::info('[SEND QUOTE LISTENER] - Event received. Checking if auto-send is enabled.');
+        Log::info("{$logPrefix} - Event received. Checking if auto-send is enabled.");
 
         if (! $event->shouldAutoSend) {
-            Log::info('[SEND QUOTE LISTENER] - Auto-send is disabled. The quote will remain pending.');
+            Log::info("{$logPrefix} - Auto-send is disabled. The quote will remain pending.");
 
             return;
         }
 
-        Log::info('[SEND QUOTE LISTENER] - Auto-send is enabled. Dispatching the job to send the quote via SMS.');
+        Log::info("{$logPrefix} - Auto-send is enabled. Dispatching the job to send the quote via SMS.");
 
         SendQuoteSMSJob::dispatch($event->quote->id);
     }
