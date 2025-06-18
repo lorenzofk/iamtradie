@@ -22,6 +22,7 @@ class Settings extends Model
         'business_name',
         'business_location',
         'phone_number',
+        'mobile_number',
         'agent_sms_number',
         'callout_fee',
         'hourly_rate',
