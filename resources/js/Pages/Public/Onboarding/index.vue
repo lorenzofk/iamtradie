@@ -196,35 +196,14 @@ setTimeout(() => {
             </div>
           </div>
 
-          <!-- What happens next -->
-          <div class="bg-gradient-to-r from-blue-50 to-green-50 rounded-xl p-6 border border-blue-200">
-            <h4 class="font-bold text-gray-900 mb-3 flex items-center">
-              <font-awesome-icon :icon="['fas', 'fa-info-circle']" class="text-blue-600 mr-2" />
-              What happens next?
-            </h4>
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
-              <div class="flex items-start gap-2">
-                <div class="w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">1</div>
-                <div>
-                  <p class="font-medium text-gray-900">Secure Payment</p>
-                  <p class="text-gray-600">Complete your subscription with Stripe</p>
-                </div>
-              </div>
-              <div class="flex items-start gap-2">
-                <div class="w-6 h-6 bg-green-600 text-white rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">2</div>
-                <div>
-                  <p class="font-medium text-gray-900">Get Your Number</p>
-                  <p class="text-gray-600">Receive your local Australian SMS number</p>
-                </div>
-              </div>
-              <div class="flex items-start gap-2">
-                <div class="w-6 h-6 bg-purple-600 text-white rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">3</div>
-                <div>
-                  <p class="font-medium text-gray-900">Setup Pricing</p>
-                  <p class="text-gray-600">Configure your rates after payment</p>
-                </div>
-              </div>
-            </div>
+          <!-- Simple reassurance line -->
+          <div class="text-center py-2">
+            <p class="text-gray-600 text-sm">
+              You're nearly there — just confirm payment and we'll set up your Aussie number + AI assistant instantly.
+            </p>
+            <p class="text-gray-500 text-xs mt-1">
+              You'll be able to customise your pricing, tone, and replies right after signup.
+            </p>
           </div>
 
           <!-- Submit Button -->
@@ -232,25 +211,27 @@ setTimeout(() => {
             type="submit"
             :disabled="form.processing"
             class="w-full !bg-gradient-to-r !from-blue-600 !to-green-600 hover:!from-blue-700 hover:!to-green-700 !py-4 !text-lg !font-bold shadow-xl"
-            :icon="form.processing ? ['fas', 'fa-spinner'] : ['fas', 'fa-credit-card']"
-            :label="form.processing ? 'Processing...' : 'Continue to Payment - $29/month'"
+            :icon="form.processing ? ['fas', 'fa-spinner'] : ['fas', 'fa-rocket']"
+            :label="form.processing ? 'Processing...' : 'Start My Free Trial — $29/month after 30 days'"
           />
 
-          <!-- Trust footer -->
-          <div class="text-center pt-4">
-            <div class="flex flex-col sm:flex-row justify-center items-center gap-4 text-sm text-gray-500">
-              <div class="flex items-center gap-1">
-                <font-awesome-icon :icon="['fas', 'fa-lock']" class="text-green-600" />
-                <span>SSL Secured</span>
-              </div>
-              <div class="flex items-center gap-1">
-                <font-awesome-icon :icon="['fas', 'fa-undo']" class="text-blue-600" />
-                <span>Cancel anytime</span>
-              </div>
-              <div class="flex items-center gap-1">
-                <font-awesome-icon :icon="['fas', 'fa-money-bill-wave']" class="text-green-600" />
-                <span>30-day money-back guarantee</span>
-              </div>
+          <!-- Trust indicators -->
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center pt-2">
+            <div class="flex items-center justify-center gap-2 text-sm text-gray-600">
+              <font-awesome-icon :icon="['fas', 'fa-phone']" class="text-green-600 text-xs" />
+              <span>Local number included</span>
+            </div>
+            <div class="flex items-center justify-center gap-2 text-sm text-gray-600">
+              <font-awesome-icon :icon="['fas', 'fa-lock']" class="text-blue-600 text-xs" />
+              <span>SSL secure payment</span>
+            </div>
+            <div class="flex items-center justify-center gap-2 text-sm text-gray-600">
+              <font-awesome-icon :icon="['fas', 'fa-undo']" class="text-purple-600 text-xs" />
+              <span>Cancel anytime</span>
+            </div>
+            <div class="flex items-center justify-center gap-2 text-sm text-gray-600">
+              <font-awesome-icon :icon="['fas', 'fa-money-bill-wave']" class="text-green-600 text-xs" />
+              <span>30-day guarantee</span>
             </div>
           </div>
         </form>
