@@ -1,13 +1,11 @@
 <script setup>
-import { ref, computed } from 'vue';
+import { ref } from 'vue';
 import { useForm } from '@inertiajs/vue3';
 import { useToast } from '@Shared/Ui/Hooks/useToast';
 import Public from '@/Layouts/Public.vue';
 import Button from '@/Shared/Ui/Button/Button.vue';
-import Card from 'primevue/card';
-import DetailsStep from './Blocks/DetailsStep.vue';
-import PricingStep from './Blocks/PricingStep.vue';
-import CommunicationStep from './Blocks/CommunicationStep.vue';
+import Input from '@/Shared/Ui/Form/Input.vue';
+import Select from '@/Shared/Ui/Form/Select.vue';
 
 defineOptions({
   layout: Public,
@@ -15,56 +13,34 @@ defineOptions({
 
 const { showToast } = useToast();
 
-const props = defineProps({
-  selectedPlan: String,
-});
-
-const currentStep = ref(0);
 const isLoaded = ref(false);
 
 const form = useForm({
   user: {
-    first_name: 'Dave',
-    email: 'dave@miller.com',
+    first_name: '',
+    email: '',
+    mobile: '',
   },
   settings: {
-    business_name: "Dave's Electric",
-    industry_type: 'electrical',
-    callout_fee: 120,
-    hourly_rate: 85,
-    response_tone: 'casual',
+    business_name: '',
+    industry_type: '',
   },
 });
 
-const steps = [
-  { step: 0, title: 'Business Details', icon: 'fa-building' },
-  { step: 1, title: 'Pricing Setup', icon: 'fa-dollar-sign' },
-  { step: 2, title: 'Communication', icon: 'fa-comments' },
-  { step: 3, title: 'Payment', icon: 'fa-credit-card' },
+const tradeTypes = [
+  { label: 'Electrical', value: 'electrical' },
+  { label: 'Plumbing', value: 'plumbing' },
+  { label: 'Tiling', value: 'tiling' },
+  { label: 'Carpentry', value: 'carpentry' },
+  { label: 'Painting', value: 'painting' },
+  { label: 'Construction', value: 'construction' },
+  { label: 'Cleaning', value: 'cleaning' },
+  { label: 'Gardening', value: 'gardening' },
+  { label: 'Landscaping', value: 'landscaping' },
+  { label: 'General', value: 'general' },
 ];
 
-const progress = computed(() => ((currentStep.value + 1) / steps.length) * 100);
-
-const nextStep = () => {
-  if (currentStep.value < steps.length - 2) {
-    currentStep.value++;
-  }
-};
-
-const prevStep = () => {
-  if (currentStep.value > 0) {
-    currentStep.value--;
-  }
-};
-
 const onSubmit = () => {
-  var lastStep = currentStep.value === steps.length - 2;
-
-  if (!lastStep) {
-    nextStep();
-    return;
-  }
-
   form.post(route('checkout'), {
     onError: () => {
       showToast('error', 'Setup failed. Please try again.');
@@ -79,103 +55,206 @@ setTimeout(() => {
 
 <template>
   <div class="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-800">
-    <div class="container mx-auto px-4 py-8 max-w-4xl">
+    <div class="container mx-auto px-4 py-8 max-w-2xl">
       <!-- Header -->
       <div class="text-center mb-8">
         <div class="flex items-center justify-center mb-6">
           <div class="bg-gradient-to-r from-blue-600 to-green-600 p-3 rounded-xl mr-4 shadow-lg">
-            <font-awesome-icon :icon="['fas', 'fa-bolt']" class="text-white text-2xl" />
+            <font-awesome-icon :icon="['fas', 'fa-rocket']" class="text-white text-2xl" />
           </div>
           <h1 class="text-3xl font-bold text-white">PingMate</h1>
         </div>
-        <h2 class="text-4xl font-black text-white mb-4">Get Ready to Never Miss Another Lead</h2>
-        <p class="text-xl text-blue-100 mb-6">Set up your AI assistant in under 3 minutes</p>
-
-        <!-- Progress Bar -->
-        <div class="max-w-md mx-auto mb-8">
-          <div class="w-full bg-blue-200 rounded-full h-2 mb-3">
-            <div
-              class="bg-gradient-to-r from-blue-600 to-green-600 h-2 rounded-full transition-all duration-500"
-              :style="{ width: `${progress}%` }"
-            ></div>
+        <h2 class="text-4xl font-black text-white mb-4">Start Your AI Assistant</h2>
+        <p class="text-xl text-blue-100 mb-6">Just a few details and you'll be winning more jobs in minutes</p>
+        
+        <!-- Trust indicators -->
+        <div class="flex flex-col sm:flex-row justify-center items-center gap-4 sm:gap-8 text-blue-200 text-sm mb-8">
+          <div class="flex items-center gap-2">
+            <font-awesome-icon :icon="['fas', 'shield-alt']" />
+            <span>30-day money back guarantee</span>
           </div>
-          <p class="text-blue-200 text-sm">
-            Step {{ currentStep + 1 }} of {{ steps.length }}: {{ steps[currentStep].title }}
-          </p>
-        </div>
-
-        <!-- Step Indicators -->
-        <div class="flex justify-center space-x-4 mb-8">
-          <div v-for="(step, index) in steps" :key="index" class="flex flex-col items-center">
-            <div
-              class="w-12 h-12 rounded-full flex items-center justify-center border-2 transition-all duration-300"
-              :class="{
-                'bg-green-500 border-green-500': index < currentStep,
-                'bg-blue-600 border-blue-600': index === currentStep,
-                'bg-gray-600 border-gray-600': index > currentStep,
-              }"
-            >
-              <font-awesome-icon
-                v-if="index < currentStep"
-                :icon="['fas', 'fa-check-circle']"
-                class="w-6 h-6 text-white"
-              />
-              <font-awesome-icon v-else :icon="['fas', step.icon]" class="w-6 h-6 text-white" />
-            </div>
-            <span class="text-xs text-blue-200 mt-2 hidden sm:block">
-              {{ step.title }}
-            </span>
+          <div class="flex items-center gap-2">
+            <font-awesome-icon :icon="['fas', 'clock']" />
+            <span>Setup in under 2 minutes</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <font-awesome-icon :icon="['fas', 'flag']" />
+            <span>🇦🇺 Australian owned</span>
           </div>
         </div>
       </div>
 
       <!-- Main Content -->
-      <Card
-        class="shadow-2xl border-0 bg-white/95 backdrop-blur transform transition-all duration-500"
+      <div
+        class="bg-white/95 backdrop-blur rounded-2xl shadow-2xl p-8 transform transition-all duration-500"
         :class="{ 'translate-y-0 opacity-100': isLoaded, 'translate-y-10 opacity-0': !isLoaded }"
       >
-        <template #content>
-          <div class="p-8">
-            <form @submit.prevent="onSubmit">
-              <DetailsStep v-if="currentStep === 0" v-model="form" />
-
-              <PricingStep v-if="currentStep === 1" v-model="form" />
-
-              <CommunicationStep v-if="currentStep === 2" v-model="form" />
-
-              <hr class="my-8 border-gray-200" />
-
-              <!-- Navigation -->
-              <div class="flex justify-between">
-                <Button
-                  type="button"
-                  outlined
-                  @click="prevStep"
-                  :class="{ '!opacity-50 !cursor-not-allowed': currentStep === 0 }"
-                  :disabled="currentStep === 0"
-                  :icon="['fas', 'fa-arrow-left']"
-                  label="Back"
-                />
-
-                <Button
-                  type="submit"
-                  :disabled="form.processing"
-                  class="!bg-gradient-to-r !from-blue-600 !to-green-600 hover:!from-blue-700 hover:!to-green-700"
-                  :icon="
-                    form.processing
-                      ? ['fas', 'fa-spinner']
-                      : currentStep === steps.length - 1
-                        ? ['fas', 'fa-check-circle']
-                        : ['fas', 'fa-arrow-right']
-                  "
-                  :iconPos="currentStep === steps.length - 1 ? 'right' : 'right'"
-                  :label="currentStep === steps.length - 2 ? 'Subscribe' : 'Continue'"
-                />
-              </div>
-            </form>
+        <div class="text-center mb-8">
+          <div
+            class="w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg"
+          >
+            <font-awesome-icon :icon="['fas', 'fa-user-tie']" class="w-8 h-8 text-white" />
           </div>
-        </template>
-      </Card>
+          <h3 class="text-2xl font-bold text-gray-900 mb-2">Tell us about your business</h3>
+          <p class="text-gray-600">We'll use this to create your AI assistant and generate personalized quotes</p>
+        </div>
+
+        <form @submit.prevent="onSubmit" class="space-y-6">
+          <!-- Form Grid -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- First Name -->
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-2">
+                Your First Name <span class="text-red-500">*</span>
+              </label>
+              <Input
+                v-model="form.user.first_name"
+                placeholder="e.g., Dave"
+                class="w-full"
+                required
+                :class="{ 'border-red-300': form.errors['user.first_name'] }"
+              />
+              <div v-if="form.errors['user.first_name']" class="text-red-500 text-sm mt-1">
+                {{ form.errors['user.first_name'] }}
+              </div>
+            </div>
+
+            <!-- Business Name -->
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-2">
+                Business Name <span class="text-red-500">*</span>
+              </label>
+              <Input
+                v-model="form.settings.business_name"
+                placeholder="e.g., Dave's Electric"
+                class="w-full"
+                required
+                :class="{ 'border-red-300': form.errors['settings.business_name'] }"
+              />
+              <div v-if="form.errors['settings.business_name']" class="text-red-500 text-sm mt-1">
+                {{ form.errors['settings.business_name'] }}
+              </div>
+            </div>
+
+            <!-- Email -->
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-2">
+                Email Address <span class="text-red-500">*</span>
+              </label>
+              <Input
+                v-model="form.user.email"
+                type="email"
+                placeholder="e.g., dave@daveelectric.com.au"
+                class="w-full"
+                required
+                :class="{ 'border-red-300': form.errors['user.email'] }"
+              />
+              <div v-if="form.errors['user.email']" class="text-red-500 text-sm mt-1">
+                {{ form.errors['user.email'] }}
+              </div>
+            </div>
+
+            <!-- Trade Type -->
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-2">
+                Your Trade <span class="text-red-500">*</span>
+              </label>
+              <Select
+                v-model="form.settings.industry_type"
+                :options="tradeTypes"
+                optionLabel="label"
+                optionValue="value"
+                placeholder="Select your trade"
+                class="w-full"
+                required
+                :class="{ 'border-red-300': form.errors['settings.industry_type'] }"
+              />
+              <div v-if="form.errors['settings.industry_type']" class="text-red-500 text-sm mt-1">
+                {{ form.errors['settings.industry_type'] }}
+              </div>
+            </div>
+          </div>
+
+          <!-- Mobile Number -->
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-2">
+              Mobile Number <span class="text-red-500">*</span>
+            </label>
+            <Input
+              v-model="form.user.mobile"
+              type="tel"
+              placeholder="e.g., 0412 345 678"
+              class="w-full"
+              required
+              :class="{ 'border-red-300': form.errors['user.mobile'] }"
+            />
+            <p class="text-gray-500 text-sm mt-1">
+              We'll forward important leads here and use this for login verification
+            </p>
+            <div v-if="form.errors['user.mobile']" class="text-red-500 text-sm mt-1">
+              {{ form.errors['user.mobile'] }}
+            </div>
+          </div>
+
+          <!-- What happens next -->
+          <div class="bg-gradient-to-r from-blue-50 to-green-50 rounded-xl p-6 border border-blue-200">
+            <h4 class="font-bold text-gray-900 mb-3 flex items-center">
+              <font-awesome-icon :icon="['fas', 'fa-info-circle']" class="text-blue-600 mr-2" />
+              What happens next?
+            </h4>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
+              <div class="flex items-start gap-2">
+                <div class="w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">1</div>
+                <div>
+                  <p class="font-medium text-gray-900">Secure Payment</p>
+                  <p class="text-gray-600">Complete your subscription with Stripe</p>
+                </div>
+              </div>
+              <div class="flex items-start gap-2">
+                <div class="w-6 h-6 bg-green-600 text-white rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">2</div>
+                <div>
+                  <p class="font-medium text-gray-900">Get Your Number</p>
+                  <p class="text-gray-600">Receive your local Australian SMS number</p>
+                </div>
+              </div>
+              <div class="flex items-start gap-2">
+                <div class="w-6 h-6 bg-purple-600 text-white rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">3</div>
+                <div>
+                  <p class="font-medium text-gray-900">Setup Pricing</p>
+                  <p class="text-gray-600">Configure your rates after payment</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Submit Button -->
+          <Button
+            type="submit"
+            :disabled="form.processing"
+            class="w-full !bg-gradient-to-r !from-blue-600 !to-green-600 hover:!from-blue-700 hover:!to-green-700 !py-4 !text-lg !font-bold shadow-xl"
+            :icon="form.processing ? ['fas', 'fa-spinner'] : ['fas', 'fa-credit-card']"
+            :label="form.processing ? 'Processing...' : 'Continue to Payment - $29/month'"
+          />
+
+          <!-- Trust footer -->
+          <div class="text-center pt-4">
+            <div class="flex flex-col sm:flex-row justify-center items-center gap-4 text-sm text-gray-500">
+              <div class="flex items-center gap-1">
+                <font-awesome-icon :icon="['fas', 'fa-lock']" class="text-green-600" />
+                <span>SSL Secured</span>
+              </div>
+              <div class="flex items-center gap-1">
+                <font-awesome-icon :icon="['fas', 'fa-undo']" class="text-blue-600" />
+                <span>Cancel anytime</span>
+              </div>
+              <div class="flex items-center gap-1">
+                <font-awesome-icon :icon="['fas', 'fa-money-bill-wave']" class="text-green-600" />
+                <span>30-day money-back guarantee</span>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
     </div>
   </div>
 </template>
