@@ -45,7 +45,7 @@ class SendQuoteSMSJob implements ShouldBeUnique, ShouldQueue
     public function handle(TwilioService $twilioService): void
     {
         $logPrefix = '[SEND QUOTE SMS JOB]';
-        
+
         Log::withContext([
             'job' => self::class,
             'quote_id' => $this->quoteId,

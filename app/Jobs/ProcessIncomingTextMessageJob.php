@@ -53,6 +53,8 @@ class ProcessIncomingTextMessageJob implements ShouldBeUnique, ShouldQueue
      */
     public function handle(OpenAIService $openAIService): void
     {
+        $logPrefix = '[PROCESS TEXT JOB]';
+
         Log::withContext([
             'job' => self::class,
             'sms_id' => $this->smsId,
@@ -66,7 +68,7 @@ class ProcessIncomingTextMessageJob implements ShouldBeUnique, ShouldQueue
             $user = User::with('settings')->findOrFail($this->userId);
             $settings = $user->settings;
 
-            Log::info('[PROCESS TEXT JOB] - Generating AI quote response.', ['industry_type' => $settings->industry_type->value]);
+            Log::info("{$logPrefix} - Generating AI quote response.", ['industry_type' => $settings->industry_type->value]);
 
             $response = $openAIService->generateQuoteResponse(
                 message: $this->messageBody,
@@ -77,7 +79,7 @@ class ProcessIncomingTextMessageJob implements ShouldBeUnique, ShouldQueue
                 firstName: $user->first_name
             );
 
-            Log::info('[PROCESS TEXT JOB] - AI response generated. Creating the quote.', ['response' => $response]);
+            Log::info("{$logPrefix} - AI response generated. Creating the quote.", ['response' => $response]);
 
             $quote = Quote::create([
                 'user_id' => $this->userId,
@@ -88,15 +90,15 @@ class ProcessIncomingTextMessageJob implements ShouldBeUnique, ShouldQueue
                 'to_number' => $this->twilioNumber,
                 'sms_id' => $this->smsId,
                 'source' => QuoteSource::SMS,
-                'status' => $settings->auto_send_sms ? QuoteStatus::SENT : QuoteStatus::PENDING,
-                'sent_at' => $settings->auto_send_sms ? now() : null,
+                'status' => QuoteStatus::PENDING,
+                'sent_at' => null,
             ]);
 
-            Log::info('[PROCESS TEXT JOB] - Quote created. Firing the event to send the quote.', ['quote_id' => $quote->id]);
+            Log::info("{$logPrefix} - Quote created. Firing the event to send the quote.", ['quote_id' => $quote->id]);
 
             QuoteCreated::dispatch($quote, $settings->auto_send_sms);
         } catch (Exception $e) {
-            Log::error('[PROCESS TEXT JOB] - Failed to process incoming text message.', [
+            Log::error("{$logPrefix} - Failed to process incoming text message.", [
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
             ]);

@@ -30,4 +30,4 @@ class SendVoicemailQuoteResponse
             userId: $event->user->id
         );
     }
-} 
+}

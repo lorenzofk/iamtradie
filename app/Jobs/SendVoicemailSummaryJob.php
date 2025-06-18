@@ -50,6 +50,8 @@ class SendVoicemailSummaryJob implements ShouldBeUnique, ShouldQueue
      */
     public function handle(OpenAIService $openAIService, TwilioService $twilioService): void
     {
+        $logPrefix = '[SEND VOICEMAIL SUMMARY JOB]';
+
         Log::withContext([
             'job' => self::class,
             'call_sid' => $this->callSid,
@@ -62,10 +64,7 @@ class SendVoicemailSummaryJob implements ShouldBeUnique, ShouldQueue
             $user = User::with('settings')->findOrFail($this->userId);
             $settings = $user->settings;
 
-            Log::info('[SEND VOICEMAIL SUMMARY JOB] - Generating voicemail summary for the user.', [
-                'transcription' => $this->transcription,
-                'industry_type' => $settings->industry_type->value,
-            ]);
+            Log::info("{$logPrefix} - Generating voicemail summary for the user.", ['industry_type' => $settings->industry_type->value]);
 
             $aiSummary = $openAIService->generateVoicemailSummaryForUser(
                 transcription: $this->transcription,
@@ -77,20 +76,20 @@ class SendVoicemailSummaryJob implements ShouldBeUnique, ShouldQueue
 
             $fullSummaryMessage = '📞 Missed Call from '.$this->caller."\n".$aiSummary;
 
-            Log::info('[SEND VOICEMAIL SUMMARY JOB] - Summary generated. Sending SMS to user.', ['summary' => $fullSummaryMessage]);
+            Log::info("{$logPrefix} - Summary generated. Sending SMS to user.", ['summary' => $fullSummaryMessage]);
 
             $twilioService->send(to: $settings->phone_number, from: $this->called, message: $fullSummaryMessage);
 
-            Log::info('[SEND VOICEMAIL SUMMARY JOB] - Summary SMS sent successfully to user.', ['to' => $settings->phone_number]);
+            Log::info("{$logPrefix} - Summary SMS sent successfully to user.", ['to' => $settings->phone_number]);
 
-            // Update voicemail with summary
             $voicemail = $user->voicemails()->where('call_sid', $this->callSid)->first();
+
             if ($voicemail) {
                 $voicemail->update(['summary_for_user' => $fullSummaryMessage]);
-                Log::info('[SEND VOICEMAIL SUMMARY JOB] - Voicemail record updated with summary.', ['voicemail_id' => $voicemail->id]);
+                Log::info("{$logPrefix} - Voicemail record updated with summary.", ['voicemail_id' => $voicemail->id]);
             }
         } catch (Exception $e) {
-            Log::error('[SEND VOICEMAIL SUMMARY JOB] - Failed to generate or send summary.', [
+            Log::error("{$logPrefix} - Failed to generate or send summary.", [
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
             ]);
@@ -110,4 +109,4 @@ class SendVoicemailSummaryJob implements ShouldBeUnique, ShouldQueue
             'error' => $exception->getMessage(),
         ]);
     }
-} 
+}

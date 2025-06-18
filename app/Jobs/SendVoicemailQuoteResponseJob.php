@@ -51,7 +51,7 @@ class SendVoicemailQuoteResponseJob implements ShouldBeUnique, ShouldQueue
     public function handle(OpenAIService $openAIService, TwilioService $twilioService): void
     {
         $logPrefix = '[SEND VOICEMAIL QUOTE JOB]';
-        
+
         Log::withContext([
             'job' => self::class,
             'call_sid' => $this->callSid,
@@ -115,4 +115,4 @@ class SendVoicemailQuoteResponseJob implements ShouldBeUnique, ShouldQueue
             'error' => $exception->getMessage(),
         ]);
     }
-} 
+}

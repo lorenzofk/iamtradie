@@ -30,4 +30,4 @@ class SendVoicemailSummary
             userId: $event->user->id
         );
     }
-} 
+}

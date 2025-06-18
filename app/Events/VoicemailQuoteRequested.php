@@ -23,4 +23,4 @@ class VoicemailQuoteRequested
         public readonly string $callSid,
         public readonly User $user
     ) {}
-} 
+}
