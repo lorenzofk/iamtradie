@@ -80,7 +80,7 @@ class ProcessIncomingTextMessageJob implements ShouldBeUnique, ShouldQueue
 
             Log::info('[PROCESS TEXT JOB] - AI response generated. Creating the quote.', [
                 'response' => $response,
-                'is_chatting' => $this->isChatting
+                'is_chatting' => $this->isChatting,
             ]);
 
             $shouldSend = $settings->auto_send_sms && ! $this->isChatting;
@@ -89,7 +89,7 @@ class ProcessIncomingTextMessageJob implements ShouldBeUnique, ShouldQueue
             if ($this->isChatting) {
                 Log::info('[PROCESS TEXT JOB] - Chat prevention active. Quote status set to PENDING.', [
                     'lead_number' => $this->leadNumber,
-                    'user_id' => $this->userId
+                    'user_id' => $this->userId,
                 ]);
             }
 
@@ -108,7 +108,7 @@ class ProcessIncomingTextMessageJob implements ShouldBeUnique, ShouldQueue
 
             Log::info('[PROCESS TEXT JOB] - Quote created. Firing the event to send the quote.', [
                 'quote_id' => $quote->id,
-                'should_send' => $shouldSend
+                'should_send' => $shouldSend,
             ]);
 
             QuoteCreated::dispatch($quote, $shouldSend);

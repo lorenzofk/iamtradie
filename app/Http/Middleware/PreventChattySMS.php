@@ -43,11 +43,11 @@ class PreventChattySMS
             'lead_number' => $leadNumber,
             'user_id' => $user->id,
             'chat_prevention_minutes' => $chatPreventionTimeMinutes,
-            'number_of_quotes_in_last_minutes' => $totalMessagesInLastMinutes
+            'number_of_quotes_in_last_minutes' => $totalMessagesInLastMinutes,
         ]);
 
         $request->attributes->add(['isChatty' => true]);
 
         return $next($request);
     }
-} 
+}

@@ -202,7 +202,7 @@ class TwilioController extends Controller
 
             Log::info('[INCOMING TEXT] - New incoming text message received. Firing the event to process it.', [
                 'user_id' => $user->id,
-                'is_chatting' => $isChatting
+                'is_chatting' => $isChatting,
             ]);
 
             IncomingTextMessageReceived::dispatch(
