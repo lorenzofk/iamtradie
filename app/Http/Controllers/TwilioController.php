@@ -198,14 +198,20 @@ class TwilioController extends Controller
         try {
             $user = $findUserAction->execute($request->getTwilioNumber());
 
-            Log::info('[INCOMING TEXT] - New incoming text message received. Firing the event to process it.', ['user_id' => $user->id]);
+            $isChatting = $request->attributes->get('isChatty', false);
+
+            Log::info('[INCOMING TEXT] - New incoming text message received. Firing the event to process it.', [
+                'user_id' => $user->id,
+                'is_chatting' => $isChatting
+            ]);
 
             IncomingTextMessageReceived::dispatch(
                 $request->getMessageBody(),
                 $request->getLeadNumber(),
                 $request->getTwilioNumber(),
                 $request->getSmsId(),
-                $user
+                $user,
+                $isChatting
             );
 
             return response()->noContent();
