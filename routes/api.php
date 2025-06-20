@@ -6,7 +6,7 @@ use App\Http\Controllers\TwilioController;
 use Illuminate\Support\Facades\Route;
 
 Route::group(['prefix' => 'twilio', 'as' => 'twilio.'], function (): void {
-    Route::post('/text', [TwilioController::class, 'incomingText'])->name('incoming-text');
+    Route::post('/text', [TwilioController::class, 'incomingText'])->middleware(\App\Http\Middleware\PreventChattySMS::class)->name('incoming-text');
     Route::post('/voice', [TwilioController::class, 'incomingCall'])->name('incoming-call');
 
     if (app()->isLocal()) {
