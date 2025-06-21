@@ -13,7 +13,7 @@
           />
         </div>
         <p class="text-gray-400 text-sm leading-relaxed">
-          AI-powered SMS responses for Australian tradies. Never miss another lead.
+          AI-powered SMS responses for Australian workers. Never miss another lead.
         </p>
       </div>
 
@@ -28,7 +28,7 @@
             />
           </div>
           <p class="text-gray-400 text-sm leading-relaxed">
-            AI-powered SMS responses for Australian tradies. Never miss another lead.
+            AI-powered SMS responses for Australian workers. Never miss another lead.
           </p>
         </div>
 

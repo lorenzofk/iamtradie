@@ -160,7 +160,7 @@ onMounted(() => {
           <!-- Header -->
           <div class="text-center mb-6">
             <h2 class="text-3xl font-black text-gray-900 mb-2">Welcome Back</h2>
-            <p class="text-gray-600 text-lg">Sign in to your tradie dashboard</p>
+            <p class="text-gray-600 text-lg">Sign in to your dashboard</p>
           </div>
 
           <!-- Form -->
@@ -242,7 +242,7 @@ onMounted(() => {
             <div class="text-center">
               <p class="text-gray-600 mb-4">Need help?</p>
               <a
-                href="mailto:hello@iamtradie.com.au"
+                href="mailto:hello@pingmate.com.au"
                 class="inline-flex items-center px-6 py-3 border-2 border-blue-600 text-blue-600 font-bold rounded-xl hover:bg-blue-600 hover:text-white transition-all duration-300 hover:scale-105"
               >
                 <font-awesome-icon :icon="['fas', 'fa-envelope']" class="mr-2" />
