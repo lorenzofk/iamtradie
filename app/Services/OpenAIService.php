@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Enums\ResponseTone;
+use App\Enums\SmsClassification;
 use Exception;
 use Illuminate\Support\Facades\Log;
 use OpenAI\Laravel\Facades\OpenAI;
@@ -102,6 +103,86 @@ class OpenAIService
 
             return 'Error generating summary for voicemail. Please check logs.';
         }
+    }
+
+    /**
+     * This method classifies SMS content to determine if it should be filtered out.
+     */
+    public function classifyContentForSMS(string $message, string $model, string $prompt): SmsClassification
+    {
+        Log::withContext(['message_length' => mb_strlen($message)]);
+
+        try {
+            $response = $this->classifyContent($message, $model, $prompt);
+            $data = $this->parseClassification($response);
+            $classification = $this->extractClassificationEnum($data);
+
+            $this->logSuccessfulClassification($classification, $data);
+
+            return $classification;
+        } catch (Exception $e) {
+            $this->logFailedClassification($e, $model);
+
+            return SmsClassification::CLEAN;
+        }
+    }
+
+    private function classifyContent(string $message, string $model, string $prompt): string
+    {
+        $userMessage = $prompt."\n\nMessage: \"".$message.'"';
+
+        $response = OpenAI::chat()->create([
+            'model' => $model,
+            'messages' => [
+                ['role' => 'user', 'content' => $userMessage],
+            ],
+            'max_tokens' => 100,
+            'temperature' => 0.1,
+            'response_format' => ['type' => 'json_object'],
+        ]);
+
+        return $response->choices[0]->message->content ?? '';
+    }
+
+    private function parseClassification(string $content): array
+    {
+        $data = json_decode($content, true);
+
+        if (json_last_error() !== JSON_ERROR_NONE || ! isset($data['classification'])) {
+            $this->logInvalidJsonResponse($content);
+            throw new Exception('Invalid JSON response from OpenAI');
+        }
+
+        return $data;
+    }
+
+    private function extractClassificationEnum(array $data): SmsClassification
+    {
+        return SmsClassification::tryFrom($data['classification']) ?? SmsClassification::CLEAN;
+    }
+
+    private function logInvalidJsonResponse(string $content): void
+    {
+        Log::warning('OpenAI SMS classification returned invalid JSON', [
+            'content' => $content,
+            'json_error' => json_last_error_msg(),
+        ]);
+    }
+
+    private function logSuccessfulClassification(SmsClassification $classification, array $data): void
+    {
+        Log::info('OpenAI SMS classification successful', [
+            'classification' => $classification->value,
+            'reason' => $data['reason'] ?? 'No reason provided',
+        ]);
+    }
+
+    private function logFailedClassification(Exception $e, string $model): void
+    {
+        Log::error('OpenAI SMS classification failed', [
+            'error' => $e->getMessage(),
+            'model' => $model,
+        ]);
     }
 
     /**
@@ -215,7 +296,7 @@ class OpenAIService
         - You are assisting an Australian {$industryType} tradie named {$userFirstName}.
         - Location: Not specified but always in Australia.
         - {$pricingText} (include only if valid).
-        - This summary is NOT visible to the customer – it’s just for the tradie.
+        - This summary is NOT visible to the customer – it's just for the tradie.
 
         🎯 GOAL:
         Summarise the customer's job inquiry into a tight format:
@@ -227,25 +308,25 @@ class OpenAIService
         🏗 STRUCTURE & RULES – FOLLOW STRICTLY:
 
         1. **Job Description (💬)**:
-            - Use plain terms a tradie would recognise (e.g., “blocked toilet”, “deck repair”).
+            - Use plain terms a tradie would recognise (e.g., "blocked toilet", "deck repair").
             - Do not repeat full sentences from the transcript – summarise.
-            - If the message is vague, note the trade-related context (e.g., “Possible plumbing issue”).
+            - If the message is vague, note the trade-related context (e.g., "Possible plumbing issue").
             - If the message is clearly **off-topic** (AI, sales, scams, etc.), write:
-            “💬 Irrelevant or spam message – not a job request” and skip all other fields.
+            "💬 Irrelevant or spam message – not a job request" and skip all other fields.
 
         2. **Value Estimation (💰)**:
             - If clear, estimate based on duration + pricing (e.g., 2hrs + callout = \$200–\$300).
-            - If vague but trade-relevant, write: “Needs inspection”
-            - Never say “Too vague” – prefer “Cannot estimate” or “Needs inspection”
+            - If vague but trade-relevant, write: "Needs inspection"
+            - Never say "Too vague" – prefer "Cannot estimate" or "Needs inspection"
             - Use AUD pricing conventions (e.g., \$ signs, avoid decimals unless necessary).
 
         3. **Urgency (⚡)**:
-            - Infer based on phrases like “urgent”, “ASAP”, “next week”, etc.
-            - If unspecified, default to “Not specified”.
+            - Infer based on phrases like "urgent", "ASAP", "next week", etc.
+            - If unspecified, default to "Not specified".
 
         4. **Location (📍)**:
             - Use any specific suburb/area mentioned.
-            - If unclear, write “Not specified”
+            - If unclear, write "Not specified"
 
         📏 FORMAT — ENFORCE THIS EXACT LAYOUT (NO VARIATIONS):
         💬 [Concise Job Description]
