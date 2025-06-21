@@ -12,8 +12,8 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LandingPageController;
 use App\Http\Controllers\OnboardingController;
 use App\Http\Controllers\QuoteController;
-use App\Http\Controllers\Settings\BasicSettingsController;
-use App\Http\Controllers\Settings\CommunicationSettingsController;
+use App\Http\Controllers\Settings\SettingsController;
+use App\Http\Controllers\HowItWorksController;
 use App\Http\Middleware\Subscribed;
 use Illuminate\Foundation\Http\Middleware\HandlePrecognitiveRequests;
 use Illuminate\Support\Facades\Route;
@@ -43,12 +43,11 @@ Route::middleware(['auth', Subscribed::class])->group(function (): void {
     });
 
     Route::prefix('settings')->name('settings.')->group(function (): void {
-        Route::get('/basic', [BasicSettingsController::class, 'index'])->name('basic.index');
-        Route::post('/basic', [BasicSettingsController::class, 'update'])->name('basic.update')->middleware([HandlePrecognitiveRequests::class]);
-
-        Route::get('/communication', [CommunicationSettingsController::class, 'index'])->name('communication.index');
-        Route::post('/communication', [CommunicationSettingsController::class, 'update'])->name('communication.update')->middleware([HandlePrecognitiveRequests::class]);
+        Route::get('/', [SettingsController::class, 'index'])->name('index');
+        Route::post('/', [SettingsController::class, 'update'])->name('update')->middleware([HandlePrecognitiveRequests::class]);
     });
+
+    Route::get('/how-it-works', [HowItWorksController::class, 'index'])->name('how-it-works');
 
     Route::prefix('billing')->name('billing.')->group(function (): void {
         Route::get('/', [BillingController::class, 'index'])->name('index');

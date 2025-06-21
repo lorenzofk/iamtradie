@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Requests;
 
 use App\Enums\IndustryType;
+use App\Enums\ResponseTone;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -39,7 +40,7 @@ class UpdateSettingsRequest extends FormRequest
             'email' => [
                 'required',
                 'email',
-                'unique:users,email,'.auth()->id(),
+                'unique:users,email,'.$this->user()->id,
             ],
             'business_name' => [
                 'nullable',
@@ -72,6 +73,30 @@ class UpdateSettingsRequest extends FormRequest
                 'required',
                 'numeric',
                 'min:1',
+            ],
+            // Communication settings
+            'response_tone' => [
+                'required',
+                Rule::in(ResponseTone::values()),
+            ],
+            'auto_send_sms' => [
+                'boolean',
+            ],
+            'call_forward_enabled' => [
+                'boolean',
+            ],
+            'auto_send_sms_after_voicemail' => [
+                'boolean',
+            ],
+            'call_ring_duration' => [
+                'required',
+                'numeric',
+                'min:1',
+            ],
+            'voicemail_message' => [
+                'nullable',
+                'string',
+                'max:255',
             ],
         ];
     }

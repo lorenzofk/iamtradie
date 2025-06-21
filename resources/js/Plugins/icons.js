@@ -90,6 +90,8 @@ import {
   faInfoCircle,
   faMoneyBillWave,
   faMagic,
+  faQuestionCircle,
+  faLightbulb,
 } from '@fortawesome/free-solid-svg-icons';
 
 // Regular Icons
@@ -185,7 +187,9 @@ library.add(
   faUndo,
   faInfoCircle,
   faMoneyBillWave,
-  faMagic
+  faMagic,
+  faQuestionCircle,
+  faLightbulb,
 );
 
 export default function SetupFontAwesome(app) {
