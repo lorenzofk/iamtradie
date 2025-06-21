@@ -98,6 +98,83 @@ const copyPhoneNumber = () => {
     </div>
 
     <form @submit.prevent="onFormSubmit" class="space-y-4 lg:space-y-6">
+      <!-- Business Phone Number Section -->
+      <div class="bg-white rounded-xl shadow-sm border-0 p-4 lg:p-6">
+        <div class="mb-4 lg:mb-6">
+          <h2 class="text-lg lg:text-xl font-semibold text-gray-900 flex items-center gap-2">
+            <font-awesome-icon :icon="['fas', 'fa-phone']" class="text-blue-600" />
+            Your Business Number
+          </h2>
+          <p class="text-sm text-gray-600 mt-1">Unified phone number for SMS and voice communications</p>
+        </div>
+
+        <!-- Active Number Display -->
+        <div
+          class="bg-green-50 border border-green-200 rounded-lg p-4 flex flex-col sm:flex-row sm:items-center justify-between mb-4 lg:mb-6 gap-4"
+        >
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
+              <font-awesome-icon :icon="['fas', 'fa-check-circle']" class="text-green-600" />
+            </div>
+            <div class="min-w-0">
+              <p class="text-sm font-medium text-gray-900">Active Business Number</p>
+              <p class="text-lg font-semibold text-green-800 break-all">{{ props.settings.agent_sms_number }}</p>
+              <p class="text-xs text-green-700 mt-1">Handles both SMS and voice calls</p>
+            </div>
+          </div>
+          <Button
+            @click="copyPhoneNumber"
+            size="small"
+            label="Copy"
+            outlined
+            :icon="['fas', 'fa-copy']"
+            class="w-full sm:w-auto flex-shrink-0"
+          />
+        </div>
+
+        <!-- Current Configuration Status -->
+        <div class="pt-4 border-t border-gray-100">
+          <h3 class="text-sm font-medium text-gray-900 mb-3">Current Configuration</h3>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+              <div class="flex items-center gap-2">
+                <font-awesome-icon :icon="['fas', 'fa-comments']" class="text-gray-600 text-sm flex-shrink-0" />
+                <span class="text-sm text-gray-700">SMS Active</span>
+              </div>
+              <span class="text-xs font-medium text-green-700">On</span>
+            </div>
+
+            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+              <div class="flex items-center gap-2">
+                <font-awesome-icon :icon="['fas', 'fa-phone-volume']" class="text-gray-600 text-sm flex-shrink-0" />
+                <span class="text-sm text-gray-700">Call Handling</span>
+              </div>
+              <span class="text-xs font-medium text-gray-900">
+                {{ form.call_forward_enabled ? 'Forward' : 'Voicemail' }}
+              </span>
+            </div>
+
+            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+              <div class="flex items-center gap-2">
+                <font-awesome-icon :icon="['fas', 'fa-dollar-sign']" class="text-gray-600 text-sm flex-shrink-0" />
+                <span class="text-sm text-gray-700">Rates</span>
+              </div>
+              <span class="text-xs font-medium text-gray-900">
+                ${{ props.settings.callout_fee }} + ${{ props.settings.hourly_rate }}/hr
+              </span>
+            </div>
+
+            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+              <div class="flex items-center gap-2">
+                <font-awesome-icon :icon="['fas', 'fa-comment-dots']" class="text-gray-600 text-sm flex-shrink-0" />
+                <span class="text-sm text-gray-700">AI Tone</span>
+              </div>
+              <span class="text-xs font-medium text-gray-900 capitalize">{{ props.settings.response_tone }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Profile Information Card -->
       <div class="bg-white shadow-sm rounded-xl border-0 p-4 lg:p-6">
         <div class="mb-4 lg:mb-6">
@@ -193,83 +270,6 @@ const copyPhoneNumber = () => {
               required
             />
           </FormElement>
-        </div>
-      </div>
-
-      <!-- Business Phone Number Section -->
-      <div class="bg-white rounded-xl shadow-sm border-0 p-4 lg:p-6">
-        <div class="mb-4 lg:mb-6">
-          <h2 class="text-lg lg:text-xl font-semibold text-gray-900 flex items-center gap-2">
-            <font-awesome-icon :icon="['fas', 'fa-phone']" class="text-blue-600" />
-            Your Business Number
-          </h2>
-          <p class="text-sm text-gray-600 mt-1">Unified phone number for SMS and voice communications</p>
-        </div>
-
-        <!-- Active Number Display -->
-        <div
-          class="bg-green-50 border border-green-200 rounded-lg p-4 flex flex-col sm:flex-row sm:items-center justify-between mb-4 lg:mb-6 gap-4"
-        >
-          <div class="flex items-center gap-3">
-            <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
-              <font-awesome-icon :icon="['fas', 'fa-check-circle']" class="text-green-600" />
-            </div>
-            <div class="min-w-0">
-              <p class="text-sm font-medium text-gray-900">Active Business Number</p>
-              <p class="text-lg font-semibold text-green-800 break-all">{{ props.settings.agent_sms_number }}</p>
-              <p class="text-xs text-green-700 mt-1">Handles both SMS and voice calls</p>
-            </div>
-          </div>
-          <Button
-            @click="copyPhoneNumber"
-            size="small"
-            label="Copy"
-            outlined
-            :icon="['fas', 'fa-copy']"
-            class="w-full sm:w-auto flex-shrink-0"
-          />
-        </div>
-
-        <!-- Current Configuration Status -->
-        <div class="pt-4 border-t border-gray-100">
-          <h3 class="text-sm font-medium text-gray-900 mb-3">Current Configuration</h3>
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-              <div class="flex items-center gap-2">
-                <font-awesome-icon :icon="['fas', 'fa-comments']" class="text-gray-600 text-sm flex-shrink-0" />
-                <span class="text-sm text-gray-700">SMS Active</span>
-              </div>
-              <span class="text-xs font-medium text-green-700">On</span>
-            </div>
-
-            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-              <div class="flex items-center gap-2">
-                <font-awesome-icon :icon="['fas', 'fa-phone-volume']" class="text-gray-600 text-sm flex-shrink-0" />
-                <span class="text-sm text-gray-700">Call Handling</span>
-              </div>
-              <span class="text-xs font-medium text-gray-900">
-                {{ form.call_forward_enabled ? 'Forward' : 'Voicemail' }}
-              </span>
-            </div>
-
-            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-              <div class="flex items-center gap-2">
-                <font-awesome-icon :icon="['fas', 'fa-dollar-sign']" class="text-gray-600 text-sm flex-shrink-0" />
-                <span class="text-sm text-gray-700">Rates</span>
-              </div>
-              <span class="text-xs font-medium text-gray-900">
-                ${{ props.settings.callout_fee }} + ${{ props.settings.hourly_rate }}/hr
-              </span>
-            </div>
-
-            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-              <div class="flex items-center gap-2">
-                <font-awesome-icon :icon="['fas', 'fa-comment-dots']" class="text-gray-600 text-sm flex-shrink-0" />
-                <span class="text-sm text-gray-700">AI Tone</span>
-              </div>
-              <span class="text-xs font-medium text-gray-900 capitalize">{{ props.settings.response_tone }}</span>
-            </div>
-          </div>
         </div>
       </div>
 
