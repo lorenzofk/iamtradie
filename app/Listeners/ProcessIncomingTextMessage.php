@@ -24,7 +24,8 @@ class ProcessIncomingTextMessage
             leadNumber: $event->leadNumber,
             twilioNumber: $event->twilioNumber,
             smsId: $event->smsId,
-            userId: $event->user->id
+            userId: $event->user->id,
+            isChatting: $event->isChatting
         );
     }
 }

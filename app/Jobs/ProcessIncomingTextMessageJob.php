@@ -37,7 +37,8 @@ class ProcessIncomingTextMessageJob implements ShouldBeUnique, ShouldQueue
         private readonly string $leadNumber,
         private readonly string $twilioNumber,
         private readonly string $smsId,
-        private readonly int $userId
+        private readonly int $userId,
+        private readonly bool $isChatting = false
     ) {}
 
     /**
@@ -79,6 +80,21 @@ class ProcessIncomingTextMessageJob implements ShouldBeUnique, ShouldQueue
                 firstName: $user->first_name
             );
 
+            Log::info('[PROCESS TEXT JOB] - AI response generated. Creating the quote.', [
+                'response' => $response,
+                'is_chatting' => $this->isChatting,
+            ]);
+
+            $shouldSend = $settings->auto_send_sms && ! $this->isChatting;
+            $status = $shouldSend ? QuoteStatus::SENT : QuoteStatus::PENDING;
+
+            if ($this->isChatting) {
+                Log::info('[PROCESS TEXT JOB] - Chat prevention active. Quote status set to PENDING.', [
+                    'lead_number' => $this->leadNumber,
+                    'user_id' => $this->userId,
+                ]);
+            }
+          
             Log::info("{$logPrefix} - AI response generated. Creating the quote.", ['response' => $response]);
 
             $quote = Quote::create([
@@ -90,13 +106,20 @@ class ProcessIncomingTextMessageJob implements ShouldBeUnique, ShouldQueue
                 'to_number' => $this->twilioNumber,
                 'sms_id' => $this->smsId,
                 'source' => QuoteSource::SMS,
+                'status' => $status,
+                'sent_at' => $shouldSend ? now() : null,
+            ]);
+
+            Log::info('[PROCESS TEXT JOB] - Quote created. Firing the event to send the quote.', [
+                'quote_id' => $quote->id,
+                'should_send' => $shouldSend,
                 'status' => QuoteStatus::PENDING,
                 'sent_at' => null,
             ]);
 
             Log::info("{$logPrefix} - Quote created. Firing the event to send the quote.", ['quote_id' => $quote->id]);
 
-            QuoteCreated::dispatch($quote, $settings->auto_send_sms);
+            QuoteCreated::dispatch($quote, $shouldSend);
         } catch (Exception $e) {
             Log::error("{$logPrefix} - Failed to process incoming text message.", [
                 'error' => $e->getMessage(),

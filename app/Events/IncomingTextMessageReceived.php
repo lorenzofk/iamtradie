@@ -20,6 +20,7 @@ class IncomingTextMessageReceived
         public readonly string $leadNumber,
         public readonly string $twilioNumber,
         public readonly string $smsId,
-        public readonly User $user
+        public readonly User $user,
+        public readonly bool $isChatting
     ) {}
 }
