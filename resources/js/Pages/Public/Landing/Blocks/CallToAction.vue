@@ -15,7 +15,7 @@ const visit = url => {
       Stop Losing Jobs to Faster Competitors
     </h2>
     <p class="text-lg sm:text-xl text-blue-100 mb-6 sm:mb-8 leading-relaxed">
-      Join 100+ Australian tradies who never miss another SMS lead.
+      Join 100+ Australian workers who never miss another SMS lead.
       <span class="text-yellow-300 font-semibold">Start now, mate</span>
     </p>
 

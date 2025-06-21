@@ -94,7 +94,7 @@ class ProcessIncomingTextMessageJob implements ShouldBeUnique, ShouldQueue
                     'user_id' => $this->userId,
                 ]);
             }
-          
+
             Log::info("{$logPrefix} - AI response generated. Creating the quote.", ['response' => $response]);
 
             $quote = Quote::create([

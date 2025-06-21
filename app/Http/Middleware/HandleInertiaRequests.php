@@ -45,6 +45,7 @@ class HandleInertiaRequests extends Middleware
                     'last_name' => $request->user()->last_name,
                     'name' => $request->user()->first_name.' '.$request->user()->last_name,
                     'email' => $request->user()->email,
+                    'role' => $request->user()->settings->industry_type->value,
                 ] : null,
             ],
             'flash' => [

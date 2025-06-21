@@ -25,7 +25,7 @@ const onLogout = e => {
 };
 
 const user = computed(() => {
-  return usePage().props.auth?.user || { name: 'User', role: 'Tradie' };
+  return usePage().props.auth?.user || { name: 'User', role: 'User' };
 });
 
 function userInitials(user) {
@@ -98,7 +98,7 @@ setToast(PrimeVueUseToast());
             </div>
             <div class="ml-3 flex-1 min-w-0">
               <p class="text-sm font-medium text-gray-700 truncate">{{ user.name }}</p>
-              <p class="text-xs text-gray-400 capitalize">{{ user.role || 'Tradie' }}</p>
+              <p class="text-xs text-gray-400 capitalize">{{ user.role }}</p>
             </div>
             <button
               @click="onLogout"
@@ -143,7 +143,7 @@ setToast(PrimeVueUseToast());
         </div>
         <div class="ml-3 flex-1 min-w-0">
           <p class="text-sm font-medium text-gray-700 truncate">{{ user.name }}</p>
-          <p class="text-xs text-gray-400 capitalize">{{ user.role || 'Tradie' }}</p>
+          <p class="text-xs text-gray-400 capitalize">{{ user.role }}</p>
         </div>
         <button
           @click="onLogout"

@@ -97,7 +97,7 @@ const guarantees = [
             <span class="text-base sm:text-lg lg:text-xl text-gray-600 ml-2">/month</span>
           </div>
 
-          <p class="text-gray-600 text-base sm:text-lg mb-4 sm:mb-6">SMS + Voice AI for busy Australian tradies</p>
+          <p class="text-gray-600 text-base sm:text-lg mb-4 sm:mb-6">SMS + Voice AI for busy Australian workers</p>
 
           <!-- Value Proposition -->
           <div
