@@ -1,13 +1,11 @@
 <script setup>
-import { ref, computed } from 'vue';
+import { ref } from 'vue';
 import { useForm } from '@inertiajs/vue3';
 import { useToast } from '@Shared/Ui/Hooks/useToast';
 import Public from '@/Layouts/Public.vue';
 import Button from '@/Shared/Ui/Button/Button.vue';
-import Card from 'primevue/card';
-import DetailsStep from './Blocks/DetailsStep.vue';
-import PricingStep from './Blocks/PricingStep.vue';
-import CommunicationStep from './Blocks/CommunicationStep.vue';
+import Input from '@/Shared/Ui/Form/Input.vue';
+import Select from '@/Shared/Ui/Form/Select.vue';
 
 defineOptions({
   layout: Public,
@@ -15,56 +13,34 @@ defineOptions({
 
 const { showToast } = useToast();
 
-const props = defineProps({
-  selectedPlan: String,
-});
-
-const currentStep = ref(0);
 const isLoaded = ref(false);
 
 const form = useForm({
   user: {
-    first_name: 'Dave',
-    email: 'dave@miller.com',
+    first_name: '',
+    email: '',
+    mobile: '',
   },
   settings: {
-    business_name: "Dave's Electric",
-    industry_type: 'electrical',
-    callout_fee: 120,
-    hourly_rate: 85,
-    response_tone: 'casual',
+    business_name: '',
+    industry_type: '',
   },
 });
 
-const steps = [
-  { step: 0, title: 'Business Details', icon: 'fa-building' },
-  { step: 1, title: 'Pricing Setup', icon: 'fa-dollar-sign' },
-  { step: 2, title: 'Communication', icon: 'fa-comments' },
-  { step: 3, title: 'Payment', icon: 'fa-credit-card' },
+const industryTypes = [
+  { label: 'Electrical', value: 'electrical' },
+  { label: 'Plumbing', value: 'plumbing' },
+  { label: 'Tiling', value: 'tiling' },
+  { label: 'Carpentry', value: 'carpentry' },
+  { label: 'Painting', value: 'painting' },
+  { label: 'Construction', value: 'construction' },
+  { label: 'Cleaning', value: 'cleaning' },
+  { label: 'Gardening', value: 'gardening' },
+  { label: 'Landscaping', value: 'landscaping' },
+  { label: 'General', value: 'general' },
 ];
 
-const progress = computed(() => ((currentStep.value + 1) / steps.length) * 100);
-
-const nextStep = () => {
-  if (currentStep.value < steps.length - 2) {
-    currentStep.value++;
-  }
-};
-
-const prevStep = () => {
-  if (currentStep.value > 0) {
-    currentStep.value--;
-  }
-};
-
 const onSubmit = () => {
-  var lastStep = currentStep.value === steps.length - 2;
-
-  if (!lastStep) {
-    nextStep();
-    return;
-  }
-
   form.post(route('checkout'), {
     onError: () => {
       showToast('error', 'Setup failed. Please try again.');
@@ -78,104 +54,272 @@ setTimeout(() => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-800">
-    <div class="container mx-auto px-4 py-8 max-w-4xl">
-      <!-- Header -->
-      <div class="text-center mb-8">
-        <div class="flex items-center justify-center mb-6">
-          <div class="bg-gradient-to-r from-blue-600 to-green-600 p-3 rounded-xl mr-4 shadow-lg">
-            <font-awesome-icon :icon="['fas', 'fa-bolt']" class="text-white text-2xl" />
-          </div>
-          <h1 class="text-3xl font-bold text-white">PingMate</h1>
-        </div>
-        <h2 class="text-4xl font-black text-white mb-4">Get Ready to Never Miss Another Lead</h2>
-        <p class="text-xl text-blue-100 mb-6">Set up your AI assistant in under 3 minutes</p>
+  <div class="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-800 relative overflow-hidden">
+    <!-- Background Pattern -->
+    <div class="absolute inset-0 opacity-10">
+      <div
+        class="absolute top-10 sm:top-20 left-10 sm:left-20 w-48 sm:w-72 h-48 sm:h-72 bg-blue-500 rounded-full mix-blend-multiply filter blur-xl animate-pulse"
+      ></div>
+      <div
+        class="absolute top-20 sm:top-40 right-10 sm:right-20 w-48 sm:w-72 h-48 sm:h-72 bg-green-500 rounded-full mix-blend-multiply filter blur-xl animate-pulse delay-75"
+      ></div>
+      <div
+        class="absolute -bottom-4 sm:-bottom-8 left-20 sm:left-40 w-48 sm:w-72 h-48 sm:h-72 bg-purple-500 rounded-full mix-blend-multiply filter blur-xl animate-pulse delay-150"
+      ></div>
+    </div>
 
-        <!-- Progress Bar -->
-        <div class="max-w-md mx-auto mb-8">
-          <div class="w-full bg-blue-200 rounded-full h-2 mb-3">
+    <div class="container mx-auto px-4 py-6 sm:py-12 max-w-5xl relative z-10">
+      <!-- Header -->
+      <div class="text-center mb-6 sm:mb-12">
+        <!-- Logo -->
+        <div class="flex flex-col items-center justify-center mb-4 sm:mb-8">
+          <div class="relative mb-2 sm:mb-0">
+            <div class="bg-white p-2 sm:p-4 rounded-2xl shadow-2xl">
+              <img
+                src="/images/logo.png"
+                alt="PingMate"
+                class="rounded-lg h-16 w-16 sm:h-24 sm:w-24 transform scale-110 sm:scale-120"
+              />
+            </div>
             <div
-              class="bg-gradient-to-r from-blue-600 to-green-600 h-2 rounded-full transition-all duration-500"
-              :style="{ width: `${progress}%` }"
+              class="absolute -top-1 sm:-top-2 -right-1 sm:-right-2 w-3 h-3 sm:w-6 sm:h-6 bg-green-400 rounded-full animate-ping"
+            ></div>
+            <div
+              class="absolute -top-1 sm:-top-2 -right-1 sm:-right-2 w-3 h-3 sm:w-6 sm:h-6 bg-green-400 rounded-full"
             ></div>
           </div>
-          <p class="text-blue-200 text-sm">
-            Step {{ currentStep + 1 }} of {{ steps.length }}: {{ steps[currentStep].title }}
-          </p>
         </div>
 
-        <!-- Step Indicators -->
-        <div class="flex justify-center space-x-4 mb-8">
-          <div v-for="(step, index) in steps" :key="index" class="flex flex-col items-center">
+        <h2 class="text-2xl sm:text-4xl lg:text-5xl font-black text-white mb-2 sm:mb-6 leading-tight px-2">
+          Ready to Win More Jobs?
+        </h2>
+        <p class="text-base sm:text-xl text-blue-100 mb-4 sm:mb-8 max-w-2xl mx-auto leading-relaxed px-2">
+          Tell us about your business and we'll set up your AI assistant to start capturing leads instantly
+        </p>
+      </div>
+
+      <!-- Main Form Card -->
+      <div
+        class="bg-white/95 backdrop-blur-sm rounded-2xl sm:rounded-3xl shadow-2xl border border-white/20 overflow-hidden transform transition-all duration-700 mx-1 sm:mx-0"
+        :class="{ 'translate-y-0 opacity-100 scale-100': isLoaded, 'translate-y-10 opacity-0 scale-95': !isLoaded }"
+      >
+        <!-- Card Header -->
+        <div class="bg-gradient-to-r from-blue-50 to-green-50 p-4 sm:p-8 border-b border-gray-100">
+          <div class="text-center">
             <div
-              class="w-12 h-12 rounded-full flex items-center justify-center border-2 transition-all duration-300"
-              :class="{
-                'bg-green-500 border-green-500': index < currentStep,
-                'bg-blue-600 border-blue-600': index === currentStep,
-                'bg-gray-600 border-gray-600': index > currentStep,
-              }"
+              class="inline-flex items-center justify-center w-10 h-10 sm:w-16 sm:h-16 bg-gradient-to-br from-blue-500 to-green-500 rounded-2xl mb-2 sm:mb-4 shadow-lg"
             >
-              <font-awesome-icon
-                v-if="index < currentStep"
-                :icon="['fas', 'fa-check-circle']"
-                class="w-6 h-6 text-white"
-              />
-              <font-awesome-icon v-else :icon="['fas', step.icon]" class="w-6 h-6 text-white" />
+              <font-awesome-icon :icon="['fas', 'user-tie']" class="text-white text-sm sm:text-2xl" />
             </div>
-            <span class="text-xs text-blue-200 mt-2 hidden sm:block">
-              {{ step.title }}
-            </span>
+            <h3 class="text-lg sm:text-2xl font-bold text-gray-900 mb-1 sm:mb-2">Tell Us About Your Business</h3>
+            <p class="text-gray-600 max-w-md mx-auto text-sm sm:text-base px-2 sm:px-0">
+              We'll customise your AI assistant to match your trade, pricing, and communication style
+            </p>
           </div>
+        </div>
+
+        <!-- Form Content -->
+        <div class="p-4 sm:p-8 lg:p-10">
+          <form @submit.prevent="onSubmit" class="space-y-4 sm:space-y-8">
+            <!-- Personal & Business Info -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-6">
+              <!-- First Name -->
+              <div class="space-y-1 sm:space-y-2">
+                <label class="block text-sm font-bold text-gray-700">
+                  Your First Name
+                  <span class="text-red-500">*</span>
+                </label>
+                <Input
+                  v-model="form.user.first_name"
+                  placeholder="e.g., Dave"
+                  class="w-full py-2.5 sm:py-3 px-3 sm:px-4 text-base border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-0 transition-colors"
+                  required
+                  :class="{ '!border-red-300 !ring-red-100': form.errors['user.first_name'] }"
+                />
+                <div v-if="form.errors['user.first_name']" class="text-red-500 text-sm flex items-center">
+                  <font-awesome-icon :icon="['fas', 'exclamation-circle']" class="mr-1" />
+                  {{ form.errors['user.first_name'] }}
+                </div>
+              </div>
+
+              <!-- Business Name -->
+              <div class="space-y-1 sm:space-y-2">
+                <label class="block text-sm font-bold text-gray-700">
+                  Business Name
+                  <span class="text-red-500">*</span>
+                </label>
+                <Input
+                  v-model="form.settings.business_name"
+                  placeholder="e.g., Dave's Electric"
+                  class="w-full py-2.5 sm:py-3 px-3 sm:px-4 text-base border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-0 transition-colors"
+                  required
+                  :class="{ '!border-red-300 !ring-red-100': form.errors['settings.business_name'] }"
+                />
+                <div v-if="form.errors['settings.business_name']" class="text-red-500 text-sm flex items-center">
+                  <font-awesome-icon :icon="['fas', 'exclamation-circle']" class="mr-1" />
+                  {{ form.errors['settings.business_name'] }}
+                </div>
+              </div>
+
+              <!-- Email -->
+              <div class="space-y-1 sm:space-y-2">
+                <label class="block text-sm font-bold text-gray-700">
+                  Email Address
+                  <span class="text-red-500">*</span>
+                </label>
+                <Input
+                  v-model="form.user.email"
+                  type="email"
+                  placeholder="e.g., dave@daveelectric.com.au"
+                  class="w-full py-2.5 sm:py-3 px-3 sm:px-4 text-base border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-0 transition-colors"
+                  required
+                  :class="{ '!border-red-300 !ring-red-100': form.errors['user.email'] }"
+                />
+                <div v-if="form.errors['user.email']" class="text-red-500 text-sm flex items-center">
+                  <font-awesome-icon :icon="['fas', 'exclamation-circle']" class="mr-1" />
+                  {{ form.errors['user.email'] }}
+                </div>
+              </div>
+
+              <!-- Industry Type -->
+              <div class="space-y-1 sm:space-y-2">
+                <label class="block text-sm font-bold text-gray-700">
+                  Your Industry
+                  <span class="text-red-500">*</span>
+                </label>
+                <Select
+                  v-model="form.settings.industry_type"
+                  :options="industryTypes"
+                  optionLabel="label"
+                  optionValue="value"
+                  placeholder="Select your industry"
+                  class="w-full text-base border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-0 transition-colors"
+                  required
+                  :class="{ '!border-red-300 !ring-red-100': form.errors['settings.industry_type'] }"
+                />
+                <div v-if="form.errors['settings.industry_type']" class="text-red-500 text-sm flex items-center">
+                  <font-awesome-icon :icon="['fas', 'exclamation-circle']" class="mr-1" />
+                  {{ form.errors['settings.industry_type'] }}
+                </div>
+              </div>
+            </div>
+
+            <!-- Mobile Number - Full Width -->
+            <div class="space-y-1 sm:space-y-2">
+              <label class="block text-sm font-bold text-gray-700">
+                Mobile Number
+                <span class="text-red-500">*</span>
+              </label>
+              <Input
+                v-model="form.user.mobile"
+                type="tel"
+                placeholder="e.g., 0412 345 678"
+                class="w-full py-2.5 sm:py-3 px-3 sm:px-4 text-base border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-0 transition-colors"
+                required
+                :class="{ '!border-red-300 !ring-red-100': form.errors['user.mobile'] }"
+              />
+              <p class="text-gray-500 text-sm flex items-center">
+                <font-awesome-icon :icon="['fas', 'info-circle']" class="mr-2 text-blue-500 flex-shrink-0" />
+                We'll forward important leads to this number
+              </p>
+              <div v-if="form.errors['user.mobile']" class="text-red-500 text-sm flex items-center">
+                <font-awesome-icon :icon="['fas', 'exclamation-circle']" class="mr-1" />
+                {{ form.errors['user.mobile'] }}
+              </div>
+            </div>
+
+            <!-- What Happens Next -->
+            <div
+              class="bg-gradient-to-br from-blue-50 to-green-50 border-2 border-blue-200 rounded-2xl p-3 sm:p-6 relative overflow-hidden"
+            >
+              <!-- Background decoration -->
+              <div
+                class="absolute top-0 right-0 w-16 sm:w-32 h-16 sm:h-32 bg-blue-200/20 rounded-full -mr-8 sm:-mr-16 -mt-8 sm:-mt-16"
+              ></div>
+              <div
+                class="absolute bottom-0 left-0 w-12 sm:w-24 h-12 sm:h-24 bg-green-200/20 rounded-full -ml-6 sm:-ml-12 -mb-6 sm:-mb-12"
+              ></div>
+
+              <div class="relative z-10">
+                <div class="flex items-center mb-3 sm:mb-4">
+                  <font-awesome-icon
+                    :icon="['fas', 'rocket']"
+                    class="text-blue-600 text-lg sm:text-xl mr-3 sm:mr-4 flex-shrink-0"
+                  />
+                  <h4 class="text-base sm:text-xl font-bold text-gray-900">What Happens After Payment?</h4>
+                </div>
+
+                <p class="text-gray-700 text-sm sm:text-lg leading-relaxed">
+                  You will get an email with your Aussie number and login details. From there, just follow our 5‑minute
+                  guide to customise your AI and start landing jobs — fast.
+                </p>
+              </div>
+            </div>
+
+            <!-- Submit Button -->
+            <Button
+              type="submit"
+              :disabled="form.processing"
+              class="w-full !bg-gradient-to-r !from-blue-600 !to-green-600 hover:!from-blue-700 hover:!to-green-700 !py-3.5 sm:!py-4 !text-base sm:!text-xl !font-bold shadow-2xl transform hover:scale-105 transition-all duration-200 cursor-pointer"
+              :icon="form.processing ? ['fas', 'spinner'] : ['fas', 'rocket']"
+              :label="form.processing ? 'Setting up your account...' : 'Start Winning Jobs – $29.90/month'"
+            />
+
+            <!-- Risk Reduction Badge -->
+            <div class="text-center">
+              <div
+                class="inline-flex items-center bg-gray-50 rounded-lg px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm text-gray-600"
+              >
+                Billed monthly. Cancel anytime, no contracts.
+              </div>
+            </div>
+
+            <!-- Trust Indicators -->
+            <div
+              class="flex flex-wrap justify-center items-center gap-3 sm:gap-4 text-xs sm:text-sm text-gray-600 pt-1 sm:pt-4"
+            >
+              <div class="flex items-center gap-1.5 sm:gap-2">
+                <span>📞</span>
+                <span class="font-medium">Local Aussie number</span>
+              </div>
+              <div class="hidden sm:block text-gray-400">|</div>
+              <div class="flex items-center gap-1.5 sm:gap-2">
+                <span>🔐</span>
+                <span class="font-medium">Secure payment</span>
+              </div>
+              <div class="hidden sm:block text-gray-400">|</div>
+              <div class="flex items-center gap-1.5 sm:gap-2">
+                <span>🔄</span>
+                <span class="font-medium">Cancel anytime</span>
+              </div>
+              <div class="hidden sm:block text-gray-400">|</div>
+              <div class="flex items-center gap-1.5 sm:gap-2">
+                <span>💰</span>
+                <span class="font-medium">30‑day guarantee</span>
+              </div>
+            </div>
+          </form>
         </div>
       </div>
 
-      <!-- Main Content -->
-      <Card
-        class="shadow-2xl border-0 bg-white/95 backdrop-blur transform transition-all duration-500"
-        :class="{ 'translate-y-0 opacity-100': isLoaded, 'translate-y-10 opacity-0': !isLoaded }"
-      >
-        <template #content>
-          <div class="p-8">
-            <form @submit.prevent="onSubmit">
-              <DetailsStep v-if="currentStep === 0" v-model="form" />
-
-              <PricingStep v-if="currentStep === 1" v-model="form" />
-
-              <CommunicationStep v-if="currentStep === 2" v-model="form" />
-
-              <hr class="my-8 border-gray-200" />
-
-              <!-- Navigation -->
-              <div class="flex justify-between">
-                <Button
-                  type="button"
-                  outlined
-                  @click="prevStep"
-                  :class="{ '!opacity-50 !cursor-not-allowed': currentStep === 0 }"
-                  :disabled="currentStep === 0"
-                  :icon="['fas', 'fa-arrow-left']"
-                  label="Back"
-                />
-
-                <Button
-                  type="submit"
-                  :disabled="form.processing"
-                  class="!bg-gradient-to-r !from-blue-600 !to-green-600 hover:!from-blue-700 hover:!to-green-700"
-                  :icon="
-                    form.processing
-                      ? ['fas', 'fa-spinner']
-                      : currentStep === steps.length - 1
-                        ? ['fas', 'fa-check-circle']
-                        : ['fas', 'fa-arrow-right']
-                  "
-                  :iconPos="currentStep === steps.length - 1 ? 'right' : 'right'"
-                  :label="currentStep === steps.length - 2 ? 'Subscribe' : 'Continue'"
-                />
-              </div>
-            </form>
+      <!-- Bottom Trust Section -->
+      <div class="mt-6 sm:mt-12 text-center px-2">
+        <div
+          class="flex flex-col sm:flex-row justify-center items-center gap-3 sm:gap-8 bg-white/10 backdrop-blur-sm rounded-2xl px-3 sm:px-8 py-3 sm:py-4 border border-white/20 max-w-5xl mx-auto"
+        >
+          <div class="flex items-center gap-2 text-blue-200">
+            <font-awesome-icon :icon="['fas', 'clock']" class="flex-shrink-0 text-xs sm:text-sm" />
+            <span class="text-xs sm:text-sm font-medium">Setup in under 5 minutes</span>
           </div>
-        </template>
-      </Card>
+          <div class="flex items-center gap-2 text-blue-200">
+            <font-awesome-icon :icon="['fas', 'shield-alt']" class="flex-shrink-0 text-xs sm:text-sm" />
+            <span class="text-xs sm:text-sm font-medium">30-day money back guarantee</span>
+          </div>
+          <div class="flex items-center gap-2 text-blue-200">
+            <span class="text-xs sm:text-sm font-medium">🇦🇺 Australian owned & operated</span>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>

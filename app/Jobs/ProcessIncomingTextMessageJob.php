@@ -54,6 +54,8 @@ class ProcessIncomingTextMessageJob implements ShouldBeUnique, ShouldQueue
      */
     public function handle(OpenAIService $openAIService): void
     {
+        $logPrefix = '[PROCESS TEXT JOB]';
+
         Log::withContext([
             'job' => self::class,
             'sms_id' => $this->smsId,
@@ -67,7 +69,7 @@ class ProcessIncomingTextMessageJob implements ShouldBeUnique, ShouldQueue
             $user = User::with('settings')->findOrFail($this->userId);
             $settings = $user->settings;
 
-            Log::info('[PROCESS TEXT JOB] - Generating AI quote response.', ['industry_type' => $settings->industry_type->value]);
+            Log::info("{$logPrefix} - Generating AI quote response.", ['industry_type' => $settings->industry_type->value]);
 
             $response = $openAIService->generateQuoteResponse(
                 message: $this->messageBody,
@@ -92,6 +94,8 @@ class ProcessIncomingTextMessageJob implements ShouldBeUnique, ShouldQueue
                     'user_id' => $this->userId,
                 ]);
             }
+          
+            Log::info("{$logPrefix} - AI response generated. Creating the quote.", ['response' => $response]);
 
             $quote = Quote::create([
                 'user_id' => $this->userId,
@@ -109,11 +113,15 @@ class ProcessIncomingTextMessageJob implements ShouldBeUnique, ShouldQueue
             Log::info('[PROCESS TEXT JOB] - Quote created. Firing the event to send the quote.', [
                 'quote_id' => $quote->id,
                 'should_send' => $shouldSend,
+                'status' => QuoteStatus::PENDING,
+                'sent_at' => null,
             ]);
+
+            Log::info("{$logPrefix} - Quote created. Firing the event to send the quote.", ['quote_id' => $quote->id]);
 
             QuoteCreated::dispatch($quote, $shouldSend);
         } catch (Exception $e) {
-            Log::error('[PROCESS TEXT JOB] - Failed to process incoming text message.', [
+            Log::error("{$logPrefix} - Failed to process incoming text message.", [
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
             ]);

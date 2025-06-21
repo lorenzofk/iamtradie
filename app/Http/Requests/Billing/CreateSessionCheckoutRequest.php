@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\Billing;
 
-use App\Enums\ResponseTone;
+use App\Enums\IndustryType;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -31,6 +31,12 @@ class CreateSessionCheckoutRequest extends FormRequest
                 'required',
                 'email',
                 'max:255',
+                'unique:users,email',
+            ],
+            'user.mobile' => [
+                'required',
+                'string',
+                'max:255',
             ],
             'settings' => [
                 'required',
@@ -44,24 +50,19 @@ class CreateSessionCheckoutRequest extends FormRequest
             'settings.industry_type' => [
                 'required',
                 'string',
-                'max:255',
+                Rule::in(IndustryType::values()),
             ],
-            'settings.callout_fee' => [
-                'required',
-                'numeric',
-                'min:0',
-                'max:1000',
-            ],
-            'settings.hourly_rate' => [
-                'required',
-                'numeric',
-                'min:0',
-                'max:500',
-            ],
-            'settings.response_tone' => [
-                'required',
-                Rule::in(ResponseTone::values()),
-            ],
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'user.email.unique' => 'An account with this email already exists. Please use a different email or try logging in.',
+            'user.first_name.required' => 'Please enter your first name.',
+            'user.mobile.required' => 'Please enter your mobile number.',
+            'settings.business_name.required' => 'Please enter your business name.',
+            'settings.industry_type.required' => 'Please select your trade type.',
         ];
     }
 }
